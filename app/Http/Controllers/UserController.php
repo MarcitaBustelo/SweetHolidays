@@ -32,8 +32,6 @@ class UserController extends Controller
                 return view('menu.admin', compact('user'));
             default:
                 return redirect()->route('logout');
-
-                //omg
         }
     }
 

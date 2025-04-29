@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('holidays', function (Blueprint $table) {
+        Schema::create('lates', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("employee_id");
-            $table->date("start_date");
-            $table->date("end_date");
-            $table->unsignedBigInteger("holiday_id");
+            $table->date("date");
+            $table->time("arrival_time");
+            $table->time("departure_time");
+            $table->boolean("late");
             $table->timestamps();
 
             $table->foreign(columns: 'employee_id')->references('id')->on('employees');
-            $table->foreign('holiday_id')->references('id')->on('holidays_types');
 
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('holidays');
+        Schema::dropIfExists('lates');
     }
 };

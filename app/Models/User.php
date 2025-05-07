@@ -2,38 +2,42 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use App\Models\Holiday;
+use App\Models\Department;
+use App\Models\Delegation;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable;
 
-    protected $dateFormat = 'd-m-Y H:i:s';
+    protected $dateFormat = 'Y-m-d';
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-        'employee_id',
-        'NIF',
         'name',
         'email',
+        'nif',
         'password',
-        'role'
+        'role',
+        'phone',
+        'employee_id',
+        'department_id',
+        'delegation_id',
+        'responsable_id',
+        'start_date',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -41,7 +45,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -50,31 +54,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'active' => 'boolean',
+            'start_date' => 'date',
         ];
     }
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+        return $this->belongsTo(Department::class);
     }
 
     public function delegation()
     {
-        return $this->belongsTo(Delegation::class, 'delegation_id', 'delegation_id');
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id', 'company_id');
-    }
-
-    public function responsable()
-    {
-        return $this->belongsTo(Responsable::class, 'responsable_id', 'responsable_id');
+        return $this->belongsTo(Delegation::class);
     }
 
     public function holidays()
     {
-        return $this->hasMany(Holiday::class, 'employee_id', 'id');
+        return $this->hasMany(Holiday::class, 'employee_id', 'employee_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (empty($user->employee_id)) {
+                $latest = static::max('employee_id');
+
+                if (!$latest || !is_numeric($latest)) {
+                    $user->employee_id = '100001';
+                } else {
+                    $user->employee_id = strval(intval($latest) + 1);
+                }
+            }
+        });
     }
 }

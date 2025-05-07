@@ -103,63 +103,7 @@ class EmployeeController extends Controller
             'message' => 'No es 1 de enero. Los días de vacaciones no se pueden regenerar.',
         ]);
     }
-
-    public function show()
-    {
-        $user = Auth::user();
-        $holidays = Holiday::where('employee_id', $user->id)
-            ->whereYear('start_date', date('Y'))
-            ->get();
-
-        // Calcular días usados por tipo
-        $vacationDaysUsed = 0;
-        $absenceDaysUsed = 0;
-        $totalDaysUsed = 0;
-
-        foreach ($holidays as $holiday) {
-            $days = $this->calculateDays($holiday->start_date, $holiday->end_date);
-
-            if ($holiday->holiday_type == 'Vacaciones') {
-                $vacationDaysUsed += $days;
-            } else {
-                $absenceDaysUsed += $days;
-            }
-
-            $totalDaysUsed += $days;
-        }
-        $totalDays = $user->days_in_total;
-        $remainingDays = $user->days;
-        $upcomingHolidays = Holiday::where('employee_id', $user->id)
-            ->where('start_date', '>=', now()->format('Y-m-d'))
-            ->orderBy('start_date')
-            ->take(3)
-            ->get();
-
-        return view('user.profile', compact(
-            'user',
-            'vacationDaysUsed',
-            'absenceDaysUsed',
-            'totalDaysUsed',
-            'totalDays',
-            'remainingDays',
-            'upcomingHolidays'
-        ));
-    }
-
-    private function calculateDays($startDate, $endDate = null)
-    {
-        if (!$endDate) {
-            return 1;
-        }
-
-        $start = new DateTime($startDate);
-        $end = new DateTime($endDate);
-        $end->modify('+1 day');
-
-        $interval = $start->diff($end);
-        return $interval->days;
-    }
-
+    
     public function holiday()
     {
         $user = Auth::user();

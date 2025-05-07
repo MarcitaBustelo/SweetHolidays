@@ -11,8 +11,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.6",
-        "league/commonmark": "2.6",
-        "spatie/laravel-permission": "^6.16"
+        "league/commonmark": "2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Vacaciones</title>
+    <title>Sweet Holidays</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -73,7 +73,8 @@
         .card-small h2,
         .card-large h2 {
             font-size: 1.8rem;
-            color:rgba(23, 60, 141, 0.9);/* Azul */
+            color: rgba(23, 60, 141, 0.9);
+            /* Azul */
             margin-bottom: 1rem;
         }
 
@@ -98,12 +99,10 @@
 <body>
     <nav class="p-5">
         <div class="flex flex-col md:flex-row md:justify-between items-center">
-            <!-- Logo -->
             <div class="text-2xl font-bold text-white mb-4 md:mb-0 text-center md:text-left">
-                Gestión de Vacaciones
+                Sweet Holidays
             </div>
-    
-            <!-- Links -->
+
             <ul class="flex space-x-0 md:space-x-6 text-white font-semibold flex-col md:flex-row items-center">
                 <li>
                     <a href="/login" class="hover:text-blue-300 px-2 py-1 text-center block">Iniciar Sesión</a>
@@ -117,7 +116,8 @@
         <div class="card-small">
             <h2>¿Para qué sirve?</h2>
             <p>
-                Gestiona las vacaciones de manera rápida y sencilla. Permite a empleados y responsables organizar ausencias de forma eficiente.
+                Gestiona las vacaciones de manera rápida y sencilla. Permite a empleados y responsables organizar
+                ausencias de forma eficiente.
             </p>
         </div>
 
@@ -138,4 +138,5 @@
         <p class="text-sm">&copy; 2025 Gestión de Vacaciones. Todos los derechos reservados.</p>
     </footer>
 </body>
+
 </html>

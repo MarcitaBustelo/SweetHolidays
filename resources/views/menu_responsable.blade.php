@@ -1,149 +1,150 @@
 @extends('adminlte::page')
 
-@section('title', 'Menú de Responsables')
+@section('title', 'Responsible Menu')
 
 @section('content_header')
-<h1 style="color: #0e0c5e;">Menú de Responsables</h1>
+<h1 style="color: #4b0082;">Responsible Menu</h1>
 @stop
 
 @section('content')
 <div class="row">
-    <!-- Tarjeta de Mi Calendario -->
+    <!-- My Calendar Card -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fas fa-calendar-alt mr-2"></i>Mi Calendario
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-calendar-alt mr-2"></i>My Calendar
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: #0e0c5e;">Consulta y administra tu calendario personal.</p>
+                <p style="color: #4b0082;">View and manage your personal calendar.</p>
                 <a href="{{ route('user.respon_calendar') }}" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none;">
-                    <i class="fas fa-calendar-alt mr-2"></i> Ver Calendario
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-calendar-alt mr-2"></i> View Calendar
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Tarjeta de Mi Perfil -->
+    <!-- My Profile Card -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fas fa-user mr-2"></i>Mi Perfil
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-user mr-2"></i>My Profile
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: #0e0c5e;">Consulta y actualiza tu información personal.</p>
+                <p style="color: #4b0082;">View and update your personal information.</p>
                 <a href="{{ route('user.profile') }}" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none;">
-                    <i class="fas fa-user mr-2"></i>
-                    Ver Perfil
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-user mr-2"></i> View Profile
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Manage Leave Types -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fas fa-calendar-plus mr-2"></i>Gestionar Tipos de Ausencia
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-calendar-plus mr-2"></i>Manage Leave Types
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: #0e0c5e;">Gestiona los tipos de ausencias laborales.</p>
+                <p style="color: #4b0082;">Manage types of work absences.</p>
                 <button onclick="openCreateHolidayType()" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
-                    <i class="fas fa-calendar-plus mr-1"></i> Crear Nuevo Tipo
+                    style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
+                    <i class="fas fa-calendar-plus mr-1"></i> Create New Type
                 </button>
                 <button onclick="viewHolidayTypes()" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
-                    <i class="fas fa-list mr-1"></i> Ver Tipos Existentes
+                    style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
+                    <i class="fas fa-list mr-1"></i> View Existing Types
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Manage Users -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fas fa-user mr-2"></i>Gestionar Usuarios
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-user mr-2"></i>Manage Users
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: #0e0c5e;">Consulta tus empleados</p>
+                <p style="color: #4b0082;">View your employees.</p>
                 <a href="{{ route('user.users') }}" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none;">
-                    <i class="fas fa-user mr-2"></i>
-                    Ver Usuarios
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-user mr-2"></i> View Users
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Tarjeta de Gestionar Festivos -->
+    <!-- Manage Holidays (conditional) -->
     @php
         $specialAccessEmployeeIds = ['100001', '100001'];
     @endphp
     @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
         <div class="col-md-6 mb-4">
-            <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-                <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                    <h3 class="card-title" style="color: #0e0c5e;">
-                        <i class="far fa-calendar-check mr-2"></i>Gestionar Festivos
+            <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+                <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                    <h3 class="card-title" style="color: #4b0082;">
+                        <i class="far fa-calendar-check mr-2"></i>Manage Holidays
                     </h3>
                 </div>
                 <div class="card-body">
-                    <p style="color: #0e0c5e;">Consulta los días festivos</p>
+                    <p style="color: #4b0082;">View official holidays.</p>
                     <a href="{{ route('user.profile') }}" class="btn"
-                        style="background-color: #7c9ed1; color: white; border: none;">
-                        <i class="far fa-calendar-check mr-2"></i>
-                        Ver festivos
+                        style="background-color: #a066c9; color: white; border: none;">
+                        <i class="far fa-calendar-check mr-2"></i> View Holidays
                     </a>
                 </div>
             </div>
         </div>
     @endif
+
+    <!-- Manage Departments -->
     <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fas fa-bezier-curve mr-2"></i>Gestionar Departamentos
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-bezier-curve mr-2"></i>Manage Departments
                 </h3>
             </div>
             <div class="card-body">
-                <p style="color: #0e0c5e;">Consulta los departamentos</p>
+                <p style="color: #4b0082;">View departments.</p>
                 <a href="{{ route('user.users') }}" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none;">
-                    <i class="fas fa-bezier-curve mr-2"></i>
-                    Ver departamentos
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f0f7ff; border-color: #d1e3f6;">
-            <div class="card-header" style="background-color: #d1e3f6; border-bottom-color: #a8c4e8;">
-                <h3 class="card-title" style="color: #0e0c5e;">
-                    <i class="fab fa-unity mr-2"></i>Gestionar Delegaciones
-                </h3>
-            </div>
-            <div class="card-body">
-                <p style="color: #0e0c5e;">Consulta las delegaciones</p>
-                <a href="{{ route('user.users') }}" class="btn"
-                    style="background-color: #7c9ed1; color: white; border: none;">
-                    <i class="fab fa-unity mr-2"></i>
-                    Ver Delegaciones
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-bezier-curve mr-2"></i> View Departments
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Manage Branches -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fab fa-unity mr-2"></i>Manage Branches
+                </h3>
+            </div>
+            <div class="card-body">
+                <p style="color: #4b0082;">View branch offices.</p>
+                <a href="{{ route('user.users') }}" class="btn"
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fab fa-unity mr-2"></i> View Branches
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 @stop
+
 @section('footer')
 <div class="float-right">
     Version: {{ config('app.version', '0.0.1') }}
@@ -158,50 +159,78 @@
 </strong>
 @stop
 
-
 @section('css')
 <style>
+    body {
+        background-color: #f7f3fa;
+    }
+
     .card {
+        background-color: #f9f5fc;
+        border: 1px solid #e2d4f4;
         border-radius: 12px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 10px 20px rgba(76, 42, 133, 0.15) !important;
     }
 
     .card-header {
+        background-color: #e8daf6;
+        border-bottom-color: #d1b8f3;
         border-radius: 12px 12px 0 0 !important;
     }
 
     .card-title {
         font-size: 1.25rem;
         font-weight: 600;
+        color: #4c2a85;
+    }
+
+    .card-body p {
+        color: #4c2a85;
     }
 
     .btn {
+        background-color: #a97cd1;
+        color: white;
+        border: none;
         border-radius: 8px;
         padding: 8px 16px;
         font-weight: 500;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px rgba(76, 42, 133, 0.1);
     }
 
     .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        opacity: 0.9;
-    }
-
-    body {
-        background-color: #f8fafc;
+        box-shadow: 0 4px 8px rgba(76, 42, 133, 0.2);
+        opacity: 0.95;
     }
 
     .content-header h1 {
-        border-bottom: 2px solid #d1e3f6;
+        color: #4c2a85;
+        border-bottom: 2px solid #d9c4ee;
         padding-bottom: 10px;
         display: inline-block;
+    }
+
+    .swal2-title {
+        color: #4c2a85 !important;
+    }
+
+    .swal2-popup {
+        border-radius: 10px;
+    }
+
+    .swal2-styled.swal2-confirm {
+        background-color: #a97cd1 !important;
+    }
+
+    .swal2-styled.swal2-cancel {
+        background-color: #ccc !important;
     }
 </style>
 @stop
@@ -209,15 +238,14 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Función para abrir el popup de Crear Tipo de Ausencia
     function openCreateHolidayType() {
         Swal.fire({
-            title: 'Crear Nuevo Tipo de Ausencia',
+            title: 'Create new Type of Absence',
             html: `
                     <form id="createHolidayTypeForm">
                         <div class="form-group">
-                            <label for="type">Nombre del Tipo</label>
-                            <input type="text" id="type" name="type" class="form-control" placeholder="Ejemplo: Vacaciones" required>
+                            <label for="type">Name of absences</label>
+                            <input type="text" id="type" name="type" class="form-control" placeholder="Example: Vacations" required>
                         </div>
                     </form>
                 `,
@@ -239,7 +267,7 @@
                         if (!response.ok) {
                             return response.json().then(err => {
                                 throw new Error(err.message ||
-                                    'Error al procesar la solicitud');
+                                    'Oops! Something went wrong.');
                             });
                         }
                         return response.json();
@@ -252,7 +280,7 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('¡Tipo de ausencia creado!', '', 'success');
+                Swal.fire('¡Type of holiday saved!', '', 'success');
             }
         });
     }

@@ -8,7 +8,10 @@ use App\Models\User;
 use App\Models\Holiday;
 use DateTime;
 use Illuminate\Support\Facades\Mail;
-use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Responsable;
+use App\Models\Festive;
+use Carbon\Carbon;
 
 
 class EmployeeController extends Controller
@@ -18,19 +21,22 @@ class EmployeeController extends Controller
     {
         $user = Auth::user();
         $specialAccessEmployeeIds = ['10332', '10342'];
+
         if (in_array($user->employee_id, $specialAccessEmployeeIds)) {
-            $employees = User::all();
+            $employees = User::with(['delegation', 'department'])->get();
+            $responsables = Responsable::select('responsable_id', 'name')->get();
+            $departments = Department::select('department_id', 'name')->get();
         } else {
-            if ($user->responsable === null) {
-                $employees = User::where('responsable', $user->employee_id)
-                    ->orWhere('id', $user->id)
-                    ->get();
-            } else {
-                $employees = User::where('responsable', $user->employee_id)->get();
-            }
+            $employees = User::where(function ($query) use ($user) {
+                $query->where('responsable', $user->employee_id)
+                    ->orWhere('id', $user->id);
+            })->with(['delegation', 'department'])->get();
+
+            $responsables = collect();
+            $departments = collect();
         }
 
-        return view('user.users', compact('employees'));
+        return view('user.users', compact('employees', 'responsables', 'departments'));
     }
 
     public function updateDays(Request $request, $id)
@@ -103,14 +109,75 @@ class EmployeeController extends Controller
             'message' => 'No es 1 de enero. Los días de vacaciones no se pueden regenerar.',
         ]);
     }
-    
+
+    public function show()
+    {
+        $user = Auth::user();
+        $holidays = Holiday::where('employee_id', $user->id)
+            ->whereYear('start_date', date('Y'))
+            ->get();
+
+        $vacationDaysUsed = 0;
+        $absenceDaysUsed = 0;
+        $totalDaysUsed = 0;
+
+        foreach ($holidays as $holiday) {
+            $days = $this->calculateDays($holiday->start_date, $holiday->end_date);
+
+            if ($holiday->holiday_type == 'Vacaciones') {
+                $vacationDaysUsed += $days;
+            } else {
+                $absenceDaysUsed += $days;
+            }
+
+            $totalDaysUsed += $days;
+        }
+        $totalDays = $user->days_in_total;
+        $remainingDays = $user->days;
+        $upcomingHolidays = Holiday::where('employee_id', $user->id)
+            ->where('start_date', '>=', now()->format('Y-m-d'))
+            ->orderBy('start_date')
+            ->take(3)
+            ->get();
+
+        return view('user.profile', compact(
+            'user',
+            'vacationDaysUsed',
+            'absenceDaysUsed',
+            'totalDaysUsed',
+            'totalDays',
+            'remainingDays',
+            'upcomingHolidays'
+        ));
+    }
+
+    private function calculateDays($startDate, $endDate = null)
+    {
+        if (!$endDate) {
+            return 1;
+        }
+
+        $start = new DateTime($startDate);
+        $end = new DateTime($endDate);
+        $end->modify('+1 day');
+
+        $interval = $start->diff($end);
+        return $interval->days;
+    }
+
     public function holiday()
     {
         $user = Auth::user();
+        $userDelegationId = $user->delegation_id;
 
-        $holidays = Holiday::with('holidayType')->where('employee_id', $user->id)->get();
 
-        return view('user.calendar', compact('user', 'holidays'));
+        $holidays = Holiday::with(['holidayType', 'employee'])->where('employee_id', $user->id)->get();
+        $festives = Festive::where(function ($query) use ($userDelegationId) {
+            $query->where('national', true)
+                ->orWhere('delegation_id', $userDelegationId);
+        })->get();
+
+        return view('user.calendar', compact('user', 'holidays', 'festives'));
     }
 
     public function store(Request $request)
@@ -132,37 +199,6 @@ class EmployeeController extends Controller
         return redirect()->route('menu.employee')->with('success', 'Empleado creado con éxito.');
     }
 
-    // public function sendEmail(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'reason' => 'required|string|max:1000',
-    //         'start_date' => 'required|date',
-    //         'end_date' => 'required|date|after_or_equal:start_date',
-    //     ]);
-
-    //     $user = User::find($id);
-
-    //     if ($user) {
-    //         $data = [
-    //             'name' => $request->input('name'),
-    //             'reason' => $request->input('reason'),
-    //             'start_date' => $request->input('start_date'),
-    //             'end_date' => $request->input('end_date'),
-    //             'responsable_email' => 'mar.bustelo@bayport.eu',
-    //         ];
-
-    //         Mail::send('email', $data, function ($message) use ($data) {
-    //             $message->to($data['responsable_email'])
-    //                 ->subject('Solicitud de Ausencia');
-    //         });
-
-    //         return response()->json(['success' => true, 'message' => 'Correo enviado con éxito.']);
-    //     }
-
-    //     return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
-    // }
-
     public function sendEmail(Request $request, $id)
     {
         // Validar las entradas del formulario
@@ -173,6 +209,24 @@ class EmployeeController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
+        $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
+        if ($endDate->isFriday()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Si el fin es viernes, la solicitud debe incluir sábado y domingo.',
+            ], 422);
+        }
+
+        $nextDay = $endDate->copy()->addDay();
+        $isFestive = Festive::where('date', $nextDay->format('Y-m-d'))->exists();
+
+        if ($isFestive) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El día siguiente es festivo, la solicitud debe incluir dicho festivo.',
+            ], 422);
+        }
+
         $user = User::find($id);
 
         if ($user) {
@@ -180,15 +234,15 @@ class EmployeeController extends Controller
             $responsableId = $user->responsable;
 
             if ($responsableId) {
-                $responsable = Employee::where('employee_id', $responsableId)->first();
+                $responsable = User::where('employee_id', $responsableId)->first();
 
-                if ($responsable && $responsable->professional_email) {
+                if ($responsable && $responsable->email) {
                     $data = [
                         'name' => $request->input('name'),
                         'reason' => $request->input('reason'),
                         'start_date' => $request->input('start_date'),
                         'end_date' => $request->input('end_date'),
-                        'responsable_email' => $responsable->professional_email,
+                        'responsable_email' => $responsable->email,
                     ];
 
                     // Enviar el correo
@@ -207,5 +261,36 @@ class EmployeeController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
+    }
+
+    public function updateResponsable(Request $request, $id)
+    {
+        $request->validate([
+            'responsable' => 'nullable|exists:users,employee_id',
+        ]);
+
+        $employee = User::findOrFail($id);
+        $employee->responsable = $request->input('responsable');
+        $employee->save();
+
+        return redirect()->back()->with('success', 'Responsable actualizado correctamente.');
+    }
+
+    public function updateDepartment(Request $request, $id)
+    {
+        $request->validate([
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
+        $employee = User::find($id);
+
+        if (!$employee) {
+            return redirect()->back()->with('error', 'Empleado no encontrado.');
+        }
+
+        $employee->department_id = $request->department_id;
+        $employee->save();
+
+        return redirect()->back()->with('success', 'Departamento actualizado correctamente.');
     }
 }

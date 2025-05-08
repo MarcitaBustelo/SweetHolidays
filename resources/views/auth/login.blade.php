@@ -2,21 +2,21 @@
 
 @section('auth_body')
     <a href="{{ url('/') }}" class="back-corner-logo">
-        <i class="fas fa-arrow-left"></i> <!-- Ícono de flecha hacia atrás -->
+        <i class="fas fa-arrow-left"></i>
     </a>
     <div class="logo-section">
-        <img src="{{ asset('images/logotipo_BAYPORT-bicolor-03.png') }}" alt="BayPortal Logo">
-        <h2>VACACIONES BAYPORT</h2>
+        <img src="{{ asset('images/Galleta_logo.png') }}" alt="SweetHoliday Logo">
+        <h2>SWEET HOLIDAYS</h2>
     </div>
 
     <div class="calendar-section" style="border-radius: 20px;">
-        <div class="month">{{ ucfirst(now()->locale('es')->monthName) }} {{ now()->year }}</div>
+        <div class="month">{{ ucfirst(now()->locale('en')->monthName) }} {{ now()->year }}</div>
         <div class="weekdays">
-            <span>L</span>
             <span>M</span>
-            <span>X</span>
-            <span>J</span>
-            <span>V</span>
+            <span>T</span>
+            <span>W</span>
+            <span>T</span>
+            <span>F</span>
         </div>
     </div>
 
@@ -25,34 +25,36 @@
         <div class="input-field" style="border-radius: 10px;">
             <i class="fas fa-id-card"></i>
             <input type="text" id="employee_id" name="employee_id" value="{{ old('employee_id') }}"
-                placeholder="Número de Empleado" required autofocus>
+                placeholder="Employee ID" required autofocus>
         </div>
         @error('employee_id')
             <span class="text-danger">{{ $message }}</span>
         @enderror
-        <span id="employee_id_error" class="text-danger" style="display: none;">El número de empleado solo puede contener
-            números.</span>
+        <span id="employee_id_error" class="text-danger" style="display: none;">
+            Employee ID must contain only numbers.
+        </span>
 
         <div class="input-field" style="border-radius: 10px;">
             <i class="fas fa-lock"></i>
-            <input type="password" name="password" placeholder="Contraseña" required>
+            <input type="password" name="password" placeholder="Password" required>
         </div>
         @error('password')
             <span class="text-danger">{{ $message }}</span>
         @enderror
 
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                {{ old('remember') ? 'checked' : '' }}>
-            <label class="form-check-label" for="remember">Recordarme</label>
+            <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+            <label class="form-check-label" for="remember">Remember me</label>
         </div>
 
         <button type="submit" class="submit-btn" style="border-radius: 10px;">
-            <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+            <i class="fas fa-sign-in-alt"></i> Log In
         </button>
 
         @if (Route::has('password.request'))
-            <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+            <div class="forgot-password-link">
+                <a href="{{ route('password.request') }}">Forgot your password?</a>
+            </div>
         @endif
     </form>
 @endsection
@@ -60,8 +62,8 @@
 @section('css')
     <style>
         body {
-            background: linear-gradient(rgba(0, 27, 113, 0.9), rgba(0, 27, 113, 0.95)),
-                url('{{ asset('images/Diseño Bayportal.png') }}') no-repeat center center fixed;
+            background: linear-gradient(rgba(56, 7, 76, 0.9), rgba(56, 7, 76, 0.9)),
+                url('{{ asset('images/bakery-products.jpg') }}') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;
@@ -76,7 +78,7 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            color: white;
+            color: #38074C;
             font-size: 24px;
             font-weight: bold;
             text-decoration: none;
@@ -84,8 +86,13 @@
         }
 
         .bayport-corner-logo:hover {
-            color: #f0f0f0;
+            color: #4d0b63;
             text-decoration: none;
+        }
+
+        .card {
+            border-top: none !important;
+            box-shadow: none !important;
         }
 
         .logo-section {
@@ -99,7 +106,7 @@
         }
 
         .logo-section h2 {
-            color: #001B71;
+            color: #38074C;
             font-size: 22px;
             margin: 0;
             font-weight: 600;
@@ -113,7 +120,7 @@
         }
 
         .month {
-            color: #001B71;
+            color: #38074C;
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 10px;
@@ -122,7 +129,7 @@
         .weekdays {
             display: flex;
             justify-content: space-around;
-            color: #001B71;
+            color: #38074C;
         }
 
         .input-field {
@@ -134,7 +141,7 @@
         }
 
         .input-field i {
-            color: #001B71;
+            color: #38074C;
             margin-right: 10px;
         }
 
@@ -147,7 +154,7 @@
 
         .submit-btn {
             width: 100%;
-            background: #001B71;
+            background: #38074C;
             color: white;
             padding: 12px;
             font-weight: bold;
@@ -157,7 +164,7 @@
         }
 
         .submit-btn:hover {
-            background: #002699;
+            background: #4d0b63;
         }
 
         .footer-link {
@@ -166,7 +173,7 @@
         }
 
         .footer-link a {
-            color: #001B71;
+            color: #38074C;
             font-size: 14px;
             text-decoration: none;
         }
@@ -174,30 +181,43 @@
         .footer-link a:hover {
             text-decoration: underline;
         }
+
+        .forgot-password-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password-link a {
+            color: #38074C;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 @endsection
 
 @section('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const employeeInput = document.getElementById('employee_id');
-            const form = document.querySelector('.form-section'); // Selecciona el formulario por su clase
-            const errorMessage = document.getElementById('employee_id_error'); // Mensaje de error existente
+            const form = document.querySelector('.form-section');
+            const errorMessage = document.getElementById('employee_id_error');
 
-            employeeInput.addEventListener('input', function() {
-                // Validar si el input contiene solo números
+            employeeInput.addEventListener('input', function () {
                 if (!/^\d*$/.test(employeeInput.value)) {
-                    errorMessage.style.display = 'block'; // Mostrar mensaje de error
+                    errorMessage.style.display = 'block';
                 } else {
-                    errorMessage.style.display = 'none'; // Ocultar mensaje de error
+                    errorMessage.style.display = 'none';
                 }
             });
 
-            form.addEventListener('submit', function(event) {
-                // Evitar envío si el campo no es válido
+            form.addEventListener('submit', function (event) {
                 if (!/^\d+$/.test(employeeInput.value)) {
-                    event.preventDefault(); // Bloquear el envío del formulario
-                    errorMessage.style.display = 'block'; // Asegurar que el mensaje de error esté visible
+                    event.preventDefault();
+                    errorMessage.style.display = 'block';
                 }
             });
         });

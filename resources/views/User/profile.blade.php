@@ -1,80 +1,79 @@
 @extends('adminlte::page')
 
-@section('title', 'Perfil de Usuario')
+@section('title', 'User Profile')
 
 @section('content_header')
-    <h1 style="color: #2c5a8a;"><i class="fas fa-user-circle mr-2"></i>Mi Perfil</h1>
+    <h1 style="color: #7f4cdb;"><i class="fas fa-user-circle mr-2"></i>My Profile</h1>
 @stop
 
 @section('content')
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <!-- Tarjeta principal -->
-            <div class="card shadow-lg" style="border-color: #a8c4e8;">
-                <div class="card-header" style="background: linear-gradient(135deg, #d1e3f6 0%, #a8c4e8 100%);">
-                    <h3 class="card-title" style="color: #2c5a8a;">
-                        <i class="fas fa-id-card mr-2"></i>Información Personal
+            <!-- Main Card -->
+            <div class="card shadow-lg" style="border-color: #c0a6f3;">
+                <div class="card-header" style="background: linear-gradient(135deg, #d7bbf3 0%, #c0a6f3 100%);">
+                    <h3 class="card-title" style="color: #7f4cdb;">
+                        <i class="fas fa-id-card mr-2"></i>Personal Information
                     </h3>
                 </div>
-                <div class="card-body" style="background-color: #f0f7ff;">
+                <div class="card-body" style="background-color: #f3e9ff;">
                     <div class="row">
-                        <!-- Columna izquierda - Datos personales -->
+                        <!-- Left Column - Personal Data -->
                         <div class="col-md-6">
-                            <h4 class="text-center" style="color: #3a6ea5;">{{ $user->name }}</h4>
-                            <p class="text-center mb-4" style="color: #4a6b9b;">
-                                <i class="fas fa-building mr-1"></i> {{ $user->delegation->name ?? 'Sin delegación' }}<br>
-                                <i class="fas fa-users mr-1"></i> {{ $user->department->name ?? 'Sin departamento' }}
+                            <h4 class="text-center" style="color: #6a3cc9;">{{ $user->name }}</h4>
+                            <p class="text-center mb-4" style="color: #9b5df2;">
+                                <i class="fas fa-building mr-1"></i> {{ $user->delegation->name ?? 'No delegation' }}<br>
+                                <i class="fas fa-users mr-1"></i> {{ $user->department->name ?? 'No department' }}
                             </p>
 
-                            <hr style="border-color: #d1e3f6;">
+                            <hr style="border-color: #d7bbf3;">
                         </div>
                         <div class="col-md-6">
-                            <div class="card" style="border-color: #8ab4e0; background-color: #e8f2ff;">
+                            <div class="card" style="border-color: #9a74f7; background-color: #e4daf9;">
                                 <div class="card-header"
-                                    style="background: linear-gradient(135deg, #bbdefb 0%, #8ab4e0 100%);">
-                                    <h3 class="card-title" style="color: #2c5a8a;">
-                                        <i class="fas fa-umbrella-beach mr-2"></i>Mis Vacaciones
+                                    style="background: linear-gradient(135deg, #d7bbf3 0%, #9a74f7 100%);">
+                                    <h3 class="card-title" style="color: #7f4cdb;">
+                                        <i class="fas fa-umbrella-beach mr-2"></i>My Vacation
                                     </h3>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Barra de progreso -->
-                                    <div class="progress mb-3" style="background-color: #e0f2f1;">
+                                    <!-- Progress Bar -->
+                                    <div class="progress mb-3" style="background-color: #f0e7ff;">
                                         <div class="progress-bar" role="progressbar"
-                                            style="width: {{ ($remainingDays / $user->days) * 100 }}%; background-color: #5a8fd1;"
+                                            style="width: {{ ($remainingDays / $user->days) * 100 }}%; background-color: #7f4cdb;"
                                             aria-valuenow="{{ $remainingDays }}" aria-valuemin="0"
                                             aria-valuemax="{{ $user->days }}">
                                             <span class="progress-text">{{ round(($remainingDays / $user->days) * 100) }}%
-                                                Disponible</span>
+                                                Available</span>
                                         </div>
                                     </div>
-                                    <div class="stats" style="background-color: #e1f0ff;">
+                                    <div class="stats" style="background-color: #e8d8f7;">
                                         <div class="stat-item">
-                                            <span class="stat-label">Días Totales:</span>
+                                            <span class="stat-label">Total Days:</span>
                                             <span class="stat-value badge"
-                                                style="background-color: #4a89dc; color: white;">{{ $user->days_in_total }}</span>
+                                                style="background-color: #8e5bff; color: white;">{{ $user->days_in_total }}</span>
                                         </div>
                                         <div class="stat-item">
-                                            <span class="stat-label">Días Restantes:</span>
+                                            <span class="stat-label">Remaining Days:</span>
                                             <span class="stat-value badge"
-                                                style="background-color: #3a7bd5; color: white;">{{ $remainingDays }}</span>
+                                                style="background-color: #6a3cc9; color: white;">{{ $remainingDays }}</span>
                                         </div>
                                         <div class="stat-item">
-                                            <span class="stat-label">Ausencias:</span>
+                                            <span class="stat-label">Absences:</span>
                                             <span class="stat-value badge"
-                                                style="background-color: #6a9bd8; color: white;">{{ $absenceDaysUsed }}</span>
+                                                style="background-color: #9b6ff4; color: white;">{{ $absenceDaysUsed }}</span>
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        <h5 style="color: #3a6ea5;"><i class="far fa-calendar mr-2"></i>Próximas Ausencias
-                                        </h5>
+                                        <h5 style="color: #6a3cc9;"><i class="far fa-calendar mr-2"></i>Upcoming Absences</h5>
                                         @if (count($upcomingHolidays) > 0)
                                             <ul class="list-group">
                                                 @foreach ($upcomingHolidays as $holiday)
                                                     <li class="list-group-item d-flex justify-content-between align-items-center"
-                                                        style="background-color: #f5f9ff; border-color: #d1e3f6;">
+                                                        style="background-color: #f7ebff; border-color: #d7bbf3;">
                                                         {{ $holiday->holiday_type }}
                                                         <span class="badge rounded-pill"
-                                                            style="background-color: #a8c4e8; color: #2c5a8a;">
+                                                            style="background-color: #c0a6f3; color: #7f4cdb;">
                                                             {{ \Carbon\Carbon::parse($holiday->start_date)->format('d/m') }}
                                                             @if ($holiday->end_date)
                                                                 -
@@ -86,8 +85,8 @@
                                             </ul>
                                         @else
                                             <div class="alert"
-                                                style="background-color: #bbdefb; border-color: #8ab4e0; color: #2c5a8a;">
-                                                No tienes ausencias programadas
+                                                style="background-color: #d7bbf3; border-color: #9a74f7; color: #7f4cdb;">
+                                                You have no scheduled absences
                                             </div>
                                         @endif
                                     </div>
@@ -96,9 +95,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer text-right" style="background-color: #e8f2ff; border-top-color: #a8c4e8;">
-                    <a href="{{ route('menu.employee') }}" class="btn" style="background-color: #4a6b9b; color: white;">
-                        <i class="fas fa-arrow-left mr-2"></i>Volver al Menú
+                <div class="card-footer text-right" style="background-color: #e4daf9; border-top-color: #c0a6f3;">
+                    <a href="{{ route('menu.employee') }}" class="btn" style="background-color: #9b5df2; color: white;">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Menu
                     </a>
                 </div>
             </div>
@@ -111,13 +110,13 @@
         .user-info p {
             margin-bottom: 0.8rem;
             font-size: 1rem;
-            color: #4a6b9b;
+            color: #9b5df2;
         }
 
         .progress {
             height: 25px;
             border-radius: 12px;
-            background-color: #e0f2f1;
+            background-color: #f0e7ff;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -150,12 +149,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.5rem 0;
-            border-bottom: 1px solid #d1e3f6;
+            border-bottom: 1px solid #d7bbf3;
         }
 
         .stat-label {
             font-weight: 500;
-            color: #4a6b9b;
+            color: #9b5df2;
         }
 
         .stat-value {
@@ -173,7 +172,7 @@
         }
 
         .list-group-item:hover {
-            background-color: #e1f0ff;
+            background-color: #e8d8f7;
         }
 
         .badge {
@@ -187,7 +186,7 @@
         }
 
         body {
-            background-color: #f8fafc;
+            background-color: #f3e9ff;
         }
     </style>
 @stop
@@ -209,7 +208,7 @@
 @section('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Perfil cargado');
+            console.log('Profile Loaded');
         });
     </script>
 @stop

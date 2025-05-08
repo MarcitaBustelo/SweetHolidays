@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('employee_id')->unique();
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('delegation_id')->nullable();
-            $table->string('responsable_id')->nullable();
+            $table->string('responsable')->nullable();
             $table->integer('days')->default(0);
             $table->integer('days_in_total')->default(0);
             $table->string('color')->nullable();

@@ -90,6 +90,31 @@ class DatabaseSeeder extends Seeder
             'start_date' => '2023-02-03',
         ]);
 
+        \App\Models\Department::factory()->create([
+            'name' => 'Boss',  
+        ]);
+        \App\Models\Department::factory()->create([
+            'name' => 'Inventory',
+        ]);
+        \App\Models\Department::factory()->create([
+            'name' => 'Head chef',  
+        ]);
+        \App\Models\Department::factory()->create([
+            'name' => 'Cook',
+        ]);
 
+        \App\Models\Delegation::factory()->create([
+            'name' => 'SWEET HOLIDAYS-CADIZ',  
+        ]);
+        \App\Models\Delegation::factory()->create([
+            'name' => 'SWEET HOLIDAYS-SEVILLA',
+        ]);
+        \App\Models\Delegation::factory()->create([
+            'name' => 'SWEET HOLIDAYS-BARCELONA',  
+        ]);
+
+        \App\Models\Delegation::factory()->create([
+            'name' => 'SWEET HOLIDAYS-MADRID',
+        ]);
     }
 }

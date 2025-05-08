@@ -81,7 +81,7 @@ class User extends Authenticatable
                 $latest = static::max('employee_id');
 
                 if (!$latest || !is_numeric($latest)) {
-                    $user->employee_id = '100001';
+                    $user->employee_id = '10001';
                 } else {
                     $user->employee_id = strval(intval($latest) + 1);
                 }

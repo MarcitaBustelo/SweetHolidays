@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'Vacaciones Bayport',
+    'title' => 'Sweet Holidays',
     'title_prefix' => '',
     'title_postfix' => '',
 

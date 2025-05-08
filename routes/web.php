@@ -8,6 +8,7 @@ use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HolidayTypeController;
 use App\Http\Controllers\ManualController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\FestiveController;
 
 
@@ -34,12 +35,13 @@ Route::get('/', function () {
 
 //rutas para empleados
 Route::get('/employee', [UserController::class, 'index'])->name('menu.employee');
-Route::get('/profile', [UserController::class, 'show'])->middleware('auth')->name('user.profile');
+Route::get('/profile', [EmployeeController::class, 'show'])->middleware('auth')->name('user.profile');
 Route::get('/users', [EmployeeController::class, 'index'])->middleware('auth')->name('user.users');
 Route::put('/employees/{id}/update-days', [EmployeeController::class, 'updateDays'])->name('employees.updateDays');
+Route::put('/employees/{id}/update-delegation', [EmployeeController::class, 'updateResponsable'])->name('employees.updateResponsable');
+Route::put('/employees/{id}/update-department', [EmployeeController::class, 'updateDepartment'])->name('employees.updateDepartment');
 Route::get('/calendar', [EmployeeController::class, 'holiday'])->middleware('auth')->name('user.calendar');
 Route::post('/send-email/{id}', [EmployeeController::class, 'sendEmail'])->name('holiday_types.send_email');
-
 
 //rutas para responsable
 Route::get('/responsable', [UserController::class, 'index'])->name('menu.responsable');
@@ -47,12 +49,14 @@ Route::get('/responsable/calendar', [ResponsableController::class, 'responCalend
 Route::post('/holiday/assign', [HolidayController::class, 'assignHoliday'])->name('holiday.assign');
 Route::delete('/holidays/delete', [HolidayController::class, 'deleteHoliday'])->name('holidays.delete');
 Route::put('/holiday/update', [HolidayController::class, 'updateHoliday'])->name('holiday.update');
+Route::post('/holidays/justify', [HolidayController::class, 'justifyHoliday'])->name('holidays.justify');
+Route::get('/holidays/{id}', [HolidayController::class, 'getHoliday'])->name('holidays.get');
+Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])->name('holidays.edit');
 
 // Rutas para HolidayType (Responsable)
-Route::get('/holiday_types', [HolidayTypeController::class, 'index'])->name('holiday_types.index'); 
+Route::get('/holiday_types', [HolidayTypeController::class, 'index'])->name('holiday_types.index');
 Route::post('/holiday_types', [HolidayTypeController::class, 'store'])->name('holiday_types.store');
 Route::delete('/holiday_types/delete', [HolidayTypeController::class, 'delete'])->name('holiday_types.delete');
-
 
 // Rutas para Festivos
 Route::get('/festives', [FestiveController::class, 'index'])->name('festives.festives');
@@ -64,3 +68,6 @@ Route::get('/manual', [ManualController::class, 'show'])->name('manual.show')->m
 
 //Asignar colores a empleados
 Route::get('/assign-colors', [UserController::class, 'assignColorsToEmployees'])->name('assign.colors');
+
+//Subir excel 
+// Route::post('/excel/upload', action: [ExcelController::class, 'processExcelFile'])->name('excel.process');

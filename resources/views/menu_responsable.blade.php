@@ -86,14 +86,14 @@
 
     <!-- Manage Holidays (conditional) -->
     @php
-        $specialAccessEmployeeIds = ['100001', '100001'];
+        $specialAccessEmployeeIds = ['10001', '10001'];
     @endphp
     @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
                 <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
                     <h3 class="card-title" style="color: #4b0082;">
-                        <i class="far fa-calendar-check mr-2"></i>Manage Holidays
+                        <i class="far fa-calendar-check mr-2"></i>Manage Festive Holidays
                     </h3>
                 </div>
                 <div class="card-body">

@@ -143,7 +143,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Inicializar Selectize
         $('#userSelect').selectize({
-            placeholder: "Pick an user...",
+            placeholder: "Pick a user...",
             allowEmptyOption: true,
             create: false,
             sortField: 'text'
@@ -194,7 +194,7 @@
                 const userId = userSelect.value;
 
                 if (!userId) {
-                    Swal.fire('Error', 'Debes seleccionar un usuario antes de añadir una ausencia.',
+                    Swal.fire('Error', 'You must select a user before adding an absence.',
                         'error');
                     calendar.unselect();
                     return;
@@ -208,10 +208,10 @@
                 const {
                     value: absenceType
                 } = await Swal.fire({
-                    title: "Selecciona el tipo de ausencia",
+                    title: "Select the type of absence.",
                     input: 'select',
                     inputOptions: inputOptions,
-                    inputPlaceholder: 'Selecciona un tipo',
+                    inputPlaceholder: 'Select absence type',
                     showCancelButton: true,
                     cancelButtonText: 'Cancelar',
                 });

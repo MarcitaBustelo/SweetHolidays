@@ -7,19 +7,19 @@ use App\Models\Department;
 
 class DepartmentController extends Controller
 {
-    
     /**
-     * Muestra la lista de departamentos.
+     * Display the list of departments.
      *
      * @return \Illuminate\View\View
      */
     public function index()
     {
         $departments = Department::all();
-        return view('user.respon_calendar', compact('departments'));
+        return view('departments.departments', compact('departments'));
     }
 
     /**
+     * Show the form to create a new department.
      *
      * @return \Illuminate\View\View
      */
@@ -29,6 +29,10 @@ class DepartmentController extends Controller
     }
 
     /**
+     * Store a new department in the database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -38,6 +42,48 @@ class DepartmentController extends Controller
 
         Department::create($request->all());
 
-        return redirect()->route('department.index')->with('success', 'Departamento creado con éxito.');
+        return redirect()->route('departments.departments')->with('success', 'Department created successfully.');
+    }
+
+    /**
+     * Show the form to edit an existing department.
+     *
+     * @param  \App\Models\Department  $department
+     * @return \Illuminate\View\View
+     */
+    public function edit(Department $department)
+    {
+        return view('department.edit', compact('department'));
+    }
+
+    /**
+     * Update an existing department in the database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Department  $department
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, Department $department)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $department->update($request->all());
+
+        return redirect()->route('departments.departments')->with('success', 'Department updated successfully.');
+    }
+
+    /**
+     * Delete a department from the database.
+     *
+     * @param  \App\Models\Department  $department
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Department $department)
+    {
+        $department->delete();
+
+        return redirect()->route('departments.departments')->with('success', 'Department deleted successfully.');
     }
 }

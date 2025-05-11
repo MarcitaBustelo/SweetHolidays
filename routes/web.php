@@ -10,7 +10,8 @@ use App\Http\Controllers\HolidayTypeController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\FestiveController;
-
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DelegationController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -71,3 +72,20 @@ Route::get('/assign-colors', [UserController::class, 'assignColorsToEmployees'])
 
 //Subir excel 
 Route::post('/excel/upload', action: [ExcelController::class, 'processExcelFile'])->name('excel.process');
+
+// Departamentos
+Route::get('/department', [DepartmentController::class, 'index'])->name('departments.departments');
+Route::get('create', [DepartmentController::class, 'create'])->name('create');
+Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+Route::delete('{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
+
+// Delegaciones
+Route::get('/delegations', [DelegationController::class, 'index'])->name('delegations.delegations');
+Route::get('/delegations/create', [DelegationController::class, 'create'])->name('delegations.create');
+Route::post('/delegations', [DelegationController::class, 'store'])->name('delegations.store');
+Route::get('/delegations/{delegation}/edit', [DelegationController::class, 'edit'])->name('delegations.edit');
+Route::put('/delegations/{delegation}', [DelegationController::class, 'update'])->name('delegations.update');
+Route::delete('/delegations/{delegation}', [DelegationController::class, 'destroy'])->name('delegations.destroy');

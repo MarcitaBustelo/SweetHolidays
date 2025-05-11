@@ -117,7 +117,7 @@
             </div>
             <div class="card-body">
                 <p style="color: #4b0082;">View departments.</p>
-                <a href="{{ route('user.users') }}" class="btn"
+                <a href="{{ route('departments.departments') }}" class="btn"
                     style="background-color: #a066c9; color: white; border: none;">
                     <i class="fas fa-bezier-curve mr-2"></i> View Departments
                 </a>
@@ -135,7 +135,7 @@
             </div>
             <div class="card-body">
                 <p style="color: #4b0082;">View branch offices.</p>
-                <a href="{{ route('user.users') }}" class="btn"
+                <a href="{{ route('delegations.delegations') }}" class="btn"
                     style="background-color: #a066c9; color: white; border: none;">
                     <i class="fab fa-unity mr-2"></i> View Branches
                 </a>
@@ -319,8 +319,8 @@
 
     function deleteHolidayType(id) {
         Swal.fire({
-            title: '¿Estás seguro?',
-            text: "Esta acción no se puede deshacer.",
+            title: '¿Are you sure?',
+            text: "This action cant be undone.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',

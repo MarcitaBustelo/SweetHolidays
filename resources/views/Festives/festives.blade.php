@@ -1,131 +1,129 @@
 @extends('adminlte::page')
 
-@section('title', 'Gestión de Festivos')
+@section('title', 'Festive Management')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 style="color: #0e0c5e;">Gestión de Festivos</h1>
-        <div>
-            <a href="{{ route('menu.responsable') }}" class="btn btn-primary">
-                <i class="fas fa-arrow-left"></i> Volver al Menú
-            </a>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center">
+    <h1 style="color: #6a3cc9;">Festive Management</h1>
+    <a href="{{ route('menu.responsable') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Back to Menu
+    </a>
+</div>
 @stop
 
 @section('content')
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="festivesTable" class="table table-bordered table-striped">
-                <thead>
-                    <tr style="background-color: #0e0c5e; color: white;">
-                        <th>Nombre</th>
-                        <th>Delegación</th>
-                        <th>Fecha</th>
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light">
+        <h3 class="card-title" style="font-weight: bold; color: #6a3cc9;">Registered Festives</h3>
+    </div>
+    <div class="card-body bg-white">
+        <table id="festivesTable" class="table table-bordered table-hover">
+            <thead>
+                <tr style="background-color: #ebe4f6; color: #4b2e83;">
+                    <th>Name</th>
+                    <th>Delegation</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($festives as $festive)
+                    <tr>
+                        <td>{{ $festive->name }}</td>
+                        <td>
+                            {{ $festive->national ? 'Nacional' : ($festive->delegation->name ?? 'No asignada') }}
+                        </td>
+                        <td>
+                            <form action="{{ route('festives.editDate', $festive->id) }}" method="POST"
+                                class="d-flex align-items-center">
+                                @csrf
+                                @method('PUT')
+                                <input type="date" name="date" value="{{ $festive->date }}"
+                                    class="form-control form-control-sm mr-2" style="width: 140px; border-color: #c8b9e6;">
+                                <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse ($festives as $festive)
-                        <tr>
-                            <td>{{ $festive->name }}</td>
-                            <td>{{ $festive->delegation->name ?? 'Nacional' }}</td>
-                            <td>
-                                <form action="{{ route('festives.editDate', $festive->id) }}" method="POST"
-                                    style="display: flex; align-items: center;">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="date" name="date" value="{{ $festive->date }}" class="form-control"
-                                        style="width: 150px; margin-right: 5px;">
-                                    <button type="submit" class="btn btn-success btn-sm" title="Guardar">
-                                        <i class="fas fa-save"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center">No hay festivos registrados.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">No festives registered.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+</div>
 @stop
-
-@section('footer')
-    <div class="float-right">
-        Version: {{ config('app.version', '0.0.1') }}
-    </div>
-
-    <strong>
-        Copyright &copy; 2025
-        <a href="{{ config('app.company_url', 'https://bayport.eu/') }}">
-            {{ config('app.company_name', 'BayportWebServices') }}
-        </a>
-        All rights reserved.
-    </strong>
-@stop
-
 
 @section('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        .btn-primary {
-            background-color: #0e0c5e;
-            border-color: #0e0c5e;
-        }
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    body {
+        background-color: #f9f9fb;
+    }
 
-        .btn-primary:hover {
-            background-color: #0c0a56;
-            border-color: #0c0a56;
-        }
+    .btn-primary {
+        background-color: #6a3cc9;
+        border-color: #6a3cc9;
+    }
 
-        .card-header {
-            font-size: 1.2rem;
-        }
+    .btn-primary:hover {
+        background-color: #5a31a8;
+        border-color: #5a31a8;
+    }
 
-        table thead tr {
-            background-color: #0e0c5e;
-            color: white;
-        }
+    .btn-outline-primary {
+        color: #6a3cc9;
+        border-color: #c8b9e6;
+    }
 
-        table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
+    .btn-outline-primary:hover {
+        background-color: #e9e0f9;
+        color: #4b2e83;
+    }
+
+    table thead tr {
+        background-color: #ebe4f6;
+        color: #4b2e83;
+    }
+
+    table tbody tr:hover {
+        background-color: #f5f2fa;
+    }
+
+    .form-control:focus {
+        border-color: #b49ce0;
+        box-shadow: 0 0 0 0.2rem rgba(106, 60, 201, 0.25);
+    }
+</style>
 @stop
 
 @section('js')
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#festivesTable').DataTable({
-                "pagingType": "full_numbers",
-                "language": {
-                    "search": "_INPUT_",
-                    "searchPlaceholder": "Buscar...",
-                    "lengthMenu": "Mostrar _MENU_ entradas",
-                    "paginate": {
-                        "first": "<<",
-                        "last": ">>",
-                        "next": ">",
-                        "previous": "<"
-                    }
-                },
-            });
-
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: '{{ session('success') }}',
-                    confirmButtonColor: '#0e0c5e'
-                });
-            @endif
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        $('#festivesTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/en-GB.json'
+            },
+            responsive: true,
+            autoWidth: false
         });
-    </script>
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#6a3cc9'
+            });
+        @endif
+        });
+</script>
 @stop

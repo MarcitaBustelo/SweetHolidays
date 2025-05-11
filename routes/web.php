@@ -70,4 +70,4 @@ Route::get('/manual', [ManualController::class, 'show'])->name('manual.show')->m
 Route::get('/assign-colors', [UserController::class, 'assignColorsToEmployees'])->name('assign.colors');
 
 //Subir excel 
-// Route::post('/excel/upload', action: [ExcelController::class, 'processExcelFile'])->name('excel.process');
+Route::post('/excel/upload', action: [ExcelController::class, 'processExcelFile'])->name('excel.process');

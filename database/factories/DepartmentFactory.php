@@ -10,7 +10,6 @@ class DepartmentFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'department_id' => $this->faker->unique()->numberBetween(1000, 9999),
         ];
     }
 }

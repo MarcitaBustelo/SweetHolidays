@@ -32,7 +32,6 @@ class UserFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'days' => $this->faker->numberBetween(0, 10),
             'days_in_total' => $this->faker->numberBetween(10, 30),
-            'color' => $this->faker->safeColorName(),
             'active' => $this->faker->boolean(90),
             'start_date' => $this->faker->date(),
             'remember_token' => Str::random(10),

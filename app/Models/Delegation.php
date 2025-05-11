@@ -23,6 +23,11 @@ class Delegation extends Model
         return $this->hasMany(User::class, 'delegation_id', 'delegation_id');
     }
 
+     public function festive()
+    {
+        return $this->hasMany(Holiday::class, 'delegation_id');
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Delegation $delegation) {

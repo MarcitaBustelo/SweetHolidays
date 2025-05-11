@@ -1,19 +1,19 @@
 @extends('adminlte::page')
 
-@section('title', 'Calendario de Responsable')
+@section('title', 'Absence Calendar')
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center">
-    <h1 style="color: #3b2469;"><i style="color: #3b2469;" class="fas fa-calendar-alt mr-2"></i>Calendario de Ausencias
-    </h1>
+    <h1 style="color: #3b2469;"><i style="color: #3b2469;" class="fas fa-calendar-alt mr-2"></i>Absence Calendar</h1>
     <div>
-        <a style="background-color: #3b2469" href="{{ route('menu.responsable') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Menú
+        <a style="background-color: #3b2469; border-color: #3b2469;" href="{{ route('menu.responsable') }}"
+            class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Menu
         </a>
         @if (auth()->user()->responsable !== null)
-            <button class="btn btn-primary ml-2" style="background-color: #6c469c; border-color: #6c469c;"
+            <button class="btn btn-primary ml-2" style="background-color: #3b2469; border-color: #a389d4;"
                 onclick="requestHoliday()">
-                <i class="fas fa-calendar-plus"></i> Pedir Ausencia
+                <i class="fas fa-calendar-plus"></i> Request Absence
             </button>
         @endif
     </div>
@@ -24,7 +24,7 @@
 <div class="card shadow-sm" style="background-color: #f8f9fa; border-color: #dee2e6;">
     <div class="card-header" style="background-color: #3b2469; border-bottom-color: #3b2469;">
         <h3 class="card-title" style="color: #ffffff;">
-            <i class="far fa-calendar mr-2"></i>Visualización de días libres
+            <i class="far fa-calendar mr-2"></i>Free Days Overview
         </h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
@@ -35,16 +35,15 @@
     <div class="card-body">
         <form id="absenceForm">
             <div class="form-group">
-                <label for="userSelect">Selecciona un usuario</label>
+                <label for="userSelect">Select a user</label>
                 <select id="userSelect" class="form-control">
-                    <option value="">-- Selecciona un usuario --</option>
+                    <option value="">-- Choose a user --</option>
 
                     @if (in_array(Auth::user()->employee_id, $specialAccessEmployeeIds))
-                        {{-- Mostrar todos los usuarios si el autenticado tiene acceso especial --}}
                         @foreach ($users->groupBy('delegation.name') as $delegationName => $usersByDelegation)
-                            <optgroup label="{{ $delegationName ?? 'Sin delegación' }}">
+                            <optgroup label="{{ $delegationName ?? 'No delegation' }}">
                                 @foreach ($usersByDelegation->groupBy('department.name') as $departmentName => $usersByDepartment)
-                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'Sin departamento' }}">
+                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'No department' }}">
                                         @foreach ($usersByDepartment as $user)
                                             <option value="{{ $user->id }}">
                                                 {{ $user->name }}
@@ -55,11 +54,10 @@
                             </optgroup>
                         @endforeach
                     @else
-                        {{-- Mostrar solo los usuarios bajo la responsabilidad del usuario autenticado --}}
                         @foreach ($users->groupBy('delegation.name') as $delegationName => $usersByDelegation)
-                            <optgroup label="{{ $delegationName ?? 'Sin delegación' }}">
+                            <optgroup label="{{ $delegationName ?? 'No delegation' }}">
                                 @foreach ($usersByDelegation->groupBy('department.name') as $departmentName => $usersByDepartment)
-                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'Sin departamento' }}">
+                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'No department' }}">
                                         @foreach ($usersByDepartment as $user)
                                             <option value="{{ $user->id }}">
                                                 {{ $user->name }}
@@ -71,9 +69,8 @@
                         @endforeach
                     @endif
 
-                    {{-- Mostrar el usuario actual si no tiene responsable --}}
                     @if (Auth::user()->role === 'responsable' && Auth::user()->responsable === null)
-                        <optgroup label="--- Tú ---">
+                        <optgroup label="--- You ---">
                             <option value="{{ Auth::id() }}">{{ Auth::user()->name }}</option>
                         </optgroup>
                     @endif
@@ -83,7 +80,7 @@
         <div id="calendar" class="fc-theme-bootstrap"></div>
     </div>
     <div class="card-footer text-muted text-right small">
-        <i class="fas fa-info-circle mr-1"></i> Haz clic en cualquier día para solicitar ausencia
+        <i class="fas fa-info-circle mr-1"></i> Click on any day to request an absence
     </div>
 </div>
 @stop
@@ -105,7 +102,7 @@
 
     .fc-toolbar-title {
         font-size: 1.5em;
-        color: #6c469c;
+        color: #3b2469;
     }
 
     .fc-button-active {
@@ -132,23 +129,9 @@
 
     .fc-day-sat,
     .fc-day-sun {
-        background-color: rgba(196, 169, 226, 0.15) !important;
+        background-color: rgba(172, 146, 205, 0.15) !important;
     }
 </style>
-@stop
-
-@section('footer')
-<div class="float-right">
-    Version: {{ config('app.version', '0.0.1') }}
-</div>
-
-<strong>
-    Copyright &copy; 2025
-    <a href="{{ config('app.company_url', 'https://bayport.eu/') }}">
-        {{ config('app.company_name', 'BayportWebServices') }}
-    </a>
-    All rights reserved.
-</strong>
 @stop
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
@@ -160,7 +143,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Inicializar Selectize
         $('#userSelect').selectize({
-            placeholder: "Busca un usuario por nombre, delegación o departamento...",
+            placeholder: "Pick an user...",
             allowEmptyOption: true,
             create: false,
             sortField: 'text'
@@ -169,7 +152,7 @@
         var holidays = @json($holidays);
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'es',
+            locale: 'en',
             initialView: 'dayGridMonth',
             themeSystem: 'bootstrap',
             firstDay: 1,
@@ -188,10 +171,10 @@
             buttonText: {
                 prev: '<',
                 next: '>',
-                today: 'Hoy',
-                month: 'Mes',
-                week: 'Semana',
-                day: 'Día'
+                today: 'Today',
+                month: 'Month',
+                week: 'Week',
+                day: 'Day'
             },
             events: holidays.map(holiday => ({
                 title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,

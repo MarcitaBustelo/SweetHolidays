@@ -18,7 +18,6 @@ class DelegationFactory extends Factory
     {
         return [
             'name' => fake()->name(),// o ->company() si prefieres nombres institucionales
-            'delegation_id' => $this->faker->unique()->numberBetween(1000, 9999),
         ];
     }
 }

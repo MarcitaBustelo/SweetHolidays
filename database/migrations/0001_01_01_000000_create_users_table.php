@@ -25,7 +25,6 @@ return new class extends Migration
             $table->string('responsable')->nullable();
             $table->integer('days')->default(0);
             $table->integer('days_in_total')->default(0);
-            $table->string('color')->nullable();
             $table->boolean('active')->default(true);
             $table->date('start_date')->nullable();
             $table->rememberToken();

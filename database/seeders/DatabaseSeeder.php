@@ -30,22 +30,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\User::factory()->create([
-            'name' => 'Ana Prat',
-            'email' => 'anaprat26@gmail.com',
-            'NIF' => '49559109C',
-            'password' => '12345678',
-            'role' => 'responsable',
-            'phone' => '601289603',
-            'department_id' => 1,
-            'delegation_id' => 2,
-            'responsable_id' => '10001',
-            'days' => 30,
-            'days_in_total' => 30,
-            'active' => 1,
-            'start_date' => '2023-01-21',
-        ]);
-
-        \App\Models\User::factory()->create([
             'name' => 'Antonio Bonet',
             'email' => 'antoniobonetoteroo@gmail.com',
             'NIF' => '49628498T',
@@ -54,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '647135029',
             'department_id' => 2,
             'delegation_id' => 1,
-            'responsable_id' => '10001',
+            'responsable' => '10001',
             'days' => 30,
             'days_in_total' => 30,
             'active' => 1,
@@ -68,13 +52,44 @@ class DatabaseSeeder extends Seeder
             'password' => '12345678',
             'role' => 'responsable',
             'phone' => '123456789',
-            'department_id' => 3,
-            'delegation_id' => 2,
-            'responsable_id' => '10001',
+            'department_id' => 5,
+            'delegation_id' => 1,
             'days' => 30,
             'days_in_total' => 30,
             'active' => 1,
             'start_date' => '2023-02-26',
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Pablo Pérez',
+            'email' => 'pablo@gmail.com',
+            'NIF' => '87654321W',
+            'password' => '12345678',
+            'role' => 'employee',
+            'phone' => '601289603',
+            'department_id' => 4,
+            'delegation_id' => 1,
+            'responsable' => '10001',
+            'days' => 30,
+            'days_in_total' => 30,
+            'active' => 1,
+            'start_date' => '2023-02-03',
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Ana Prat',
+            'email' => 'anaprat26@gmail.com',
+            'NIF' => '49559109C',
+            'password' => '12345678',
+            'role' => 'responsable',
+            'phone' => '601289603',
+            'department_id' => 1,
+            'delegation_id' => 2,
+            'responsable' => '10001',
+            'days' => 30,
+            'days_in_total' => 30,
+            'active' => 1,
+            'start_date' => '2023-01-21',
         ]);
 
         \App\Models\User::factory()->create([
@@ -86,7 +101,23 @@ class DatabaseSeeder extends Seeder
             'phone' => '601289603',
             'department_id' => 4,
             'delegation_id' => 1,
-            'responsable_id' => '10004',
+            'responsable' => '10004',
+            'days' => 30,
+            'days_in_total' => 30,
+            'active' => 1,
+            'start_date' => '2023-02-03',
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Javi Bocanegra',
+            'email' => 'javi@gmail.com',
+            'NIF' => '12387645H',
+            'password' => '12345678',
+            'role' => 'employee',
+            'phone' => '601289603',
+            'department_id' => 2,
+            'delegation_id' => 1,
+            'responsable' => '10004',
             'days' => 30,
             'days_in_total' => 30,
             'active' => 1,
@@ -105,7 +136,15 @@ class DatabaseSeeder extends Seeder
         \App\Models\Department::factory()->create([
             'name' => 'Cook',
         ]);
-
+         \App\Models\Department::factory()->create([
+            'name' => 'Rhh',
+        ]);
+        \App\Models\Department::factory()->create([
+            'name' => 'Waiter',
+        ]);
+        \App\Models\Department::factory()->create([ 
+            'name' => 'Receptionist',
+        ]);
         \App\Models\Delegation::factory()->create([
             'name' => 'SWEET HOLIDAYS-CADIZ',
         ]);
@@ -143,8 +182,8 @@ class DatabaseSeeder extends Seeder
             'national' => 1,
         ]);
         \App\Models\Festive::factory()->create([
-            'name' => 'New Year',
-            'date' => '2025-01-01',
+            'name' => 'Assumption of Mary',
+            'date' => '2025-08-15',
             'national' => 1,
         ]);
         \App\Models\Festive::factory()->create([
@@ -174,23 +213,58 @@ class DatabaseSeeder extends Seeder
             'national' => 0,
         ]);
         \App\Models\Festive::factory()->create([
-            'name' => 'Día de Andalucía',
-            'date' => '2025-02-28',
+            'name' => 'Traslado del Día de la Fiesta Nacional y de la Virgen del Pilar',
+            'date' => '2025-10-13',
             'delegation_id' => '1',
             'national' => 0,
         ]);
         \App\Models\Festive::factory()->create([
-            'name' => 'Día de Andalucía',
-            'date' => '2025-02-28',
-            'delegation_id' => '1',
+            'name' => 'Fiesta de la Com. de Madrid',
+            'date' => '2025-05-02',
+            'delegation_id' => '3',
             'national' => 0,
         ]);
         \App\Models\Festive::factory()->create([
-            'name' => 'Asunción de la Virgen',
-            'date' => '2025-08-15',
-            'delegation_id' => '1',
+            'name' => 'San Isidro',
+            'date' => '2025-05-15',
+            'delegation_id' => '3',
             'national' => 0,
         ]);
-
+        \App\Models\Festive::factory()->create([
+            'name' => 'Santiago Apóstol',
+            'date' => '2025-07-25',
+            'delegation_id' => '3',
+            'national' => 0,
+        ]);
+        \App\Models\Festive::factory()->create([
+            'name' => 'Nuestra Señora de la Almudena',
+            'date' => '2025-11-09',
+            'delegation_id' => '3',
+            'national' => 0,
+        ]);
+        \App\Models\Festive::factory()->create([
+            'name' => 'Lunes de Pascua',
+            'date' => '2025-04-21',
+            'delegation_id' => '2',
+            'national' => 0,
+        ]);
+        \App\Models\Festive::factory()->create([
+            'name' => 'San Juan',
+            'date' => '2025-06-24',
+            'delegation_id' => '2',
+            'national' => 0,
+        ]);
+        \App\Models\Festive::factory()->create([
+            'name' => 'Diada Nacional de Cataluña',
+            'date' => '2025-09-11',
+            'delegation_id' => '2',
+            'national' => 0,
+        ]);
+        \App\Models\Festive::factory()->create([
+            'name' => 'San Esteban',
+            'date' => '2025-12-26',
+            'delegation_id' => '2',
+            'national' => 0,
+        ]);
     }
 }

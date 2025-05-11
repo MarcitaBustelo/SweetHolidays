@@ -98,7 +98,7 @@
                 </div>
                 <div class="card-body">
                     <p style="color: #4b0082;">View official holidays.</p>
-                    <a href="{{ route('user.profile') }}" class="btn"
+                    <a href="{{ route('festives.festives') }}" class="btn"
                         style="background-color: #a066c9; color: white; border: none;">
                         <i class="far fa-calendar-check mr-2"></i> View Holidays
                     </a>
@@ -305,14 +305,15 @@
                 typesHtml += '</ul>';
 
                 Swal.fire({
-                    title: 'Tipos de Ausencia',
+                    title: 'Type of Absences',
+                    icon: 'info',
                     html: typesHtml,
                     showCloseButton: true,
                     showConfirmButton: false
                 });
             })
             .catch(error => {
-                Swal.fire('Error', 'No se pudieron cargar los tipos de ausencia.', 'error');
+                Swal.fire('Error', 'Absence types could not be loaded.', 'error');
             });
     }
 

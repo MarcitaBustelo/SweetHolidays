@@ -5,7 +5,7 @@
         <i class="fas fa-arrow-left"></i>
     </a>
     <div class="logo-section">
-        <img src="{{ asset('images/Galleta_logo.png') }}" alt="SweetHoliday Logo">
+        <img src="{{ asset('storage/images/Galleta_logo.png') }}" alt="SweetHoliday Logo">
         <h2>SWEET HOLIDAYS</h2>
     </div>
 
@@ -63,7 +63,7 @@
     <style>
         body {
             background: linear-gradient(rgba(56, 7, 76, 0.9), rgba(56, 7, 76, 0.9)),
-                url('{{ asset('images/logo.png') }}') no-repeat center center fixed;
+                url('{{ asset('storage/images/logo.png') }}') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;

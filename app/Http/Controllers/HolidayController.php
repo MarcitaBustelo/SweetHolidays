@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 
 use Illuminate\Http\Request;
@@ -169,7 +170,7 @@ class HolidayController extends Controller
         }
     }
 
-    public function justifyHoliday(Request $request)
+    public function editJustifyHoliday(Request $request)
     {
         $request->validate([
             'holiday_id' => 'required|exists:holidays,id',
@@ -177,89 +178,29 @@ class HolidayController extends Controller
             'file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ]);
 
-        $holiday = Holiday::findOrFail($request->holiday_id);
-
-        if ($request->has('comment')) {
-            $holiday->comment = $request->comment;
-        }
-
-        if ($request->hasFile('file')) {
-            $employeeId = $holiday->employee_id;
-            $date = now()->format('Ymd');
-            $nextFileIndex = Holiday::where('employee_id', $employeeId)
-                ->where('file', 'LIKE', "images/Justificantes/{$employeeId}{$date}%")
-                ->count() + 1;
-
-            $fileName = "{$employeeId}{$date}{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
-
-            // Define the custom directory path
-            $customDirectory = 'public/images/Justificantes';
-
-            // Ensure the directory exists
-            if (!file_exists(storage_path("app/{$customDirectory}"))) {
-                mkdir(storage_path("app/{$customDirectory}"), 0775, true);
-            }
-
-            // Store the file in the custom directory
-            $filePath = $request->file('file')->storeAs($customDirectory, $fileName);
-
-            // Update the file_path to match the public-accessible path
-            $holiday->file = str_replace('public/', '', $filePath);
-        }
-
-        $holiday->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'The absence has been justified successfully.',
-            'holiday' => $holiday,
-        ]);
-    }
-
-    public function editJustifyHoliday(Request $request)
-    {
-        $request->validate([
-            'holiday_id' => 'required|exists:holidays,id',
-            'comment' => 'nullable|string',
-            'file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048', // Agregué validación de tipo y tamaño del archivo
-        ]);
-
         try {
             $holiday = Holiday::findOrFail($request->holiday_id);
-
             if ($request->has('comment')) {
                 $holiday->comment = $request->comment;
             }
-
             if ($request->hasFile('file')) {
                 $employeeId = $holiday->employee_id;
                 $date = now()->format('Ymd');
                 $nextFileIndex = Holiday::where('employee_id', $employeeId)
-                    ->where('file', 'LIKE', "images/Justificantes/{$employeeId}{$date}%")
+                    ->where('file', 'LIKE', "justified/{$employeeId}{$date}%")
                     ->count() + 1;
 
-                $fileName = "{$employeeId}{$date}{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
+                $fileName = "{$employeeId}_{$date}_{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
 
-                // Definir el directorio personalizado
-                $customDirectory = 'public/images/Justificantes';
-
-                // Asegurarse de que el directorio exista
-                if (!file_exists(storage_path("app/{$customDirectory}"))) {
-                    mkdir(storage_path("app/{$customDirectory}"), 0775, true);
-                }
-
-                // Guardar el archivo en el directorio personalizado
-                $filePath = $request->file('file')->storeAs($customDirectory, $fileName);
-
-                // Actualizar el file_path para que coincida con la ruta accesible públicamente
-                $holiday->file = str_replace('public/', '', $filePath);
+                $filePath = $request->file('file')->storeAs('justificantes', $fileName, 'public');
+                $holiday->file = $filePath;
             }
 
             $holiday->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'La ausencia ha sido actualizada correctamente.',
+                'message' => 'The absence has been updated successfully.',
                 'holiday' => $holiday,
             ]);
         } catch (\Exception $e) {
@@ -277,7 +218,7 @@ class HolidayController extends Controller
                 'success' => true,
                 'holiday_id' => $holiday->id,
                 'comment' => $holiday->comment,
-                'file_path' => $holiday->file,
+                'file' => $holiday->file,
                 'start_date' => $holiday->start_date,
                 'end_date' => $holiday->end_date,
             ]);

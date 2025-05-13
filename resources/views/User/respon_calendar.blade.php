@@ -136,19 +136,6 @@
 </style>
 @stop
 
-@section('footer')
-<div class="float-right">
-    Version: {{ config('app.version', '0.0.1') }}
-</div>
-
-<strong>
-    Copyright &copy; 2025
-    <a href="{{ config('app.company_url', 'https://bayport.eu/') }}">
-        {{ config('app.company_name', 'BayportWebServices') }}
-    </a>
-    All rights reserved.
-</strong>
-@stop
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.js"></script>
@@ -166,14 +153,6 @@
         var holidayTypes = @json($holiday_types);
         var holidays = @json($holidays);
         var festives = @json($festives);
-        // let holidayCounts = [];
-        // try {
-        //     const response = await fetch('{{ route('holidays.countPerDay') }}');
-        //     holidayCounts = await response.json();
-        // } catch (error) {
-        //     console.error('Error al cargar los contadores de ausencias:', error);
-        // }
-
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
@@ -220,32 +199,6 @@
                     textColor: '#fff',
                 }))
             ],
-            // dayCellDidMount: function(info) {
-            //     // Buscar la cuenta de ausencias para el día actual
-            //     const count = holidayCounts.find(h => h.date === info.date.toISOString().split('T')[
-            //         0])?.count || 0;
-
-            //     if (count > 0) {
-            //         const countIndicator = document.createElement('div');
-            //         countIndicator.textContent = count; // Mostrar el número de ausencias
-            //         countIndicator.style.position = 'absolute';
-            //         countIndicator.style.top = '2px';
-            //         countIndicator.style.right = '2px';
-            //         countIndicator.style.backgroundColor =
-            //         '#ff5722';
-            //         countIndicator.style.color = '#fff';
-            //         countIndicator.style.borderRadius = '50%';
-            //         countIndicator.style.width = '20px';
-            //         countIndicator.style.height = '20px'; 
-            //         countIndicator.style.display = 'flex';
-            //         countIndicator.style.justifyContent = 'center';
-            //         countIndicator.style.alignItems = 'center';
-            //         countIndicator.style.fontSize = '0.8em'; 
-
-            //         info.el.style.position = 'relative';
-            //         info.el.appendChild(countIndicator);
-            //     }
-            // },
             select: async function (arg) {
                 const userSelect = document.getElementById('userSelect');
                 const userId = userSelect.value;
@@ -447,27 +400,27 @@
                             });
                         } else if (action === 'justifyAbsence') {
                             const formHtml = `
-                    <form id="editHolidayForm">
-                        <div class="form-group">
-                            <label for="comment">Comentario</label>
-                            <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Añade un comentario">${holiday.comment || ''}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="file">Justificante</label>
-                            ${holiday.file_path ? `<p><strong>Archivo actual:</strong> <a href="/storage/${holiday.file_path}" target="_blank">Descargar</a></p>` : ''}
-                            <input type="file" id="file" name="file" class="form-control" accept=".jpeg,.png,.jpg,.pdf">
-                        </div>
-                    </form>
-                `;
+        <form id="editHolidayForm">
+            <div class="form-group">
+                <label for="comment">Comentario</label>
+                <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Añade un comentario">${holiday.comment || ''}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="file">Justificante</label>
+                ${holiday.file ? `<p><strong>Archivo actual:</strong> <a href="/storage/${holiday.file}" target="_blank">Descargar</a></p>` : ''}
+                <input type="file" id="file" name="file" class="form-control" accept=".jpeg,.png,.jpg,.pdf">
+            </div>
+        </form>
+    `;
                             Swal.fire({
                                 title: 'Detalles de la ausencia',
                                 html: `
-                        <div class="text-left">
-                            <p><strong>Tipo:</strong> ${arg.event.title}</p>
-                            <p><strong>Fecha:</strong> ${arg.event.start.toLocaleDateString('es-ES')} ${arg.event.end ? ` - ${arg.event.end.toLocaleDateString('es-ES')}` : ''}</p>
-                        </div>
-                        ${formHtml}
-                    `,
+            <div class="text-left">
+                <p><strong>Tipo:</strong> ${arg.event.title}</p>
+                <p><strong>Fecha:</strong> ${arg.event.start.toLocaleDateString('es-ES')} ${arg.event.end ? ` - ${arg.event.end.toLocaleDateString('es-ES')}` : ''}</p>
+            </div>
+            ${formHtml}
+        `,
                                 icon: 'info',
                                 showCancelButton: true,
                                 confirmButtonText: 'Guardar',
@@ -476,14 +429,12 @@
                                 confirmButtonColor: '#28a745',
                                 cancelButtonColor: '#dc3545',
                                 preConfirm: async () => {
-                                    const form = document.getElementById(
-                                        'editHolidayForm');
+                                    const form = document.getElementById('editHolidayForm');
                                     const formData = new FormData(form);
                                     formData.append('holiday_id', holidayId);
 
                                     try {
-                                        const response = await fetch(
-                                            '{{ route('holidays.edit') }}', {
+                                        const response = await fetch('{{ route('holidays.edit') }}', {
                                             method: 'POST',
                                             headers: {
                                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -494,27 +445,21 @@
                                         const result = await response.json();
 
                                         if (!response.ok) {
-                                            throw new Error(result.message ||
-                                                'Error desconocido');
+                                            throw new Error(result.message || 'Error desconocido');
                                         }
 
                                         return result;
                                     } catch (error) {
-                                        Swal.showValidationMessage(
-                                            `Error: ${error.message}`);
+                                        Swal.showValidationMessage(`Error: ${error.message}`);
                                     }
                                 }
                             }).then(async (result) => {
                                 if (result.isConfirmed) {
-                                    Swal.fire('¡Guardado!',
-                                        'La ausencia ha sido actualizada correctamente.',
-                                        'success')
+                                    Swal.fire('¡Guardado!', 'La ausencia ha sido actualizada correctamente.', 'success')
                                         .then(() => location.reload());
-                                } else if (result.dismiss === Swal.DismissReason
-                                    .cancel) {
+                                } else if (result.dismiss === Swal.DismissReason.cancel) {
                                     try {
-                                        const response = await fetch(
-                                            '{{ route('holidays.delete') }}', {
+                                        const response = await fetch('{{ route('holidays.delete') }}', {
                                             method: 'DELETE',
                                             headers: {
                                                 'Content-Type': 'application/json',
@@ -529,24 +474,19 @@
 
                                         if (response.ok) {
                                             arg.event.remove();
-                                            Swal.fire('¡Eliminado!',
-                                                'La ausencia ha sido eliminada.',
-                                                'success');
+                                            Swal.fire('¡Eliminado!', 'La ausencia ha sido eliminada.', 'success');
                                         } else {
                                             console.error(result.error);
-                                            Swal.fire('Error', result.error ||
-                                                'No se pudo eliminar la ausencia.',
-                                                'error');
+                                            Swal.fire('Error', result.error || 'No se pudo eliminar la ausencia.', 'error');
                                         }
                                     } catch (error) {
                                         console.error(error);
-                                        Swal.fire('Error',
-                                            'Ocurrió un error al eliminar la ausencia.',
-                                            'error');
+                                        Swal.fire('Error', 'Ocurrió un error al eliminar la ausencia.', 'error');
                                     }
                                 }
                             });
                         }
+
                     } else {
                         Swal.fire('Error', holiday.error ||
                             'No se pudo cargar los detalles de la ausencia.', 'error');

@@ -42,8 +42,7 @@ Route::get('/users', [EmployeeController::class, 'index'])->middleware('auth')->
 Route::put('/employees/{id}/update-days', [EmployeeController::class, 'updateDays'])->name('employees.updateDays');
 Route::put('/employees/{id}/update-delegation', [EmployeeController::class, 'updateResponsable'])->name('employees.updateResponsable');
 Route::put('/employees/{id}/update-department', [EmployeeController::class, 'updateDepartment'])->name('employees.updateDepartment');
-Route::get('/calendar', [EmployeeController::class, 'holiday'])->middleware('auth')->name('user.calendar');
-Route::post('/send-email/{id}', [EmployeeController::class, 'sendEmail'])->name('holiday_types.send_email');
+Route::post('/send-email/{id}', [UserController::class, 'sendEmail'])->name('holiday_types.send_email');
 
 //rutas para responsable
 Route::get('/responsable', [UserController::class, 'index'])->name('menu.responsable');
@@ -51,7 +50,6 @@ Route::get('/responsable/calendar', [ResponsableController::class, 'responCalend
 Route::post('/holiday/assign', [HolidayController::class, 'assignHoliday'])->name('holiday.assign');
 Route::delete('/holidays/delete', [HolidayController::class, 'deleteHoliday'])->name('holidays.delete');
 Route::put('/holiday/update', [HolidayController::class, 'updateHoliday'])->name('holiday.update');
-Route::post('/holidays/justify', [HolidayController::class, 'justifyHoliday'])->name('holidays.justify');
 Route::get('/holidays/{id}', [HolidayController::class, 'getHoliday'])->name('holidays.get');
 Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])->name('holidays.edit');
 

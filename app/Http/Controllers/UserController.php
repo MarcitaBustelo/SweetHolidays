@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Holiday;
 use DateTime;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Festive;
+use Carbon\Carbon;
 
 
 
@@ -27,8 +30,6 @@ class UserController extends Controller
         }
 
         switch ($user->role) {
-            case 'employee':
-                return view('menu_employee', compact('user'));
             case 'responsable':
                 return view('menu_responsable', compact('user'));
             case 'admin':
@@ -69,7 +70,7 @@ class UserController extends Controller
     //     return view('user.users', compact('employees', 'responsables', 'departments'));
     // }
 
-   // VER PERFIL (para responsables para ver el suyo, para empleados API para el movil)
+    // VER PERFIL (para responsables para ver el suyo, para empleados API para el movil)
     public function show()
     {
         $user = Auth::user();
@@ -123,6 +124,66 @@ class UserController extends Controller
 
         $interval = $start->diff($end);
         return $interval->days;
+    }
+
+    //Mandar email para solicitar vacaciones
+    public function sendEmail(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'reason' => 'required|string|max:1000',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
+
+        if ($endDate->isFriday()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Si el fin es viernes, la solicitud debe incluir sábado y domingo.',
+            ], 422);
+        }
+
+        $nextDay = $endDate->copy()->addDay();
+        $isFestive = Festive::where('date', $nextDay->format('Y-m-d'))->exists();
+
+        if ($isFestive) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El día siguiente es festivo, la solicitud debe incluir dicho festivo.',
+            ], 422);
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no autenticado.'], 401);
+        }
+
+        $responsable = User::where('employee_id', $user->responsable)->first();
+
+        if (!$responsable || !$responsable->email) {
+            return response()->json(['success' => false, 'message' => 'Correo del responsable no encontrado.'], 404);
+        }
+
+        $data = [
+            'name' => $request->input('name'),
+            'reason' => $request->input('reason'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+            'responsable_email' => $responsable->email,
+        ];
+
+        try {
+            Mail::send('email', $data, function ($message) use ($data) {
+                $message->to($data['responsable_email'])
+                    ->subject('Solicitud de Ausencia');
+            });
+
+            return response()->json(['success' => true, 'message' => 'Correo enviado con éxito.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al enviar el correo: ' . $e->getMessage()], 500);
+        }
     }
 
     // VER CALENDARIO RESPONSABLE

@@ -9,7 +9,7 @@
     <style>
         body {
             background:
-                url('{{ asset('images/logo.png') }}') no-repeat center center fixed;
+                url('{{ asset(path: 'storage/images/logo.png') }}') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             margin: 0;

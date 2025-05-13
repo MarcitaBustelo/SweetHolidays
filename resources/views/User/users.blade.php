@@ -7,7 +7,7 @@
     <h1 style="color: #3b2469;">Employee Management</h1>
     <div>
         @php
-            $specialAccessEmployeeIds = ['10001', '10001'];
+            $specialAccessEmployeeIds = ['10001', '10003'];
         @endphp
         @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
             <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#uploadModal">
@@ -24,53 +24,102 @@
 @section('content')
 <div class="card shadow-sm border-0">
     <div class="card-header bg-light">
-        <h3 class="card-title" style="font-weight: bold; color: #6a3cc9;">Assigned Employees List</h3>
+        <h3 class="card-title" style="font-weight: bold; color: #6a3cc9;">Assigned Employees</h3>
     </div>
     <div class="card-body bg-white">
-        <table id="employeesTable" class="table table-bordered table-hover">
-            <thead>
-                <tr style="background-color: #ebe4f6; color: #4b2e83;">
-                    <th>Name</th>
-                    <th>Delegation</th>
-                    <th>Department</th>
-                    <th>Total Days</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($employees as $employee)
-                    <tr>
-                        <td>{{ $employee->name }}</td>
-                        <td>{{ $employee->delegation->name ?? 'No delegation' }}</td>
-                        <td>{{ $employee->department->name ?? 'No department' }}</td>
-                        <td>
-                            <form action="{{ route('employees.updateDays', $employee->id) }}" method="POST"
-                                class="d-flex align-items-center">
-                                @csrf
-                                @method('PUT')
-                                <input type="number" name="days_in_total" value="{{ $employee->days_in_total }}" min="0"
-                                    class="form-control form-control-sm mr-2" style="width: 80px; border-color: #c8b9e6;">
-                                <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </form>
-                        </td>
+        <div class="table-responsive">
+            <table id="employeesTable" class="table table-bordered table-hover">
+                <thead>
+                    <tr style="background-color: #ebe4f6; color: #4b2e83;">
+                        <th>Name</th>
+                        <th>Delegation</th>
+                        <th>Department</th>
+                        @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+                            <th>Manager</th>
+                        @endif
+                        <th>Total Days</th>
+                        <th>Remaining Days</th>
+                        <th>Used Days</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">No assigned employees.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($employees as $employee)
+                        <tr>
+                            <td>{{ $employee->name }}</td>
+                            <td>{{ $employee->delegation->name ?? 'No delegation' }}</td>
+                            <td>
+                                @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+                                    <form action="{{ route('employees.updateDepartment', $employee->id) }}" method="POST" class="d-flex align-items-center">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="department_id" class="form-control form-control-sm mr-2" style="width: 150px;">
+                                            <option value="">No Department</option>
+                                            @foreach ($departments as $department)
+                                                <option value="{{ $department->department_id }}"
+                                                    {{ $employee->department_id == $department->department_id ? 'selected' : '' }}>
+                                                    {{ $department->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    {{ $employee->department->name ?? 'No Department' }}
+                                @endif
+                            </td>
+                            @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+                                <td>
+                                    <form action="{{ route('employees.updateResponsable', $employee->id) }}" method="POST" class="d-flex align-items-center">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="responsable" class="form-control form-control-sm mr-2" style="width: 150px;">
+                                            <option value="">No Manager</option>
+                                            @foreach ($responsables as $responsable)
+                                                <option value="{{ $responsable->responsable_id }}"
+                                                    {{ $employee->responsable == $responsable->responsable_id ? 'selected' : '' }}>
+                                                    {{ $responsable->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            @endif
+                            <td>
+                                <form action="{{ route('employees.updateDays', $employee->id) }}" method="POST" class="d-flex align-items-center">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="number" name="days_in_total" value="{{ $employee->days_in_total }}" min="0"
+                                        class="form-control form-control-sm mr-2" style="width: 80px; border-color: #c8b9e6;">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>{{ $employee->remaining_days }}</td>
+                            <td>{{ $employee->vacation_days_used }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No assigned employees.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Upload Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #f4f6f9;">
-                <h5 class="modal-title" id="uploadModalLabel" style="font-weight: bold;">Update Users</h5>
+            <div class="modal-header bg-light">
+                <h5 class="modal-title font-weight-bold">Update Users</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -83,7 +132,7 @@
                         <input type="file" name="excelFile" id="excelFile" class="form-control" accept=".xlsx, .xls" required>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary" id="uploadButton">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-upload"></i> Upload
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -119,6 +168,11 @@
         border-color: #5a31a8;
     }
 
+    .btn-warning {
+        background-color: #f0ad4e;
+        border-color: #f0ad4e;
+    }
+
     .btn-outline-primary {
         color: #6a3cc9;
         border-color: #c8b9e6;
@@ -143,13 +197,13 @@
         box-shadow: 0 0 0 0.2rem rgba(106, 60, 201, 0.25);
     }
 
-    #loadingSpinner {
-        margin-top: 20px;
-    }
-
     .spinner-border {
         width: 3rem;
         height: 3rem;
+    }
+
+    #loadingSpinner {
+        margin-top: 20px;
     }
 </style>
 @stop
@@ -157,16 +211,26 @@
 @section('js')
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
         $('#employeesTable').DataTable({
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/en-GB.json',
-                searchPlaceholder: "Search employee..."
+                searchPlaceholder: "Search..."
             },
             responsive: true,
             autoWidth: false
         });
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#6a3cc9'
+            });
+        @endif
     });
 </script>
 @stop

@@ -72,6 +72,12 @@ class User extends Authenticatable
     public function holidays()
     {
         return $this->hasMany(Holiday::class, 'employee_id', 'employee_id');
+
+    }
+
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable', 'employee_id');
     }
 
     protected static function booted(): void

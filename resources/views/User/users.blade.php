@@ -38,8 +38,6 @@
                             <th>Manager</th>
                         @endif
                         <th>Total Days</th>
-                        <th>Remaining Days</th>
-                        <th>Used Days</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,24 +68,24 @@
                                 @endif
                             </td>
                             @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
-                                <td>
-                                    <form action="{{ route('employees.updateResponsable', $employee->id) }}" method="POST" class="d-flex align-items-center">
-                                        @csrf
-                                        @method('PUT')
+                            <td>
+                                <form action="{{ route('employees.updateResponsable', $employee->id) }}" method="POST" class="d-flex align-items-center">
+                                    @csrf
+                                    @method('PUT')
                                         <select name="responsable" class="form-control form-control-sm mr-2" style="width: 150px;">
-                                            <option value="">No Manager</option>
-                                            @foreach ($responsables as $responsable)
-                                                <option value="{{ $responsable->responsable_id }}"
-                                                    {{ $employee->responsable == $responsable->responsable_id ? 'selected' : '' }}>
-                                                    {{ $responsable->name }}
-                                                </option>
-                                            @endforeach
+                                           <option value="">No Responsable</option>
+                                              @foreach ($responsables as $responsable)
+                                                   <option value="{{ $responsable->employee_id }}" 
+                                                      {{ $employee->responsable == $responsable->employee_id ? 'selected' : '' }}>
+                                                        {{ $responsable->name }}
+                                                  </option>
+                                               @endforeach
                                         </select>
-                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
-                                            <i class="fas fa-save"></i>
-                                        </button>
-                                    </form>
-                                </td>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Save">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </form>
+                            </td>
                             @endif
                             <td>
                                 <form action="{{ route('employees.updateDays', $employee->id) }}" method="POST" class="d-flex align-items-center">
@@ -100,8 +98,6 @@
                                     </button>
                                 </form>
                             </td>
-                            <td>{{ $employee->remaining_days }}</td>
-                            <td>{{ $employee->vacation_days_used }}</td>
                         </tr>
                     @empty
                         <tr>

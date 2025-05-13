@@ -11,7 +11,7 @@ use DateTime;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Festive;
 use Carbon\Carbon;
-
+use App\Models\Department;
 
 
 
@@ -49,26 +49,30 @@ class UserController extends Controller
     //METODO RESPONSABLES
 
     //Ver Usuario
-    // public function index()
-    // {
-    //     $user = Auth::user();
-    //     $specialAccessEmployeeIds = '10001;
-    //     if (in_array($user->employee_id, $specialAccessEmployeeIds)) {
-    //         $employees = User::with(['delegation', 'department'])->get();
-    //         $responsables = Responsable::select('responsable_id', 'name')->get();
-    //         $departments = Department::select('department_id', 'name')->get();
-    //     } else {
-    //         $employees = User::where(function ($query) use ($user) {
-    //             $query->where('responsable', $user->employee_id)
-    //                 ->orWhere('id', $user->id);
-    //         })->with(['delegation', 'department'])->get();
+    public function showUsers()
+    {
+        $user = Auth::user();
+        $specialAccessEmployeeIds = ['10001', '10003'];
+        if (in_array($user->employee_id, $specialAccessEmployeeIds)) {
+            $employees = User::with(['delegation', 'department'])->get();
 
-    //         $responsables = collect();
-    //         $departments = collect();
-    //     }
+            $responsables = User::where('role', 'responsable')
+                ->select('employee_id', 'name')
+                ->get();
 
-    //     return view('user.users', compact('employees', 'responsables', 'departments'));
-    // }
+            $departments = Department::select('department_id', 'name')->get();
+        } else {
+            $employees = User::where(function ($query) use ($user) {
+                $query->where('responsable', $user->employee_id)
+                    ->orWhere('id', $user->id);
+            })->with(['delegation', 'department'])->get();
+
+            $responsables = collect();
+            $departments = collect();
+        }
+
+        return view('user.users', compact('employees', 'responsables', 'departments'));
+    }
 
     // VER PERFIL (para responsables para ver el suyo, para empleados API para el movil)
     public function show()
@@ -141,7 +145,7 @@ class UserController extends Controller
         if ($endDate->isFriday()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Si el fin es viernes, la solicitud debe incluir sábado y domingo.',
+                'message' => 'If the last day is friday, the request must include saturday and sunday.',
             ], 422);
         }
 
@@ -151,19 +155,19 @@ class UserController extends Controller
         if ($isFestive) {
             return response()->json([
                 'success' => false,
-                'message' => 'El día siguiente es festivo, la solicitud debe incluir dicho festivo.',
+                'message' => 'If the next day is a festive day, the request must include it.',
             ], 422);
         }
 
         $user = Auth::user();
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Usuario no autenticado.'], 401);
+            return response()->json(['success' => false, 'message' => 'Unauthorized user'], 401);
         }
 
         $responsable = User::where('employee_id', $user->responsable)->first();
 
         if (!$responsable || !$responsable->email) {
-            return response()->json(['success' => false, 'message' => 'Correo del responsable no encontrado.'], 404);
+            return response()->json(['success' => false, 'message' => 'Responsable´s email not found'], 404);
         }
 
         $data = [
@@ -180,10 +184,40 @@ class UserController extends Controller
                     ->subject('Solicitud de Ausencia');
             });
 
-            return response()->json(['success' => true, 'message' => 'Correo enviado con éxito.']);
+            return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al enviar el correo: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Oops! Something went wrong: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function updateResponsable(Request $request, $id)
+    {
+        $request->validate([
+            'responsable' => 'nullable|exists:users,employee_id',
+        ]);
+
+        $employee = User::findOrFail($id);
+        $employee->responsable = $request->input('responsable');
+        $employee->save();
+
+        return redirect()->back()->with('success', 'Responsable updated successfully.');
+    }
+    public function updateDepartment(Request $request, $id)
+    {
+        $request->validate([
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
+        $employee = User::find($id);
+
+        if (!$employee) {
+            return redirect()->back()->with('error', 'Employee not found.');
+        }
+
+        $employee->department_id = $request->department_id;
+        $employee->save();
+
+        return redirect()->back()->with('success', 'Department updated successfully.');
     }
 
     // VER CALENDARIO RESPONSABLE

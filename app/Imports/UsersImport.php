@@ -4,11 +4,13 @@ namespace App\Imports;
 
 use App\Models\User;
 use App\Models\Department;
+use App\Models\Delegation;
 use App\Models\Responsable;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Carbon\Carbon;
+
 
 class UsersImport implements ToModel, WithHeadingRow
 {
@@ -17,7 +19,8 @@ class UsersImport implements ToModel, WithHeadingRow
         $existingUser = User::where('employee_id', $row['employee_id'])->first();
 
         $department = Department::where('name', $row['department'])->first();
-        $responsable = Responsable::where('name', $row['responsable'])->first();
+        $delegation = Delegation::where('name', $row['delegation'])->first();
+        $responsable = User::where('responsable', $row['responsable'])->first();
 
         if ($existingUser) {
             $updateData = [
@@ -25,9 +28,9 @@ class UsersImport implements ToModel, WithHeadingRow
                 'email' => $row['email'],
                 'phone' => $row['phone'],
                 'start_date' => $this->parseDate($row['start_date']),
-                'delegation_id' => $this->getDelegationIdByName($row['delegation']),
+                'delegation_id' => $delegation ? $delegation->delegation_id : 99,
                 'department_id' => $department ? $department->department_id : 99,
-                'responsable_id' => $responsable ? $responsable->responsable_id : 1,
+                'responsable' => $responsable ? $responsable->responsable : 1,
             ];
 
             $existingUser->update($updateData);
@@ -44,7 +47,7 @@ class UsersImport implements ToModel, WithHeadingRow
             'employee_id' => $row['employee_id'],
             'department_id' => $department ? $department->department_id : 99,
             'delegation_id' => $this->getDelegationIdByName($row['delegation']),
-            'responsable_id' => $responsable ? $responsable->responsable_id : 1,
+            'responsable' => $responsable ? $responsable->responsable_id : 1,
             'days' => $row['days'] ?? 30,
             'days_in_total' => $row['days_in_total'] ?? 30,
             'active' => $row['active'] ?? 1,

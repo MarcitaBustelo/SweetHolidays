@@ -17,7 +17,7 @@ class ExcelController extends Controller
 
         Excel::import(new UsersImport, $request->file('excelFile'));
 
-        return redirect()->back()->with('success', 'Usuarios procesados correctamente.');
+        return redirect()->back()->with('success', 'Users imported successfully.');
     }
     
 }

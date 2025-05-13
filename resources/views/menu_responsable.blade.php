@@ -86,7 +86,7 @@
 
     <!-- Manage Holidays (conditional) -->
     @php
-        $specialAccessEmployeeIds = ['10001', '10001'];
+        $specialAccessEmployeeIds = ['10001', '10003'];
     @endphp
     @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
         <div class="col-md-6 mb-4">
@@ -107,41 +107,53 @@
         </div>
     @endif
 
-    <!-- Manage Departments -->
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
-            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
-                <h3 class="card-title" style="color: #4b0082;">
-                    <i class="fas fa-bezier-curve mr-2"></i>Manage Departments
-                </h3>
-            </div>
-            <div class="card-body">
-                <p style="color: #4b0082;">View departments.</p>
-                <a href="{{ route('departments.departments') }}" class="btn"
-                    style="background-color: #a066c9; color: white; border: none;">
-                    <i class="fas fa-bezier-curve mr-2"></i> View Departments
-                </a>
+    @php
+        $specialAccessEmployeeIds = ['10001', '10003'];
+    @endphp
+    @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+        <!-- Manage Departments -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+                <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                    <h3 class="card-title" style="color: #4b0082;">
+                        <i class="fas fa-bezier-curve mr-2"></i>Manage Departments
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p style="color: #4b0082;">View departments.</p>
+                    <a href="{{ route('departments.departments') }}" class="btn"
+                        style="background-color: #a066c9; color: white; border: none;">
+                        <i class="fas fa-bezier-curve mr-2"></i> View Departments
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 
-    <!-- Manage Branches -->
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
-            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
-                <h3 class="card-title" style="color: #4b0082;">
-                    <i class="fab fa-unity mr-2"></i>Manage Branches
-                </h3>
-            </div>
-            <div class="card-body">
-                <p style="color: #4b0082;">View branch offices.</p>
-                <a href="{{ route('delegations.delegations') }}" class="btn"
-                    style="background-color: #a066c9; color: white; border: none;">
-                    <i class="fab fa-unity mr-2"></i> View Branches
-                </a>
+    <!-- Manage Holidays (conditional) -->
+    @php
+        $specialAccessEmployeeIds = ['10001', '10003'];
+    @endphp
+    @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+        <!-- Manage Branches -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+                <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                    <h3 class="card-title" style="color: #4b0082;">
+                        <i class="fab fa-unity mr-2"></i>Manage Branches
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p style="color: #4b0082;">View branch offices.</p>
+                    <a href="{{ route('delegations.delegations') }}" class="btn"
+                        style="background-color: #a066c9; color: white; border: none;">
+                        <i class="fab fa-unity mr-2"></i> View Branches
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
+
 </div>
 @stop
 

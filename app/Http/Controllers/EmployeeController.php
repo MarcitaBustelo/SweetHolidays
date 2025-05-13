@@ -199,34 +199,7 @@ class EmployeeController extends Controller
         return redirect()->route('menu.employee')->with('success', 'Empleado creado con éxito.');
     }
 
-    public function updateResponsable(Request $request, $id)
-    {
-        $request->validate([
-            'responsable' => 'nullable|exists:users,employee_id',
-        ]);
 
-        $employee = User::findOrFail($id);
-        $employee->responsable = $request->input('responsable');
-        $employee->save();
 
-        return redirect()->back()->with('success', 'Responsable actualizado correctamente.');
-    }
 
-    public function updateDepartment(Request $request, $id)
-    {
-        $request->validate([
-            'department_id' => 'required|exists:departments,id',
-        ]);
-
-        $employee = User::find($id);
-
-        if (!$employee) {
-            return redirect()->back()->with('error', 'Empleado no encontrado.');
-        }
-
-        $employee->department_id = $request->department_id;
-        $employee->save();
-
-        return redirect()->back()->with('success', 'Departamento actualizado correctamente.');
-    }
 }

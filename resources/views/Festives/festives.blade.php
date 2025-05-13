@@ -10,11 +10,13 @@
     </a>
 </div>
 @stop
-
 @section('content')
 <div class="card shadow-sm border-0">
     <div class="card-header bg-light">
         <h3 class="card-title" style="font-weight: bold; color: #6a3cc9;">Registered Festives</h3>
+        <button class="btn btn-primary float-right" data-toggle="modal" data-target="#createFestiveModal">
+            <i class="fas fa-plus"></i> Add Festive
+        </button>
     </div>
     <div class="card-body bg-white">
         <table id="festivesTable" class="table table-bordered table-hover">
@@ -23,6 +25,7 @@
                     <th>Name</th>
                     <th>Delegation</th>
                     <th>Date</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,18 +47,157 @@
                                 </button>
                             </form>
                         </td>
+                        <td>
+                            <!-- Botón para editar -->
+                            <button class="btn btn-sm btn-outline-primary" data-toggle="modal"
+                                data-target="#editFestiveModal{{ $festive->id }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <!-- Botón para eliminar -->
+                            <button class="btn btn-sm btn-outline-danger" data-toggle="modal"
+                                data-target="#deleteFestiveModal{{ $festive->id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
                     </tr>
+
+                    <!-- Modal para editar -->
+                    <div class="modal fade" id="editFestiveModal{{ $festive->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="editFestiveModalLabel{{ $festive->id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <form action="{{ route('festives.update', $festive->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editFestiveModalLabel{{ $festive->id }}">Edit Festive
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="name">Festive Name</label>
+                                            <input type="text" name="name" class="form-control" value="{{ $festive->name }}"
+                                                required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date">Date</label>
+                                            <input type="date" name="date" class="form-control" value="{{ $festive->date }}"
+                                                required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="delegation_id">Delegation</label>
+                                            <select name="delegation_id" class="form-control">
+                                                <option value="">No Delegation</option>
+                                                @foreach($delegations as $delegation)
+                                                    <option value="{{ $delegation->id }}" {{ $festive->delegation_id == $delegation->id ? 'selected' : '' }}>
+                                                        {{ $delegation->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group form-check">
+                                            <input type="hidden" name="national" value="0">
+                                            <input type="checkbox" name="national" class="form-check-input"
+                                                id="nationalCheck{{ $festive->id }}" value="1" {{ $festive->national ? 'checked' : '' }}>
+                                            <label class="form-check-label"
+                                                for="nationalCheck{{ $festive->id }}">National</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Modal para eliminar -->
+                    <div class="modal fade" id="deleteFestiveModal{{ $festive->id }}" tabindex="-1" role="dialog"
+                        aria-labelledby="deleteFestiveModalLabel{{ $festive->id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <form action="{{ route('festives.destroy', $festive->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteFestiveModalLabel{{ $festive->id }}">Delete
+                                            Festive</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete this festive?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 @empty
                     <tr>
-                        <td colspan="3" class="text-center text-muted">No festives registered.</td>
+                        <td colspan="4" class="text-center text-muted">No festives registered.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 </div>
-@stop
 
+<!-- Modal -->
+<div class="modal fade" id="createFestiveModal" tabindex="-1" role="dialog" aria-labelledby="createFestiveModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="{{ route('festives.store') }}" method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createFestiveModalLabel">Add New Festive</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Festive Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Festive Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="delegation_id">Delegation</label>
+                        <select name="delegation_id" class="form-control">
+                            <option value="">No Delegation</option>
+                            @foreach($delegations as $delegation)
+                                <option value="{{ $delegation->id }}">{{ $delegation->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="hidden" name="national" value="0">
+                        <input type="checkbox" name="national" class="form-check-input" id="nationalCheck" value="1">
+                        <label class="form-check-label" for="nationalCheck">National</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Festive</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@stop
 @section('css')
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">

@@ -38,10 +38,10 @@ Route::get('/', function () {
 //rutas para empleados
 Route::get('/employee', [UserController::class, 'index'])->name('menu.employee');
 Route::get('/profile', [EmployeeController::class, 'show'])->middleware('auth')->name('user.profile');
-Route::get('/users', [EmployeeController::class, 'index'])->middleware('auth')->name('user.users');
+Route::get('/users', [UserController::class, 'showUsers'])->middleware('auth')->name('user.users');
 Route::put('/employees/{id}/update-days', [EmployeeController::class, 'updateDays'])->name('employees.updateDays');
-Route::put('/employees/{id}/update-delegation', [EmployeeController::class, 'updateResponsable'])->name('employees.updateResponsable');
-Route::put('/employees/{id}/update-department', [EmployeeController::class, 'updateDepartment'])->name('employees.updateDepartment');
+Route::put('/employees/{id}/update-delegation', [UserController::class, 'updateResponsable'])->name('employees.updateResponsable');
+Route::put('/employees/{id}/update-department', [UserController::class, 'updateDepartment'])->name('employees.updateDepartment');
 Route::post('/send-email/{id}', [UserController::class, 'sendEmail'])->name('holiday_types.send_email');
 
 //rutas para responsable
@@ -64,8 +64,11 @@ Route::post('/holidays/update-type', [HolidayController::class, 'updateType'])->
 Route::get('/festives', [FestiveController::class, 'index'])->name('festives.festives');
 Route::put('/festives/update-year', [FestiveController::class, 'updateFestiveYear'])->name('festives.updateYear');
 Route::put('/festives/{id}/edit-date', [FestiveController::class, 'updateFestive'])->name('festives.editDate');
+Route::post('/festives', [FestiveController::class, 'store'])->name('festives.store');
+Route::delete('/festives/{id}', [FestiveController::class, 'destroy'])->name('festives.destroy');
+Route::put('/festives/{id}', [FestiveController::class, 'update'])->name('festives.update');
 
-
+//Ruta manual
 Route::get('/manual', [ManualController::class, 'show'])->name('manual.show')->middleware('auth');
 
 //Asignar colores a empleados

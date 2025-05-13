@@ -31,22 +31,20 @@ class HolidayController extends Controller
             $employee = \App\Models\User::find($request->employee_id);
 
             if (!$employee) {
-                return response()->json(['error' => 'El empleado no existe.'], 404);
+                return response()->json(['error' => 'This employee doesn´t exist'], 404);
             }
 
-            // Verificar si el usuario autenticado está intentando asignarse una ausencia
             if ($employee->id === Auth::id() && Auth::user()->responsable === null) {
-                $employee = Auth::user(); // Usar el usuario autenticado
+                $employee = Auth::user();
             }
 
-            // Calcular los días solicitados
             $startDate = new \DateTime($request->start_date);
             $endDate = new \DateTime($request->end_date);
             $interval = $startDate->diff($endDate);
             $daysRequested = $interval->days;
 
             if ($employee->days < $daysRequested) {
-                return response()->json(['error' => 'El empleado no tiene suficientes días disponibles.'], 400);
+                return response()->json(['error' => 'This employee does not have enough vacation days left'], 400);
             }
 
             // Crear la ausencia
@@ -59,20 +57,19 @@ class HolidayController extends Controller
                 'holiday_id' => $request->holiday_id,
             ]);
 
-            // Restar los días del atributo `days`
             $employee->days -= $daysRequested;
             $employee->save();
 
             return response()->json([
-                'success' => 'Ausencia registrada correctamente.',
+                'success' => 'Absence added correctly.',
                 'holiday_id' => $holiday->id,
                 'start_date' => $holiday->start_date,
                 'end_date' => $holiday->end_date,
                 'holiday_type' => $holiday->holiday_id,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error al guardar la ausencia: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al guardar la ausencia.'], 500);
+            Log::error('Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
     }
 
@@ -82,12 +79,13 @@ class HolidayController extends Controller
             'holiday_id' => 'required|exists:holidays,id',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
+            'holiday_type_id' => 'nullable|exists:holiday_types,id', // Validación para el holiday_type_id
         ]);
 
         if ($validator->fails()) {
+            Log::error('Errores de validación:', $validator->errors()->toArray());
             return response()->json(['error' => $validator->errors()], 422);
         }
-
         try {
             $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
             $holiday = Holiday::find($request->holiday_id);
@@ -99,6 +97,7 @@ class HolidayController extends Controller
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
+                'holiday_type_id' => $request->holiday_type_id ?? $holiday->holiday_type_id, // Actualizar holiday_type si se envía
             ]);
 
             return response()->json([
@@ -106,9 +105,11 @@ class HolidayController extends Controller
                 'holiday' => $holiday
             ]);
         } catch (\Exception $e) {
-            Log::error('Error al actualizar la ausencia: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al actualizar la ausencia.'], 500);
+            Log::error('Error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
+
     }
 
 
@@ -132,24 +133,19 @@ class HolidayController extends Controller
                 return response()->json(['error' => 'La ausencia no existe o ya fue eliminada.'], 404);
             }
 
-            // Obtener al empleado asociado
-            $employee = $holiday->employee; // Asegúrate de que la relación esté definida en el modelo `Holiday`
+            $employee = $holiday->employee;
 
             if (!$employee) {
                 Log::warning('El empleado asociado no existe.', ['holiday_id' => $request->holiday_id]);
                 return response()->json(['error' => 'El empleado asociado no existe.'], 404);
             }
 
-            // Calcular los días de ausencia
             $startDate = new \DateTime($holiday->start_date);
             $endDate = new \DateTime($holiday->end_date);
             $interval = $startDate->diff($endDate);
-            $daysToReturn = $interval->days + 1; // Incluir el último día
+            $daysToReturn = $interval->days + 1;
 
-            // Devolver los días al empleado
             $employee->days += $daysToReturn;
-
-            // Asegurarse de que no supere el máximo permitido (por ejemplo, 30 días)
             $maxDays = 30;
             if ($employee->days > $maxDays) {
                 $employee->days = $maxDays;
@@ -171,5 +167,155 @@ class HolidayController extends Controller
             Log::error('Error al eliminar la ausencia: ' . $e->getMessage());
             return response()->json(['error' => 'Ocurrió un error al eliminar la ausencia.'], 500);
         }
+    }
+
+    public function justifyHoliday(Request $request)
+    {
+        $request->validate([
+            'holiday_id' => 'required|exists:holidays,id',
+            'comment' => 'nullable|string',
+            'file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
+        ]);
+
+        $holiday = Holiday::findOrFail($request->holiday_id);
+
+        if ($request->has('comment')) {
+            $holiday->comment = $request->comment;
+        }
+
+        if ($request->hasFile('file')) {
+            $employeeId = $holiday->employee_id;
+            $date = now()->format('Ymd');
+            $nextFileIndex = Holiday::where('employee_id', $employeeId)
+                ->where('file', 'LIKE', "images/Justificantes/{$employeeId}{$date}%")
+                ->count() + 1;
+
+            $fileName = "{$employeeId}{$date}{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
+
+            // Define the custom directory path
+            $customDirectory = 'public/images/Justificantes';
+
+            // Ensure the directory exists
+            if (!file_exists(storage_path("app/{$customDirectory}"))) {
+                mkdir(storage_path("app/{$customDirectory}"), 0775, true);
+            }
+
+            // Store the file in the custom directory
+            $filePath = $request->file('file')->storeAs($customDirectory, $fileName);
+
+            // Update the file_path to match the public-accessible path
+            $holiday->file = str_replace('public/', '', $filePath);
+        }
+
+        $holiday->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'The absence has been justified successfully.',
+            'holiday' => $holiday,
+        ]);
+    }
+
+    public function editJustifyHoliday(Request $request)
+    {
+        $request->validate([
+            'holiday_id' => 'required|exists:holidays,id',
+            'comment' => 'nullable|string',
+            'file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048', // Agregué validación de tipo y tamaño del archivo
+        ]);
+
+        try {
+            $holiday = Holiday::findOrFail($request->holiday_id);
+
+            if ($request->has('comment')) {
+                $holiday->comment = $request->comment;
+            }
+
+            if ($request->hasFile('file')) {
+                $employeeId = $holiday->employee_id;
+                $date = now()->format('Ymd');
+                $nextFileIndex = Holiday::where('employee_id', $employeeId)
+                    ->where('file', 'LIKE', "images/Justificantes/{$employeeId}{$date}%")
+                    ->count() + 1;
+
+                $fileName = "{$employeeId}{$date}{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
+
+                // Definir el directorio personalizado
+                $customDirectory = 'public/images/Justificantes';
+
+                // Asegurarse de que el directorio exista
+                if (!file_exists(storage_path("app/{$customDirectory}"))) {
+                    mkdir(storage_path("app/{$customDirectory}"), 0775, true);
+                }
+
+                // Guardar el archivo en el directorio personalizado
+                $filePath = $request->file('file')->storeAs($customDirectory, $fileName);
+
+                // Actualizar el file_path para que coincida con la ruta accesible públicamente
+                $holiday->file = str_replace('public/', '', $filePath);
+            }
+
+            $holiday->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'La ausencia ha sido actualizada correctamente.',
+                'holiday' => $holiday,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar la ausencia: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error al actualizar la ausencia.'], 500);
+        }
+    }
+
+    public function getHoliday($id)
+    {
+        try {
+            $holiday = Holiday::findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'holiday_id' => $holiday->id,
+                'comment' => $holiday->comment,
+                'file_path' => $holiday->file,
+                'start_date' => $holiday->start_date,
+                'end_date' => $holiday->end_date,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener los detalles de la ausencia: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error al obtener los detalles de la ausencia.'], 500);
+        }
+    }
+
+    public function countHolidaysPerDay()
+    {
+        try {
+            $holidays = DB::table('holidays')
+                ->select(DB::raw('DATE(start_date) as date'), DB::raw('COUNT(*) as count'))
+                ->groupBy(DB::raw('DATE(start_date)'))
+                ->get();
+
+            return response()->json($holidays);
+        } catch (\Exception $e) {
+            Log::error('Error al contar las ausencias por día: ' . $e->getMessage());
+            return response()->json(['error' => 'Ocurrió un error al contar las ausencias por día.'], 500);
+        }
+    }
+
+    public function updateType(Request $request)
+    {
+        $request->validate([
+            'holiday_id' => 'required|exists:holidays,id',
+            'absenceType' => 'required|exists:holidays_types,id',
+        ]);
+
+        $holiday = Holiday::findOrFail($request->holiday_id);
+        $holiday->holiday_id = $request->absenceType;
+        $holiday->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipo de ausencia actualizado correctamente.'
+        ]);
     }
 }

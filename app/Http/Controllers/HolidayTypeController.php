@@ -26,7 +26,7 @@ class HolidayTypeController extends Controller
         if ($existingType) {
             return response()->json([
                 'success' => false,
-                'message' => 'El tipo de ausencia ya existe.',
+                'message' => 'The absence type already exists.',
             ], 422);
         }
 
@@ -34,9 +34,12 @@ class HolidayTypeController extends Controller
             'type' => $request->input('type'),
         ]);
 
+        $holidayType->color = $this->generateRandomColor($holidayType->id);
+        $holidayType->save();
+
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de vacaciones creado exitosamente.',
+            'message' => 'Type of absence created successfully.',
             'data' => $holidayType,
         ]);
     }
@@ -52,7 +55,13 @@ class HolidayTypeController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de vacaciones eliminado exitosamente.',
+            'message' => 'Type of absence deleted successfully.',
         ]);
+    }
+
+    private function generateRandomColor($id)
+    {
+        $hash = md5($id);
+        return '#' . substr($hash, 0, 6); // Tomar los primeros 6 caracteres del hash para el color
     }
 }

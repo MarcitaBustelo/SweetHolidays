@@ -63,7 +63,7 @@
     <style>
         body {
             background: linear-gradient(rgba(56, 7, 76, 0.9), rgba(56, 7, 76, 0.9)),
-                url('{{ asset('images/bakery-products.jpg') }}') no-repeat center center fixed;
+                url('{{ asset('images/logo.png') }}') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;

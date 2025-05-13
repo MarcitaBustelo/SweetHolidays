@@ -45,46 +45,15 @@ class UserController extends Controller
         return view('user.show', compact('users'));
     }
 
-    public function assignColorsToEmployees()
-    {
-        // Obtén todos los empleados que aún no tienen un color asignado
-        $usersWithoutColor = \App\Models\User::whereNull('color')->get();
-
-        foreach ($usersWithoutColor as $user) {
-            // Generar un color único basado en el ID del usuario o aleatoriamente
-            $user->color = $this->generateColorFromId($user->id);
-            $user->save();
-        }
-
-        return response()->json([
-            'message' => 'Colores asignados exitosamente a los empleados.',
-        ]);
-    }
-
-    private function generateColorFromId($id)
-    {
-        // Convierte el ID a un hash hexadecimal y toma los primeros 6 caracteres
-        $hash = md5($id);
-        return '#' . substr($hash, 0, 6);
-    }
-
     //METODO RESPONSABLES
 
     //Ver Usuario
     // public function index()
     // {
     //     $user = Auth::user();
-    //     $specialAccessEmployeeIds = ['10332', '10342'];
-    //     $tecnicoResponsable = '10032';
-
+    //     $specialAccessEmployeeIds = '10001;
     //     if (in_array($user->employee_id, $specialAccessEmployeeIds)) {
     //         $employees = User::with(['delegation', 'department'])->get();
-    //         $responsables = Responsable::select('responsable_id', 'name')->get();
-    //         $departments = Department::select('department_id', 'name')->get();
-    //     } elseif ($user->employee_id === $tecnicoResponsable || $user->department_id == 5) {
-    //         $employees = User::where('department_id', 5)
-    //             ->with(['delegation', 'department'])
-    //             ->get();
     //         $responsables = Responsable::select('responsable_id', 'name')->get();
     //         $departments = Department::select('department_id', 'name')->get();
     //     } else {
@@ -108,7 +77,6 @@ class UserController extends Controller
             ->whereYear('start_date', date('Y'))
             ->get();
 
-       // Calcular días usados por tipo
         $vacationDaysUsed = 0;
         $absenceDaysUsed = 0;
         $totalDaysUsed = 0;
@@ -116,7 +84,7 @@ class UserController extends Controller
         foreach ($holidays as $holiday) {
             $days = $this->calculateDays($holiday->start_date, $holiday->end_date);
 
-            if ($holiday->holiday_type == 'Vacaciones') {
+            if ($holiday->holiday_type == 'Vacations') {
                 $vacationDaysUsed += $days;
             } else {
                 $absenceDaysUsed += $days;

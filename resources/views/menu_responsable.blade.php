@@ -250,7 +250,7 @@
                     </form>
                 `,
             showCancelButton: true,
-            confirmButtonText: 'Crear',
+            confirmButtonText: 'Create',
             preConfirm: () => {
                 const form = document.getElementById('createHolidayTypeForm');
                 const formData = new FormData(form);
@@ -297,7 +297,7 @@
                         
                         <button onclick="deleteHolidayType(${type.id})" 
                                 style="margin-left: 5px; padding: 5px 10px; color: white; background-color: #dc3545; border: none; border-radius: 5px;">
-                            Eliminar
+                            Delete
                         </button>
                     </li>
                 `;
@@ -325,8 +325,8 @@
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Eliminar',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch('{{ route('holiday_types.delete') }}', {
@@ -342,14 +342,14 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire('¡Eliminado!', data.message, 'success');
+                            Swal.fire('Deleted!', data.message, 'success');
                             viewHolidayTypes(); // Recargar la lista
                         } else {
-                            Swal.fire('Error', 'No se pudo eliminar el tipo de ausencia.', 'error');
+                            Swal.fire('Error', 'Could not delete the type of absences', 'error');
                         }
                     })
                     .catch(error => {
-                        Swal.fire('Error', 'Ocurrió un error al eliminar el tipo de ausencia.', 'error');
+                        Swal.fire('Error', 'Error', 'error');
                     });
             }
         });

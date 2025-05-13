@@ -10,6 +10,7 @@ use App\Http\Controllers\HolidayTypeController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\FestiveController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DelegationController;
 
@@ -58,6 +59,8 @@ Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])-
 Route::get('/holiday_types', [HolidayTypeController::class, 'index'])->name('holiday_types.index');
 Route::post('/holiday_types', [HolidayTypeController::class, 'store'])->name('holiday_types.store');
 Route::delete('/holiday_types/delete', [HolidayTypeController::class, 'delete'])->name('holiday_types.delete');
+Route::get('/holidays/count-per-day', [HolidayController::class, 'countHolidaysPerDay'])->name('holidays.countPerDay');
+Route::post('/holidays/update-type', [HolidayController::class, 'updateType'])->name('holidays.updateType');
 
 // Rutas para Festivos
 Route::get('/festives', [FestiveController::class, 'index'])->name('festives.festives');
@@ -68,10 +71,13 @@ Route::put('/festives/{id}/edit-date', [FestiveController::class, 'updateFestive
 Route::get('/manual', [ManualController::class, 'show'])->name('manual.show')->middleware('auth');
 
 //Asignar colores a empleados
-Route::get('/assign-colors', [UserController::class, 'assignColorsToEmployees'])->name('assign.colors');
+Route::get('/assign-colors', [HolidayTypeController::class, 'assignColorsToHolidayTypes'])->name('assign.colors');
 
 //Subir excel 
-Route::post('/excel/upload', action: [ExcelController::class, 'processExcelFile'])->name('excel.process');
+Route::post('/excel/upload', [ExcelController::class, 'processExcelFile'])->name('excel.process');
+
+//Cambiar contraseña
+Route::put('/user/change-password', [ResetPasswordController::class, 'reset'])->name('user.changePassword');
 
 // Departamentos
 Route::get('/department', [DepartmentController::class, 'index'])->name('departments.departments');

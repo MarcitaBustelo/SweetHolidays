@@ -9,7 +9,7 @@
     <style>
         body {
             background:
-                url('{{ asset('images/Vacaciones.png') }}') no-repeat center center fixed;
+                url('{{ asset('images/logo.png') }}') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             margin: 0;
@@ -18,7 +18,7 @@
         }
 
         nav {
-            background-color: rgba(23, 60, 141, 0.9);
+            background-color: rgba(113, 23, 141, 0.9);
             backdrop-filter: blur(5px);
         }
 
@@ -36,7 +36,7 @@
         }
 
         footer {
-            background-color: rgba(23, 60, 141, 0.9);
+            background-color: rgba(113, 23, 141, 0.9);
             text-align: center;
         }
 
@@ -134,9 +134,6 @@
         </div>
     </main>
 
-    <footer class="text-white p-4">
-        <p class="text-sm">&copy; 2025 Gestión de Vacaciones. Todos los derechos reservados.</p>
-    </footer>
 </body>
 
 </html>

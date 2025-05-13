@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean("late");
             $table->timestamps();
 
-            $table->foreign(columns: 'employee_id')->references('id')->on('employees');
+            $table->foreign(columns: 'employee_id')->references('id')->on('users');
 
         });
     }

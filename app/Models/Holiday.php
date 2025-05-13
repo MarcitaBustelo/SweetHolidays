@@ -8,7 +8,7 @@ class Holiday extends Model
 {
 
     protected $table = 'holidays';
-    protected $dateFormat = 'd-m-Y H:i:s';
+    protected $dateFormat = 'Y-m-d';
 
     protected $fillable = [
         'holiday_id',

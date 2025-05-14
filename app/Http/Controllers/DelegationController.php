@@ -42,7 +42,7 @@ class DelegationController extends Controller
 
         Delegation::create($request->all());
 
-        return redirect()->route('delegations.delegations')->with('success', 'Delegación creada con éxito.');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation created successfully');
     }
 
     /**
@@ -71,7 +71,7 @@ class DelegationController extends Controller
 
         $delegation->update($request->all());
 
-        return redirect()->route('delegations.delegations')->with('success', 'Delegación actualizada con éxito.');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation updated successfully');
     }
 
     /**
@@ -84,6 +84,6 @@ class DelegationController extends Controller
     {
         $delegation->delete();
 
-        return redirect()->route('delegations.delegations')->with('success', 'Delegación eliminada con éxito.');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation deleted correctly');
     }
 }

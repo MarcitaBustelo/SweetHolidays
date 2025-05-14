@@ -1,86 +1,83 @@
-# Manual de Usuario - Vacaciones
+# User Manual - Vacation Management
 
 ---
 
-## Introducción
+## Introduction
 
-Bienvenido a nuestra aplicación web de calendario. Esta versión está diseñada para gestionar perfiles, ausencias y calendarios, según el rol del usuario (Empleado o Responsable). Agradecemos tu colaboración en probar estas funcionalidades y reportar cualquier error que encuentres.
+Welcome to our web calendar application. This version is designed to manage profiles, absences, and calendars. We appreciate your collaboration in testing these features and reporting any errors you may encounter.
 
-## Funcionalidades
+## Features
 
-### 1. Perfil de Usuario
+#### See Profile
 
-#### Acceso
-- Una vez hayas iniciado sesión, serás dirigido al menú principal donde podrás acceder a tu perfil.
+##### Access
+- Once logged in, you will be directed to the main menu where you can access your profile.
 
-#### Uso
-- **Visualización**: En tu perfil podrás ver la siguiente información:
-  - Nombre completo.
-  - Delegación.
-  - Departamento.
-  - Porcentaje de días de vacaciones restantes.
-  - Total de días de vacaciones.
-  - Días restantes y días utilizados.
-  - Próximas ausencias.
+##### Usage
+- **Viewing**: In your profile, you can see the following information:
+  - Full name.
+  - Delegation.
+  - Department.
+  - Percentage of remaining vacation days.
+  - Total vacation days.
+  - Remaining days and days used.
+  - Upcoming absences.
+  - Option to change your password.
 
-### 2. Solicitud de Ausencias (Rol: Empleado)
+### 2. Requesting Absences
 
-#### Acceso
-- Desde la pantalla principal del menú, selecciona la opción "Pedir Ausencia".
+##### Access
+- From the main menu screen, select the "Request Absence" option.
 
-#### Uso
-- **Formulario de Solicitud**:
-  - Completa los campos requeridos, incluyendo:
-    - Nombre completo.
-    - Razón de la ausencia.
-    - Fecha de inicio y fecha de fin.
-  - Envía la solicitud para su revisión.
+##### Usage
+- **Request Form**:
+  - Fill in the required fields, including:
+    - Full name.
+    - Reason for the absence.
+    - Start date and end date.
+  - Submit the request for review.
 
-### 3. Calendario (Rol: Empleado)
+### 3.  Calendar
 
-#### Acceso
-- En la pantalla principal del menú, selecciona la opción "Calendario".
+- **Access**:
+  - From the main menu, select the "Calendar" option.
+- **Usage**:
+  - You can view the calendars of all users under your responsibility.
+  - You will have the option to register absences for those users.
+  - You will have the option to add comments and upload justifications for your employees' absences.
+  - You can edit the type of absence, comments, and justifications for your employees.
+  - You can also see all the holidays for your delegation.
+  - **Self-Management of Vacations**:
+    - Managers who do not have someone overseeing them will be responsible for managing their own vacations directly within the application.
 
-#### Uso
-- **Visualización**:
-  - Podrás ver un calendario con todas tus ausencias, incluyendo el tipo de ausencia.
-- **Solicitud de Ausencias**:
-  - Desde el calendario, también puedes solicitar nuevas ausencias siguiendo el mismo proceso del formulario.
+#### Absence Management
+- **Access**:
+  - From the main menu, select the "Absences" option.
+- **Usage**:
+  - You can view existing absence types.
+  - Create new types of absences by adding a name for each type.
+  - Delete absence types that are no longer necessary.
 
-### 4. Funcionalidades Adicionales para el Rol de Responsable
+#### Managing Employees' Vacation Days
+- **Access**:
+  - From the main menu, select the "Manage Users" option.
+- **Usage**:
+  - You can manage the vacation days assigned to employees under your responsibility.
+  - You will have the option to modify the total number of vacation days assigned to each employee.
+  - You can also edit the manager and department of the employees you are responsible for.
+  - **HR**:
+    - You can upload an Excel file to update the employee table in case of new hires or to update existing data.
 
-#### Perfil
-- Igual que los empleados, los responsables también tendrán acceso a su perfil con la información mencionada anteriormente.
+#### Managing Holidays
+- **Access**:
+  - From the main menu, only if you belong to HR, select the "Manage Holidays" option.
+- **Usage**:
+  - You can view and manage holiday dates.
 
-#### Calendario
-- **Acceso**:
-  - Desde el menú principal, selecciona la opción "Calendario".
-- **Uso**:
-  - Podrás ver los calendarios de todos los usuarios bajo tu responsabilidad.
-  - Tendrás la opción de registrar ausencias para dichos usuarios.
+## Acknowledgments
 
-#### Gestión de Ausencias
-- **Acceso**:
-  - Desde el menú principal, selecciona la opción "Ausencias".
-- **Uso**:
-  - Podrás consultar los tipos de ausencias existentes.
-  - Crear nuevos tipos de ausencias añadiendo un nombre para cada tipo.
-  - Eliminar tipos de ausencias que ya no sean necesarios.
-
-#### Gestión de dias de vacaciones de los empleados
-- **Acceso**:
-  - Desde el menú principal, selecciona la opción "Gestionar Usuarios".
-- **Uso**:
-  - Podrás gestionar los días de vacaciones que tienen los empleados bajo tu responsabilidad.
-  - Tendrás la opción de modificar el total de días de vacaciones asignados a cada empleado.
-
-#### Autogestión de Vacaciones
-- Los responsables que no tienen un responsable a cargo de ellos mismos serán encargados de gestionar sus propias vacaciones directamente en la aplicación.
-
-## Agradecimientos
-
-Agradecemos tu colaboración en probar esta versión beta. Tu feedback es invaluable para mejorar la aplicación y asegurar su correcto funcionamiento.
+We appreciate your collaboration in testing this beta version. Your feedback is invaluable in improving the application and ensuring its proper functionality.
 
 ---
 
-**Nota**: Esta es una versión beta y puede contener errores. Por favor, reporta cualquier problema que encuentres para que podamos solucionarlo lo antes posible.
+**Note**: This is a beta version and may contain errors. Please report any issues you encounter so that we can resolve them as soon as possible.

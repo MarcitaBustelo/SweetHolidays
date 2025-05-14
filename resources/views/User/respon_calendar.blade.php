@@ -1,19 +1,19 @@
 @extends('adminlte::page')
 
-@section('title', 'Calendario de Responsable')
+@section('title', 'Responsable Calendar')
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center">
-    <h1 style="color: #094080;"><i style="color: #094080;" class="fas fa-calendar-alt mr-2"></i>Calendario de Ausencias
-    </h1>
+    <h1 style="color: rgb(81, 5, 91);"><i style="color: rgb(81, 5, 91);" class="fas fa-calendar-alt mr-2"></i>Absence
+        Calendar</h1>
     <div>
-        <a style="background-color: #094080" href="{{ route('menu.responsable') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Menú
+        <a style="background-color: rgb(81, 5, 91)" href="{{ route('menu.responsable') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Menu
         </a>
         @if (auth()->user()->responsable !== null)
             <button class="btn btn-primary ml-2" style="background-color: #3c8dbc; border-color: #3c8dbc;"
                 onclick="requestHoliday()">
-                <i class="fas fa-calendar-plus"></i> Pedir Ausencia
+                <i class="fas fa-calendar-plus"></i> Request Absence
             </button>
         @endif
     </div>
@@ -22,9 +22,9 @@
 
 @section('content')
 <div class="card shadow-sm" style="background-color: #f8f9fa; border-color: #dee2e6;">
-    <div class="card-header" style="background-color: #094080; border-bottom-color: #094080;">
+    <div class="card-header" style="background-color:rgb(81, 5, 91); border-bottom-color: #094080;">
         <h3 class="card-title" style="color: #ffffff;">
-            <i class="far fa-calendar mr-2"></i>Visualización de días libres
+            <i class="far fa-calendar mr-2"></i>View of Free Days
         </h3>
         <div class="card-tools">
             <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
@@ -35,14 +35,15 @@
     <div class="card-body">
         <form id="absenceForm">
             <div class="form-group">
-                <label for="userSelect">Selecciona un usuario</label>
+                <label for="userSelect">Select a User</label>
                 <select id="userSelect" class="form-control">
-                    <option value="">-- Selecciona un usuario --</option>
+                    <option value="all">-- All Users --</option>
+                    <option value="">-- Select a User --</option>
                     @if (in_array(Auth::user()->employee_id, $specialAccessEmployeeIds) || Auth::user()->employee_id === '10032')
                         @foreach ($users->groupBy('delegation.name') as $delegationName => $usersByDelegation)
-                            <optgroup label="{{ $delegationName ?? 'Sin delegación' }}">
+                            <optgroup label="{{ $delegationName ?? 'No Delegation' }}">
                                 @foreach ($usersByDelegation->groupBy('department.name') as $departmentName => $usersByDepartment)
-                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'Sin departamento' }}">
+                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'No Department' }}">
                                         @foreach ($usersByDepartment as $user)
                                             <option value="{{ $user->id }}">
                                                 {{ $user->name }}
@@ -54,9 +55,9 @@
                         @endforeach
                     @else
                         @foreach ($users->groupBy('delegation.name') as $delegationName => $usersByDelegation)
-                            <optgroup label="{{ $delegationName ?? 'Sin delegación' }}">
+                            <optgroup label="{{ $delegationName ?? 'No Delegation' }}">
                                 @foreach ($usersByDelegation->groupBy('department.name') as $departmentName => $usersByDepartment)
-                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'Sin departamento' }}">
+                                    <optgroup label="&nbsp;&nbsp;&nbsp;{{ $departmentName ?? 'No Department' }}">
                                         @foreach ($usersByDepartment as $user)
                                             <option value="{{ $user->id }}">
                                                 {{ $user->name }}
@@ -68,17 +69,21 @@
                         @endforeach
                     @endif
                     @if (Auth::user()->role === 'responsable' && Auth::user()->responsable === null)
-                        <optgroup label="--- Tú ---">
+                        <optgroup label="--- You ---">
                             <option value="{{ Auth::id() }}">{{ Auth::user()->name }}</option>
                         </optgroup>
                     @endif
                 </select>
             </div>
         </form>
+        <button id="filterButton" class="btn btn-primary btn-block mt-2"
+            style="background-color: rgb(118, 41, 130); border-color: rgb(118, 41, 130);">
+            Filter Absences
+        </button>
         <div id="calendar" class="fc-theme-bootstrap"></div>
     </div>
     <div class="card-footer text-muted text-right small">
-        <i class="fas fa-info-circle mr-1"></i> Haz clic en cualquier día para solicitar ausencia
+        <i class="fas fa-info-circle mr-1"></i> Click on any day to request absence
     </div>
 </div>
 @stop
@@ -100,11 +105,27 @@
 
     .fc-toolbar-title {
         font-size: 1.5em;
-        color: #3c8dbc;
+        color: rgb(118, 41, 130);
     }
 
     .fc-button-active {
-        background-color: #296282;
+        background-color: rgb(118, 41, 130);
+    }
+
+    .fc-today-button,
+    .fc-dayGridMonth-button,
+    .fc-timeGridWeek-button,
+    .fc-timeGridDay-button {
+        background-color: rgb(118, 41, 130) !important;
+        border-color: rgb(118, 41, 130) !important;
+    }
+
+    .fc-today-button:hover,
+    .fc-dayGridMonth-button:hover,
+    .fc-timeGridWeek-button:hover,
+    .fc-timeGridDay-button:hover {
+        background-color: rgb(145, 56, 150) !important;
+        border-color: rgb(145, 56, 150) !important;
     }
 
     .fc-day-today {
@@ -127,11 +148,24 @@
 
     .fc-day-sat,
     .fc-day-sun {
-        background-color: #73d0f525 !important;
+        background-color: rgba(54, 9, 73, 0.07) !important;
     }
 
     .fc-event-title {
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .fc-prev-button,
+    .fc-next-button {
+        background-color: rgb(118, 41, 130) !important;
+        border-color: rgb(118, 41, 130) !important;
+        color: white !important;
+    }
+
+    .fc-prev-button:hover,
+    .fc-next-button:hover {
+        background-color: rgb(145, 56, 150) !important;
+        border-color: rgb(145, 56, 150) !important;
     }
 </style>
 @stop
@@ -145,7 +179,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         $('#userSelect').selectize({
-            placeholder: "Busca un usuario...",
+            placeholder: "Search for a user...",
             allowEmptyOption: true,
             create: false,
             sortField: 'text'
@@ -155,7 +189,7 @@
         var festives = @json($festives);
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'es',
+            locale: 'en',
             initialView: 'dayGridMonth',
             themeSystem: 'bootstrap',
             firstDay: 1,
@@ -171,10 +205,10 @@
             buttonText: {
                 prev: '<',
                 next: '>',
-                today: 'Hoy',
-                month: 'Mes',
-                week: 'Semana',
-                day: 'Día'
+                today: 'Today',
+                month: 'Month',
+                week: 'Week',
+                day: 'Day'
             },
             events: [
                 ...holidays.map(holiday => ({
@@ -204,8 +238,7 @@
                 const userId = userSelect.value;
 
                 if (!userId) {
-                    Swal.fire('Error', 'Debes seleccionar un usuario antes de añadir una ausencia.',
-                        'error');
+                    Swal.fire('Error', 'You must select a user before adding an absence.', 'error');
                     calendar.unselect();
                     return;
                 }
@@ -218,12 +251,12 @@
                 const {
                     value: absenceType
                 } = await Swal.fire({
-                    title: "Selecciona el tipo de ausencia",
+                    title: "Select the type of absence",
                     input: 'select',
                     inputOptions: inputOptions,
-                    inputPlaceholder: 'Selecciona un tipo',
+                    inputPlaceholder: 'Select a type',
                     showCancelButton: true,
-                    cancelButtonText: 'Cancelar',
+                    cancelButtonText: 'Cancel',
                 });
 
                 if (absenceType) {
@@ -232,7 +265,7 @@
                     let color = selectedType.color || "#f5f6fd";
 
                     calendar.addEvent({
-                        title: `${title} - Usuario ${userId}`,
+                        title: `${title}`,
                         start: arg.start,
                         end: arg.end,
                         allDay: arg.allDay,
@@ -263,20 +296,20 @@
 
                         const result = await response.json();
                         if (response.ok) {
-                            Swal.fire('¡Guardado!', 'La ausencia ha sido registrada correctamente.',
+                            Swal.fire('Saved!', 'The absence has been successfully registered.',
                                 'success')
                                 .then(() => {
                                     location.reload();
                                 });
                         } else {
                             console.error(result.error);
-                            Swal.fire('Error', result.error || 'No se pudo guardar la ausencia.',
+                            Swal.fire('Error', result.error || 'Could not save the absence.',
                                 'error').then(() => {
                                     location.reload();
                                 });
                         }
                     } catch (error) {
-                        Swal.fire('Error', 'Ocurrió un error al guardar la ausencia.', 'error')
+                        Swal.fire('Error', 'An error occurred while saving the absence.', 'error')
                             .then(() => {
                                 location.reload();
                             });
@@ -318,27 +351,27 @@
                         const {
                             value: action
                         } = await Swal.fire({
-                            title: '¿Qué acción deseas realizar?',
+                            title: 'What would yo like to edit?',
                             input: 'radio',
                             inputOptions: {
-                                changeType: 'Cambiar Tipo de Ausencia',
-                                justifyAbsence: 'Justificar o Eliminar Ausencia'
+                                changeType: 'Type of absence',
+                                justifyAbsence: 'Justify or delete'
                             },
                             inputValidator: (value) => {
                                 if (!value) {
-                                    return 'Debes seleccionar una opción';
+                                    return 'Must select an option';
                                 }
                             },
-                            confirmButtonText: 'Continuar',
+                            confirmButtonText: 'Continue',
                             showCancelButton: true,
-                            cancelButtonText: 'Cancelar'
+                            cancelButtonText: 'Cancel'
                         });
 
                         if (action === 'changeType') {
                             const formHtml = `
                     <form id="editHolidayFormType">
                         <div class="form-group">
-                            <label for="absenceType">Tipo de Ausencia</label>
+                            <label for="absenceType">Type of absence</label>
                             <select id="absenceType" name="absenceType" class="form-control">
                                 ${Object.entries(inputOptions).map(([id, type]) => `
                                         <option value="${id}" ${holiday.holiday_id == id ? 'selected' : ''}>${type}</option>
@@ -348,7 +381,7 @@
                     </form>
                 `;
                             Swal.fire({
-                                title: 'Cambiar Tipo de Ausencia',
+                                title: 'Change type of absence',
                                 html: `
                         <div class="text-left">
                             <p><strong>Tipo:</strong> ${arg.event.title}</p>
@@ -357,8 +390,8 @@
                         ${formHtml}
                     `,
                                 showCancelButton: true,
-                                confirmButtonText: 'Guardar',
-                                cancelButtonText: 'Cancelar',
+                                confirmButtonText: 'Save',
+                                cancelButtonText: 'Cancel',
                                 confirmButtonColor: '#28a745',
                                 cancelButtonColor: '#dc3545',
                                 preConfirm: async () => {
@@ -381,7 +414,7 @@
 
                                         if (!response.ok) {
                                             throw new Error(result.message ||
-                                                'Error desconocido');
+                                                'Unknown error');
                                         }
 
                                         return result;
@@ -392,8 +425,8 @@
                                 }
                             }).then(result => {
                                 if (result.isConfirmed) {
-                                    Swal.fire('¡Actualizado!',
-                                        'El tipo de ausencia ha sido actualizado.',
+                                    Swal.fire('Updated!',
+                                        'The type of absence has been updated correctly',
                                         'success')
                                         .then(() => location.reload());
                                 }
@@ -402,18 +435,18 @@
                             const formHtml = `
         <form id="editHolidayForm">
             <div class="form-group">
-                <label for="comment">Comentario</label>
-                <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Añade un comentario">${holiday.comment || ''}</textarea>
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Add a comment">${holiday.comment || ''}</textarea>
             </div>
             <div class="form-group">
-                <label for="file">Justificante</label>
-                ${holiday.file ? `<p><strong>Archivo actual:</strong> <a href="/storage/${holiday.file}" target="_blank">Descargar</a></p>` : ''}
+                <label for="file">Proof</label>
+                ${holiday.file ? `<p><strong>Archivo actual:</strong> <a href="/storage/${holiday.file}" target="_blank">Download</a></p>` : ''}
                 <input type="file" id="file" name="file" class="form-control" accept=".jpeg,.png,.jpg,.pdf">
             </div>
         </form>
     `;
                             Swal.fire({
-                                title: 'Detalles de la ausencia',
+                                title: 'Absence Details',
                                 html: `
             <div class="text-left">
                 <p><strong>Tipo:</strong> ${arg.event.title}</p>
@@ -423,9 +456,9 @@
         `,
                                 icon: 'info',
                                 showCancelButton: true,
-                                confirmButtonText: 'Guardar',
-                                cancelButtonText: 'Eliminar',
-                                denyButtonText: 'Cerrar',
+                                confirmButtonText: 'Save',
+                                cancelButtonText: 'Delete',
+                                denyButtonText: 'Close',
                                 confirmButtonColor: '#28a745',
                                 cancelButtonColor: '#dc3545',
                                 preConfirm: async () => {
@@ -445,7 +478,7 @@
                                         const result = await response.json();
 
                                         if (!response.ok) {
-                                            throw new Error(result.message || 'Error desconocido');
+                                            throw new Error(result.message || 'Unknown error');
                                         }
 
                                         return result;
@@ -455,7 +488,7 @@
                                 }
                             }).then(async (result) => {
                                 if (result.isConfirmed) {
-                                    Swal.fire('¡Guardado!', 'La ausencia ha sido actualizada correctamente.', 'success')
+                                    Swal.fire('Saved!', 'The absence has been updated correctly', 'success')
                                         .then(() => location.reload());
                                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                                     try {
@@ -474,14 +507,14 @@
 
                                         if (response.ok) {
                                             arg.event.remove();
-                                            Swal.fire('¡Eliminado!', 'La ausencia ha sido eliminada.', 'success');
+                                            Swal.fire('Deleted!', 'The absence has been eliminated', 'success');
                                         } else {
                                             console.error(result.error);
-                                            Swal.fire('Error', result.error || 'No se pudo eliminar la ausencia.', 'error');
+                                            Swal.fire('Error', result.error || 'Could not delete the absence', 'error');
                                         }
                                     } catch (error) {
                                         console.error(error);
-                                        Swal.fire('Error', 'Ocurrió un error al eliminar la ausencia.', 'error');
+                                        Swal.fire('Error', 'Oops! Something wrong happended while deleten absence', 'error');
                                     }
                                 }
                             });
@@ -489,10 +522,10 @@
 
                     } else {
                         Swal.fire('Error', holiday.error ||
-                            'No se pudo cargar los detalles de la ausencia.', 'error');
+                            'Could not load absence details', 'error');
                     }
                 } catch (error) {
-                    Swal.fire('Error', 'Ocurrió un error al obtener los detalles de la ausencia.',
+                    Swal.fire('Error', 'Something went wrong while loading absence details',
                         'error');
                 }
             },
@@ -520,17 +553,17 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        Swal.fire('¡Actualizado!', 'La ausencia ha sido actualizada correctamente.',
+                        Swal.fire('Updated!', 'The absence has been updated correctly.',
                             'success');
                     } else {
                         console.error(result.error);
-                        Swal.fire('Error', result.error || 'No se pudo actualizar la ausencia.',
+                        Swal.fire('Error', result.error || 'Could not update the absence.',
                             'error');
                         info.revert();
                     }
                 } catch (error) {
                     console.error(error);
-                    Swal.fire('Error', 'Ocurrió un error al actualizar la ausencia.', 'error');
+                    Swal.fire('Error', 'Something wrong happened while updating the absence', 'error');
                     info.revert();
                 }
             },
@@ -557,49 +590,106 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        Swal.fire('¡Actualizado!', 'La ausencia ha sido actualizada correctamente.',
+                        Swal.fire('Updated!', 'The absence has been updated correctly.',
                             'success');
                     } else {
                         console.error(result.error);
-                        Swal.fire('Error', result.error || 'No se pudo actualizar la ausencia.',
+                        Swal.fire('Error', result.error || 'Could not update the absence.',
                             'error');
                         info.revert();
                     }
                 } catch (error) {
                     console.error(error);
-                    Swal.fire('Error', 'Ocurrió un error al actualizar la ausencia.', 'error');
+                    Swal.fire('Error', 'Something wrong happened while updating the absence', 'error');
                     info.revert();
                 }
             },
         });
         calendar.render();
+
+        filterButton.addEventListener('click', () => {
+            const selectedUserId = userSelect.value;
+
+            if (selectedUserId === 'all') {
+                calendar.removeAllEvents();
+                calendar.addEventSource([
+                    ...holidays.map(holiday => ({
+                        title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,
+                        start: holiday.start_date,
+                        end: holiday.end_date ? new Date(new Date(holiday.end_date)
+                            .getTime() + 86400000).toISOString().split('T')[0] :
+                            null,
+                        allDay: true,
+                        color: holiday.color,
+                        textColor: "#f5f6fd",
+                        extendedProps: {
+                            holiday_id: holiday.id,
+                            employee_id: holiday.employee.id,
+                        },
+                    })),
+                    ...festives.map(festive => ({
+                        title: festive.name,
+                        start: festive.date,
+                        allDay: true,
+                        color: festive.national === true ? '#ffc107' : '#28a745',
+                        textColor: '#fff',
+                    })),
+                ]);
+                return;
+            }
+
+            // Si selecciona un usuario específico, filtrar sus eventos
+            if (!selectedUserId) {
+                Swal.fire('Error', 'You must choose an employee to filter the absences', 'error');
+                return;
+            }
+
+            const filteredEvents = holidays
+                .filter(holiday => holiday.employee.id == selectedUserId)
+                .map(holiday => ({
+                    title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,
+                    start: holiday.start_date,
+                    end: holiday.end_date ? new Date(new Date(holiday.end_date).getTime() +
+                        86400000).toISOString().split('T')[0] : null,
+                    allDay: true,
+                    color: holiday.color,
+                    textColor: "#f5f6fd",
+                    extendedProps: {
+                        holiday_id: holiday.id,
+                        employee_id: holiday.employee.id,
+                    },
+                }));
+
+            calendar.removeAllEvents();
+            calendar.addEventSource(filteredEvents);
+        });
     });
 
     function requestHoliday() {
         Swal.fire({
-            title: 'Pedir Ausencia',
+            title: 'Request Absence',
             html: `
                     <form id="requestHolidayForm">
-                        <div class="form-group">
-                            <label for="name">Nombre</label>
-                            <input type="text" id="name" name="name" class="form-control" value="{{ auth()->user()->name }}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="reason">Razón de la Ausencia</label>
-                            <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Razón de la ausencia" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="start_date">Fecha de Inicio</label>
-                            <input type="date" id="start_date" name="start_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="end_date">Fecha de Fin</label>
-                            <input type="date" id="end_date" name="end_date" class="form-control" required>
-                        </div>
-                    </form>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+    </div>
+    <div class="form-group">
+        <label for="reason">Reason for Absence</label>
+        <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Reason for the absence" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="start_date">Start Date</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="end_date">End Date</label>
+        <input type="date" id="end_date" name="end_date" class="form-control" required>
+    </div>
+</form>
                 `,
             showCancelButton: true,
-            confirmButtonText: 'Enviar Solicitud',
+            confirmButtonText: 'Send request',
             preConfirm: () => {
                 const form = document.getElementById('requestHolidayForm');
                 const formData = new FormData(form);
@@ -614,7 +704,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (!data.success) {
-                            throw new Error(data.message || 'Error desconocido');
+                            throw new Error(data.message || 'Unknown error');
                         }
                         return data;
                     })
@@ -626,7 +716,7 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('¡Enviado!', 'Tu solicitud de ausencia ha sido enviada.', 'success');
+                Swal.fire('Sent!', 'Your request has been sent correctly', 'success');
             }
         });
     }

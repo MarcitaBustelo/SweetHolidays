@@ -6,8 +6,8 @@ use App\Models\Holiday;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\HolidayType;
+use App\Models\User;
 
 
 use Illuminate\Http\Request;
@@ -228,21 +228,6 @@ class HolidayController extends Controller
         }
     }
 
-    public function countHolidaysPerDay()
-    {
-        try {
-            $holidays = DB::table('holidays')
-                ->select(DB::raw('DATE(start_date) as date'), DB::raw('COUNT(*) as count'))
-                ->groupBy(DB::raw('DATE(start_date)'))
-                ->get();
-
-            return response()->json($holidays);
-        } catch (\Exception $e) {
-            Log::error('Error al contar las ausencias por día: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al contar las ausencias por día.'], 500);
-        }
-    }
-
     public function updateType(Request $request)
     {
         $request->validate([
@@ -258,5 +243,92 @@ class HolidayController extends Controller
             'success' => true,
             'message' => 'Tipo de ausencia actualizado correctamente.'
         ]);
+    }
+
+    public function getHolidaysByTypeAndDate(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $specialAccessEmployeeIds = ['10001', '10003'];
+
+        $user = Auth::user();
+        $authEmployeeId = $user->employee_id;
+
+        $hasSpecialAccess = in_array($authEmployeeId, $specialAccessEmployeeIds);
+
+        if ($hasSpecialAccess) {
+            $holidays = Holiday::with('holidayType', 'employee')
+                ->where(function ($query) use ($request) {
+                    $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                        ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                        ->orWhere(function ($query) use ($request) {
+                            $query->where('start_date', '<', $request->start_date)
+                                ->where('end_date', '>', $request->end_date);
+                        });
+                })
+                ->get();
+        } else {
+            $employeeIds = User::where('responsable', $authEmployeeId)->pluck('id')->toArray();
+            if (empty($employeeIds)) {
+                return response()->json([
+                    'success' => true,
+                    'absences' => [],
+                    'message' => 'No se encontraron empleados bajo su responsabilidad.',
+                ]);
+            }
+            $holidays = Holiday::with('holidayType', 'employee')
+                ->whereIn('employee_id', $employeeIds)
+                ->where(function ($query) use ($request) {
+                    $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                        ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                        ->orWhere(function ($query) use ($request) {
+                            $query->where('start_date', '<', $request->start_date)
+                                ->where('end_date', '>', $request->end_date);
+                        });
+                })
+                ->get();
+        }
+
+        $holidayTypes = HolidayType::pluck('color', 'type')->toArray();
+
+        $absences = [];
+        foreach ($holidays as $holiday) {
+            $startDate = new \DateTime($holiday->start_date);
+            $endDate = new \DateTime($holiday->end_date ?? $holiday->start_date);
+            $dateInterval = new \DateInterval('P1D');
+            $dateRange = new \DatePeriod($startDate, $dateInterval, $endDate->modify('+1 day'));
+
+            foreach ($dateRange as $date) {
+                $formattedDate = $date->format('Y-m-d');
+                $type = $holiday->holidayType->type;
+
+                if (!isset($absences[$formattedDate])) {
+                    $absences[$formattedDate] = [];
+                }
+
+                if (!isset($absences[$formattedDate][$type])) {
+                    $absences[$formattedDate][$type] = [
+                        'count' => 0,
+                        'color' => $holidayTypes[$type] ?? '#6c757d',
+                    ];
+                }
+
+                $absences[$formattedDate][$type]['count']++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'absences' => $absences,
+        ]);
+    }
+
+    public function showHolidayManagementPage()
+    {
+        $holidayTypes = HolidayType::all();
+        return view('holidays.index', compact('holidayTypes'));
     }
 }

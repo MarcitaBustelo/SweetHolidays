@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Responsible Menu')
+@section('title', 'Responsable Menu')
 
 @section('content_header')
-<h1 style="color: #4b0082;">Responsible Menu</h1>
+<h1 style="color: #4b0082;">Responsable Menu</h1>
 @stop
 
 @section('content')
@@ -154,21 +154,24 @@
         </div>
     @endif
 
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
+            <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
+                <h3 class="card-title" style="color: #4b0082;">
+                    <i class="fas fa-plus mr-2"></i>Absences Management
+                </h3>
+            </div>
+            <div class="card-body">
+                <p style="color: #4b0082;">See how many people and absences per day</p>
+                <a href="{{ route('holidays.management') }}" class="btn"
+                        style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-plus mr-2"></i>
+                    View Absences   
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-@stop
-
-@section('footer')
-<div class="float-right">
-    Version: {{ config('app.version', '0.0.1') }}
-</div>
-
-<strong>
-    Copyright &copy; 2025
-    <a href="{{ config('app.company_url', 'https://bayport.eu/') }}">
-        {{ config('app.company_name', 'BayportWebServices') }}
-    </a>
-    All rights reserved.
-</strong>
 @stop
 
 @section('css')

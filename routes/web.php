@@ -2,9 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HolidayTypeController;
 use App\Http\Controllers\ManualController;
@@ -35,21 +33,37 @@ Route::get('/', function () {
     return view('welcome');
 })->name('login');
 
-//rutas para empleados
-Route::get('/employee', [UserController::class, 'index'])->name('menu.employee');
-Route::get('/profile', [EmployeeController::class, 'show'])->middleware('auth')->name('user.profile');
-Route::get('/users', [UserController::class, 'showUsers'])->middleware('auth')->name('user.users');
-Route::put('/employees/{id}/update-days', [EmployeeController::class, 'updateDays'])->name('employees.updateDays');
-Route::put('/employees/{id}/update-delegation', [UserController::class, 'updateResponsable'])->name('employees.updateResponsable');
+// RUTAS PARA BOSS Y RHH
+// CAMBIAR DEPARTAMENTO Y RESPONSABLE EN VISTA USUARIOS
+Route::put('/employees/{id}/update-responsable', [UserController::class, 'updateResponsable'])->name('employees.updateResponsable');
 Route::put('/employees/{id}/update-department', [UserController::class, 'updateDepartment'])->name('employees.updateDepartment');
+
+
+// RUTAS PARA RESPONSABLE 
+
+// MENU RESPONSABLE
+Route::get('/responsable', [UserController::class, 'index'])->name('menu.responsable');
+
+// VER PERFIL Y CAMBIAR CONTRASEÑA
+Route::get('/profile', [UserController::class, 'show'])->middleware('auth')->name('user.profile');
+Route::put('/user/change-password', [ResetPasswordController::class, 'reset'])->name('user.changePassword');
+
+// VER USUARIOS
+Route::get('/users', [UserController::class, 'showUsers'])->middleware('auth')->name('user.users');
+
+// EDITAR CUANTOS DIAS DE VACACIONES TIENE CADA EMPLEADO
+Route::put('/employees/{id}/update-days', [UserController::class, 'updateDays'])->name('employees.updateDays');
+
+// SOLICITAR VACACIONES(MANDAR CORREO)
 Route::post('/send-email/{id}', [UserController::class, 'sendEmail'])->name('holiday_types.send_email');
 
-//rutas para responsable
-Route::get('/responsable', [UserController::class, 'index'])->name('menu.responsable');
-Route::get('/responsable/calendar', [ResponsableController::class, 'responCalendar'])->name('user.respon_calendar');
+// VER CALENDARIO VACACIONES Y AÑADIR/EDITAR/ELIMINAR/JUSTIFICAR VACACIONES
+Route::get('/responsable/calendar', [UserController::class, 'responCalendar'])->name('user.respon_calendar');
 Route::post('/holiday/assign', [HolidayController::class, 'assignHoliday'])->name('holiday.assign');
 Route::delete('/holidays/delete', [HolidayController::class, 'deleteHoliday'])->name('holidays.delete');
 Route::put('/holiday/update', [HolidayController::class, 'updateHoliday'])->name('holiday.update');
+Route::get('/holidays/management', [HolidayController::class, 'showHolidayManagementPage'])->name('holidays.management');
+Route::get('/holidays/filter', [HolidayController::class, 'getHolidaysByTypeAndDate'])->name('holidays.getByTypeAndDate');
 Route::get('/holidays/{id}', [HolidayController::class, 'getHoliday'])->name('holidays.get');
 Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])->name('holidays.edit');
 
@@ -57,7 +71,6 @@ Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])-
 Route::get('/holiday_types', [HolidayTypeController::class, 'index'])->name('holiday_types.index');
 Route::post('/holiday_types', [HolidayTypeController::class, 'store'])->name('holiday_types.store');
 Route::delete('/holiday_types/delete', [HolidayTypeController::class, 'delete'])->name('holiday_types.delete');
-Route::get('/holidays/count-per-day', [HolidayController::class, 'countHolidaysPerDay'])->name('holidays.countPerDay');
 Route::post('/holidays/update-type', [HolidayController::class, 'updateType'])->name('holidays.updateType');
 
 // Rutas para Festivos

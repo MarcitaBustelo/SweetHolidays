@@ -299,7 +299,7 @@ return [
     */
 
     'menu' => [
-        
+
         // Navbar items:
         [
             'type' => 'fullscreen-widget',
@@ -314,28 +314,31 @@ return [
         ],
         ['header' => 'account_settings'],
         [
-            'text' => 'Mi perfil',
+            'text' => 'Menu',
+            'url' => '/responsable',
+            'icon' => 'fas fa-fw fa-user',
+        ],
+        [
+            'text' => 'My Profile',
             'url' => '/profile',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
-            'text' => 'Manual de usuario',
-            'url' => '/manual',
-            'icon' => 'fas fa-book-open',
-            
-        ],
-        [
-            'text' => 'Calendario',
-            'url' => '/calendar',
-            'icon' => 'fas fa-calendar-alt',
-            'can' => 'see free days', 
-        ],
-        [
-            'text' => 'Calendario',
+            'text' => 'Calendar',
             'url' => '/responsable/calendar',
             'icon' => 'fas fa-calendar-alt',
-            'can' => 'manage users',
         ],
+        [
+            'text' => 'Users',
+            'url' => '/users',
+            'icon' => 'fas fa-users',
+        ],
+        // [
+        //     'text' => 'User Handbook',
+        //     'url' => '/manual',
+        //     'icon' => 'fas fa-book-open',
+
+        // ],
     ],
 
     /*

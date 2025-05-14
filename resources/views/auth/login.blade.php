@@ -51,11 +51,11 @@
             <i class="fas fa-sign-in-alt"></i> Log In
         </button>
 
-        @if (Route::has('password.request'))
+        <!-- @if (Route::has('password.request'))
             <div class="forgot-password-link">
                 <a href="{{ route('password.request') }}">Forgot your password?</a>
             </div>
-        @endif
+        @endif -->
     </form>
 @endsection
 

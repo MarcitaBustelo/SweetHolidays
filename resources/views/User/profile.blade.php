@@ -98,11 +98,58 @@
                     </div>
                 </div>
             </div>
+            <div class="card-footer text-right" style="background-color: #e8f2ff; border-top-color: #a8c4e8;">
+                <button class="btn" style="background-color: #9b5df2; color: white;" data-toggle="modal"
+                    data-target="#changePasswordModal">
+                    <i class="fas fa-lock mr-2"></i>Change Password
+                </button>
+            </div>
             <div class="card-footer text-right" style="background-color: #e4daf9; border-top-color: #c0a6f3;">
-                <a href="{{ route('menu.employee') }}" class="btn" style="background-color: #9b5df2; color: white;">
+                <a href="{{ route('menu.responsable') }}" class="btn" style="background-color: #9b5df2; color: white;">
                     <i class="fas fa-arrow-left mr-2"></i>Back to Menu
                 </a>
             </div>
+        </div>
+    </div>
+</div>
+
+<div id="changePasswordModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="changePasswordForm" method="POST">
+                @csrf
+                <input type="hidden" name="_method" value="PUT">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="form-errors" class="alert alert-danger d-none">
+                        <!-- Aquí se mostrarán los errores -->
+                    </div>
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password_confirmation">Confirm New Password</label>
+                        <input type="password" class="form-control" id="new_password_confirmation"
+                            name="new_password_confirmation" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -191,27 +238,103 @@
     body {
         background-color: #f3e9ff;
     }
+
+    /* Estilo para el toast */
+    .custom-toast {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4caf50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        z-index: 1050;
+    }
+
+    .custom-toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .custom-toast i {
+        font-size: 1.5rem;
+    }
+
+    .custom-toast span {
+        font-size: 1rem;
+        font-weight: 500;
+    }
 </style>
-@stop
-
-@section('footer')
-<div class="float-right">
-    Version: {{ config('app.version', '0.0.1') }}
-</div>
-
-<strong>
-    Copyright &copy; 2025
-    <a href="{{ config('app.company_url', 'https://bayport.eu/') }}">
-        {{ config('app.company_name', 'BayportWebServices') }}
-    </a>
-    All rights reserved.
-</strong>
 @stop
 
 @section('js')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        console.log('Profile Loaded');
+        const form = document.getElementById('changePasswordForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            const errorContainer = document.getElementById('form-errors');
+            errorContainer.classList.add('d-none');
+            errorContainer.innerHTML = '';
+
+            fetch('{{ route('user.changePassword') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.errors) {
+                        errorContainer.classList.remove('d-none');
+                        Object.values(data.errors).forEach(error => {
+                            const errorItem = document.createElement('p');
+                            errorItem.textContent = error[0];
+                            errorContainer.appendChild(errorItem);
+                        });
+                    } else if (data.status === 'success') {
+                        showToast(data.message);
+                        $('#changePasswordModal').modal('hide');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error. Por favor, inténtalo nuevamente más tarde.');
+                });
+        });
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.classList.add('custom-toast');
+            toast.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('visible');
+            }, 100);
+
+            setTimeout(() => {
+                toast.classList.remove('visible');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     });
 </script>
 @stop

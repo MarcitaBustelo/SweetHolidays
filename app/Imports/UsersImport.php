@@ -20,7 +20,6 @@ class UsersImport implements ToModel, WithHeadingRow
 
         $department = Department::where('name', $row['department'])->first();
         $delegation = Delegation::where('name', $row['delegation'])->first();
-        $responsable = User::where('responsable', $row['responsable'])->first();
 
         if ($existingUser) {
             $updateData = [
@@ -30,7 +29,7 @@ class UsersImport implements ToModel, WithHeadingRow
                 'start_date' => $this->parseDate($row['start_date']),
                 'delegation_id' => $delegation ? $delegation->delegation_id : 99,
                 'department_id' => $department ? $department->department_id : 99,
-                'responsable' => $responsable ? $responsable->responsable : 1,
+                'responsable' =>  $row['responsable'] ?? 1,
             ];
 
             $existingUser->update($updateData);
@@ -40,14 +39,14 @@ class UsersImport implements ToModel, WithHeadingRow
         return new User([
             'name' => $row['name'],
             'email' => $row['email'],
-            'nif' => $row['nif'],
+            'NIF' => $row['nif'],
             'password' => Hash::make($row['password']),
             'role' => $row['role'],
             'phone' => $row['phone'],
             'employee_id' => $row['employee_id'],
             'department_id' => $department ? $department->department_id : 99,
             'delegation_id' => $this->getDelegationIdByName($row['delegation']),
-            'responsable' => $responsable ? $responsable->responsable_id : 1,
+            'responsable' => $row['responsable'] ?? 1,
             'days' => $row['days'] ?? 30,
             'days_in_total' => $row['days_in_total'] ?? 30,
             'active' => $row['active'] ?? 1,

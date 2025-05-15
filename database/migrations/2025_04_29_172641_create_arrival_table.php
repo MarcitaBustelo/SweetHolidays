@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lates', function (Blueprint $table) {
+        Schema::create('arrivals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("employee_id");
+            $table->string('employee_id');
             $table->date("date");
             $table->time("arrival_time");
-            $table->time("departure_time");
-            $table->boolean("late");
+            $table->time("departure_time")->nullable();
+            $table->boolean("late")->default(false);
             $table->timestamps();
 
-            $table->foreign(columns: 'employee_id')->references('id')->on('users');
+            $table->foreign('employee_id')->references('employee_id')->on('users')->onDelete('cascade');
 
         });
     }

@@ -365,97 +365,6 @@ class UserController extends Controller
 
     //METODOS PARA EMPLEADOS QUE HAY QUE HACER API
 
-    //VER CALENDARIO 
-    // public function holiday()
-    // {
-    //     $user = Auth::user();
-    //     $userDelegationId = $user->delegation_id;
-
-
-    //     $holidays = Holiday::with(['holidayType', 'employee'])->where('employee_id', $user->id)->get();
-    //     $festives = Festive::where(function ($query) use ($userDelegationId) {
-    //         $query->where('national', true)
-    //             ->orWhere('delegation_id', $userDelegationId);
-    //     })->get();
-
-    //     return view('user.calendar', compact('user', 'holidays', 'festives'));
-    // }
-
-
-    // EDITAR DIAS DE VACACIONES
-    // public function updateDays(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'days_in_total' => 'required|integer|min:0',
-    //     ]);
-
-    //     $employee = User::find($id);
-
-    //     if (!$employee) {
-    //         return redirect()->back()->with('error', 'Empleado no encontrado.');
-    //     }
-
-    //     $holidays = Holiday::where('employee_id', $employee->id)
-    //         ->whereYear('start_date', date('Y'))
-    //         ->get();
-
-    //     $daysUsed = 0;
-    //     foreach ($holidays as $holiday) {
-    //         $startDate = new DateTime($holiday->start_date);
-    //         $endDate = $holiday->end_date ? new DateTime($holiday->end_date) : null;
-
-    //         if ($endDate) {
-    //             $endDate->modify('+1 day');
-    //         }
-
-    //         $interval = $startDate->diff($endDate ?: $startDate);
-    //         $daysUsed += $interval->days;
-    //     }
-    //     $employee->days_in_total = $request->days_in_total;
-    //     $employee->days = $employee->days_in_total - $daysUsed;
-    //     if ($employee->days < 0) {
-    //         $employee->days = 0;
-    //     }
-
-    //     $employee->save();
-
-    //     return redirect()->back()->with('success', 'Días totales y días restantes actualizados correctamente.');
-    // }
-
-    // EDITAR DIAS DE VACACIONES CUANDO CAMBIA EL AÑO
-    // public function editDaysPerYear($id)
-    // {
-    //     $employee = User::find($id);
-
-    //     if (!$employee) {
-    //         return response()->json(['error' => 'Empleado no encontrado.'], 404);
-    //     }
-
-    //     $currentDate = now();
-
-    //     if ($currentDate->isSameDay(new DateTime('first day of January'))) {
-    //         $remainingDays = $employee->days;
-
-    //         $employee->days_in_total = 30;
-    //         $employee->days = $employee->days_in_total + $remainingDays;
-
-    //         $employee->save();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Días de vacaciones regenerados correctamente.',
-    //             'days_in_total' => $employee->days_in_total,
-    //             'days' => $employee->days,
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'No es 1 de enero. Los días de vacaciones no se pueden regenerar.',
-    //     ]);
-    // }
-
-
     // MANDAR EMAIL PARA SOLICITAR VACACIONES
     // public function sendEmail(Request $request, $id)
     // {
@@ -504,40 +413,6 @@ class UserController extends Controller
     // }
 
     //VER CALENDARIO CON LOS FESTIOS Y SUS AUSENCIAS
-    // public function holiday()
-    // {
-    //     $user = Auth::user();
-    //     $userDelegationId = $user->delegation_id;
-
-
-    //     $holidays = Holiday::with(['holidayType', 'employee'])->where('employee_id', $user->id)->get();
-    //     $festives = Festive::where(function ($query) use ($userDelegationId) {
-    //         $query->where('national', true)
-    //             ->orWhere('delegation_id', $userDelegationId);
-    //     })->get();
-
-    //     return view('user.calendar', compact('user', 'holidays', 'festives'));
-    // }
-
-    //REGISTER???
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:8|confirmed',
-    //     ]);
-
-    //     $user = User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => bcrypt($request->password),
-    //     ]);
-
-    //     $user->assignRole('employee');
-
-    //     return redirect()->route('menu.employee')->with('success', 'Empleado creado con éxito.');
-    // }
 
 
 

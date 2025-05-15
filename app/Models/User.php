@@ -8,10 +8,11 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Holiday;
 use App\Models\Department;
 use App\Models\Delegation;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $dateFormat = 'Y-m-d';
 
@@ -23,14 +24,14 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'nif',
+        'NIF',
         'password',
         'role',
         'phone',
         'employee_id',
         'department_id',
         'delegation_id',
-        'responsable_id',
+        'responsable',
         'start_date',
     ];
 
@@ -78,6 +79,11 @@ class User extends Authenticatable
     public function responsable()
     {
         return $this->belongsTo(User::class, 'responsable', 'employee_id');
+    }
+
+      public function arrival()
+    {
+        return $this->hasMany(Arrival::class, 'employee_id', 'employee_id');
     }
 
     protected static function booted(): void

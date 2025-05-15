@@ -26,4 +26,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 # Exponer el puerto 8000, ya que usaremos `php artisan serve`
 EXPOSE 8080
-CMD tail -f /dev/null
+CMD php artisan serve --host=0.0.0.0 --port=8080

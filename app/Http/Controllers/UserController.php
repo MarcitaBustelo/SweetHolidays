@@ -43,7 +43,6 @@ class UserController extends Controller
     }
 
     //METODO RESPONSABLES
-
     //Ver calendario
     public function responCalendar(Request $request)
     {

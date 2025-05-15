@@ -25,7 +25,5 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Exponer el puerto 8000, ya que usaremos `php artisan serve`
-EXPOSE 8000
-
-# Comando para iniciar el servidor embebido de Laravel
-CMD php artisan serve --host=0.0.0.0 --port=8000
+EXPOSE 8080
+CMD php artisan serve --host=0.0.0.0 --port=8080

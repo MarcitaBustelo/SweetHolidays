@@ -24,6 +24,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Dar permisos a los directorios de almacenamiento y caché
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exponer el puerto 8000, ya que usaremos `php artisan serve`
+# Exponer el puerto 8080
 EXPOSE 8080
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
+ENTRYPOINT ["sh", "-c"]
+CMD ["php artisan serve --host=0.0.0.0 --port=8080"]
+

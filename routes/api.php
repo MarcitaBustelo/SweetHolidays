@@ -38,4 +38,9 @@ Route::middleware('auth:sanctum')->get('user/profile', [UserApiController::class
 Route::middleware('auth:sanctum')->post('user/vacation-request', [UserApiController::class, 'sendEmail']);
 
 // QR Code escaner
+//http://127.0.0.1:8000/api/user/scan-qr
+// {
+//     "employee_id": 10001,
+//     "timestamp": "2025-05-15T14:25:05"
+// }
 Route::middleware('auth:sanctum')->post('user/scan-qr', [ArrivalApiController::class, 'handleScan']);

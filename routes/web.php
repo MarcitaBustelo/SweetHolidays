@@ -109,3 +109,7 @@ Route::post('/delegations', [DelegationController::class, 'store'])->name('deleg
 Route::get('/delegations/{delegation}/edit', [DelegationController::class, 'edit'])->name('delegations.edit');
 Route::put('/delegations/{delegation}', [DelegationController::class, 'update'])->name('delegations.update');
 Route::delete('/delegations/{delegation}', [DelegationController::class, 'destroy'])->name('delegations.destroy');
+
+Route::get('/ping', function () {
+    return 'pong';
+});

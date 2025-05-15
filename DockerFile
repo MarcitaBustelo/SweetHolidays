@@ -11,12 +11,15 @@ RUN apt-get update && apt-get install -y \
 
 # Instalar Composer
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
+RUN chmod -R 775 storage bootstrap/cache
 
 # Copiar los archivos del proyecto Laravel al contenedor
 COPY . /var/www/html
 
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html
+
+RUN composer install --no-dev --optimize-autoloader
 
 # Dar permisos a los directorios de almacenamiento y caché
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

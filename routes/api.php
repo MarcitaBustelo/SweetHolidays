@@ -8,16 +8,16 @@ use App\Http\Controllers\API\ArrivalApiController;
 
 // Endpoints de autenticación
 //Para hacer login
-//http://127.0.0.1:8000/api/login?employee_id=10001&password=12345678
-Route::post('login', [AuthAPIController::class, 'login']);
+//http://127.0.0.1:8000/api/loginAPI?employee_id=10001&password=12345678
+Route::post('loginAPI', [AuthAPIController::class, 'login']);
 
 //Para registrarse
-//http://127.0.0.1:8000/api/register?name=anitaprat&email=anitaprat@gmail.com&NIF=98764523J&delegation_id=1&password=12345678&c_password=12345678
-Route::post('register', [AuthAPIController::class, 'register']);
+//http://127.0.0.1:8000/registerAPI/register?name=anitaprat&email=anitaprat@gmail.com&NIF=98764523J&delegation_id=1&password=12345678&c_password=12345678
+Route::post('registerAPI', [AuthAPIController::class, 'register']);
 
 //Para hacer logout
-//http://127.0.0.1:8000/api/logout
-Route::middleware('auth:sanctum')->post('/logout', [AuthApiController::class, 'logout']);
+//http://127.0.0.1:8000/api/logoutAPI
+Route::middleware('auth:sanctum')->post('/logoutAPI', [AuthApiController::class, 'logout']);
 
 // Endpoints de usuario
 

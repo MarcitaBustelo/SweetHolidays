@@ -8,7 +8,11 @@ use App\Http\Controllers\API\ArrivalApiController;
 
 // Endpoints de autenticación
 //Para hacer login
-//http://127.0.0.1:8000/api/login?employee_id=10001&password=12345678
+//http://127.0.0.1:8000/api/login
+// {
+//   "username": "10001",
+//   "password": "12345678"
+// }
 Route::post('login', [AuthAPIController::class, 'login']);
 
 //Para registrarse

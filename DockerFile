@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
 
 # Instalar Composer
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
-RUN chmod -R 775 storage bootstrap/cache
 
 # Copiar los archivos del proyecto Laravel al contenedor
 COPY . /var/www/html
@@ -19,14 +18,22 @@ COPY . /var/www/html
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html
 
+# Instalar dependencias PHP de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Dar permisos a los directorios de almacenamiento y caché
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Crear enlace simbólico a storage público
+RUN php artisan storage:link
 
-# Exponer el puerto 8080
+# Cache de configuración y rutas
+RUN php artisan config:cache && php artisan route:cache
+
+# Dar permisos a los directorios necesarios
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Exponer el puerto
 EXPOSE 8080
 
+# Comando de inicio
 ENTRYPOINT ["sh", "-c"]
 CMD ["php artisan serve --host=0.0.0.0 --port=8080"]
-

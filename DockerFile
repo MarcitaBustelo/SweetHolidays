@@ -1,13 +1,14 @@
 FROM php:8.2-fpm
 
-# Instalar dependencias
+# Instalar dependencias del sistema y extensiones PHP
 RUN apt-get update && apt-get install -y \
     libzip-dev \
+    libpng-dev \
     unzip \
     git \
     curl \
     libonig-dev \
-    && docker-php-ext-install pdo pdo_mysql zip mbstring bcmath
+    && docker-php-ext-install pdo pdo_mysql zip mbstring bcmath gd
 
 # Instalar Composer
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
@@ -28,5 +29,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Exponer puerto
 EXPOSE 8000
 
-# Comando de inicio: ejecutar comandos artisan al arrancar
+# Comando de inicio
 CMD php artisan config:cache && php artisan route:cache && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000

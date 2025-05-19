@@ -52,10 +52,10 @@
         </button>
 
         <!-- @if (Route::has('password.request'))
-            <div class="forgot-password-link">
-                <a href="{{ route('password.request') }}">Forgot your password?</a>
-            </div>
-        @endif -->
+                <div class="forgot-password-link">
+                    <a href="{{ route('password.request') }}">Forgot your password?</a>
+                </div>
+            @endif -->
     </form>
 @endsection
 

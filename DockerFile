@@ -1,39 +1,32 @@
-# Imagen base de PHP con soporte para FPM (PHP 8.2)
 FROM php:8.2-fpm
 
-# Instalar dependencias del sistema necesarias
+# Instalar dependencias
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo pdo_mysql zip
+    libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql zip mbstring bcmath
 
 # Instalar Composer
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 
-# Copiar los archivos del proyecto Laravel al contenedor
-COPY . /var/www/html
-
-# Configurar el directorio de trabajo
+# Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
-# Instalar dependencias PHP de Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Copiar los archivos del proyecto
+COPY . .
 
-# Crear enlace simbólico a storage público
-RUN php artisan storage:link
+# Instalar dependencias de Composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Cache de configuración y rutas
-RUN php artisan config:cache && php artisan route:cache
-
-# Dar permisos a los directorios necesarios
+# Dar permisos a las carpetas necesarias
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exponer el puerto
-EXPOSE 8080
+# Exponer puerto
+EXPOSE 8000
 
-# Comando de inicio
-ENTRYPOINT ["sh", "-c"]
-CMD ["php artisan serve --host=0.0.0.0 --port=8000"]
+# Comando de inicio: ejecutar comandos artisan al arrancar
+CMD php artisan config:cache && php artisan route:cache && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000

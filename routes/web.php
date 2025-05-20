@@ -24,19 +24,6 @@ Route::get('/', function () {
 // Autenticación
 Auth::routes();
 
-Route::get('/', function () {
-    if (Auth::check()) {
-        if (Auth::user()->role === 'responsable') {
-            return redirect()->route('menu.responsable');
-        } else if (Auth::user()->role === 'employee') {
-            return redirect()->route('menu_employee');
-        } else if (Auth::user()->role === 'admin') {
-            return redirect()->route('menu.admin');
-        }
-    }
-    return view('welcome');
-})->name('login');
-
 // RUTAS PARA BOSS Y RHH
 // CAMBIAR DEPARTAMENTO Y RESPONSABLE EN VISTA USUARIOS
 Route::put('/employees/{id}/update-responsable', [UserController::class, 'updateResponsable'])->name('employees.updateResponsable');

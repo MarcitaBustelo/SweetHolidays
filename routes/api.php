@@ -10,10 +10,10 @@ use App\Http\Controllers\API\ArrivalApiController;
 //Para hacer login
 //http://127.0.0.1:8000/api/login
 // {
-//   "username": "10001",
+//   "employee_id": "10001",
 //   "password": "12345678"
 // }
-Route::post('login', [AuthAPIController::class, 'login']);
+Route::post('login', [AuthAPIController::class, 'loginApi']);
 
 //Para registrarse
 //http://127.0.0.1:8000/register/register?name=anitaprat&email=anitaprat@gmail.com&NIF=98764523J&delegation_id=1&password=12345678&c_password=12345678
@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthApiController::class, 'l
 
 //Ver ausencias calendario
 //http://127.0.0.1:8000/api/user/holidays
-Route::middleware('auth:sanctum')->get('/user/holidays', [UserApiController::class, 'holiday']);
+Route::middleware('auth:sanctum')->get('user/holidays', [UserApiController::class, 'holiday']);
 
 //Ver perfil
 //http://127.0.0.1:8000/api/user/profile

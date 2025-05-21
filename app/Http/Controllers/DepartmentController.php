@@ -15,25 +15,9 @@ class DepartmentController extends Controller
     public function index()
     {
         $departments = Department::all();
-        return view('departments.departments', compact('departments'));
+        return view('Departments.departments', compact('departments'));
     }
 
-    /**
-     * Show the form to create a new department.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create()
-    {
-        return view('department.create');
-    }
-
-    /**
-     * Store a new department in the database.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -42,27 +26,9 @@ class DepartmentController extends Controller
 
         Department::create($request->all());
 
-        return redirect()->route('departments.departments')->with('success', 'Department created successfully.');
+        return redirect()->route('Departments.departments')->with('success', 'Department created successfully.');
     }
 
-    /**
-     * Show the form to edit an existing department.
-     *
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\View\View
-     */
-    public function edit(Department $department)
-    {
-        return view('department.edit', compact('department'));
-    }
-
-    /**
-     * Update an existing department in the database.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request, Department $department)
     {
         $request->validate([
@@ -71,7 +37,7 @@ class DepartmentController extends Controller
 
         $department->update($request->all());
 
-        return redirect()->route('departments.departments')->with('success', 'Department updated successfully.');
+        return redirect()->route('Departments.departments')->with('success', 'Department updated successfully.');
     }
 
     /**
@@ -84,6 +50,6 @@ class DepartmentController extends Controller
     {
         $department->delete();
 
-        return redirect()->route('departments.departments')->with('success', 'Department deleted successfully.');
+        return redirect()->route('Departments.departments')->with('success', 'Department deleted successfully.');
     }
 }

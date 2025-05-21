@@ -8,7 +8,7 @@ use App\Http\Controllers\API\ArrivalApiController;
 
 // Endpoints de autenticación
 //Para hacer login
-//http://127.0.0.1:8000/api/login
+//http://127.0.0.1:8000/api/loginApi
 // {
 //   "employee_id": "10001",
 //   "password": "12345678"

@@ -18,7 +18,7 @@ class FestiveController extends Controller
     {
         $festives = Festive::all();
         $delegations = Delegation::all();
-        return view('festives.festives', compact('festives', 'delegations'));
+        return view('Festives.festives', compact('festives', 'delegations'));
     }
     public function store(Request $request)
     {
@@ -106,7 +106,7 @@ class FestiveController extends Controller
         $festive->date = $request->input('date');
         $festive->save();
 
-        return redirect()->route('festives.festives')->with('success', 'Fecha del festivo actualizada correctamente.');
+        return redirect()->route('Festives.festives')->with('success', 'Fecha del festivo actualizada correctamente.');
     }
 
 

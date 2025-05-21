@@ -113,7 +113,7 @@ class UserController extends Controller
         $departments = Department::all();
 
         // Pasar $specialAccessEmployeeIds a la vista
-        return view('user.respon_calendar', compact('users', 'delegations', 'departments', 'holiday_types', 'holidays', 'festives', 'specialAccessEmployeeIds'));
+        return view('User.respon_calendar', compact('users', 'delegations', 'departments', 'holiday_types', 'holidays', 'festives', 'specialAccessEmployeeIds'));
     }
 
     //Ver Usuario
@@ -139,7 +139,7 @@ class UserController extends Controller
             $departments = collect();
         }
 
-        return view('user.users', compact('employees', 'responsables', 'departments'));
+        return view('User.users', compact('employees', 'responsables', 'departments'));
     }
 
     //Actualizar los días totales de vacaciones que tienen los usuarios

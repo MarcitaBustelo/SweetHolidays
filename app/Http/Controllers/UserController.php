@@ -247,7 +247,7 @@ class UserController extends Controller
             ->take(3)
             ->get();
 
-        return view('user.profile', compact(
+        return view('User.profile', compact(
             'user',
             'vacationDaysUsed',
             'absenceDaysUsed',

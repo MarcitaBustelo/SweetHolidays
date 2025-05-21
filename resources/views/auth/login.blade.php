@@ -5,7 +5,7 @@
         <i class="fas fa-arrow-left"></i>
     </a>
     <div class="logo-section">
-        <img src="{{ asset('storage/images/Galleta_logo.png') }}" alt="SweetHoliday Logo">
+        <img src="{{ asset('Galleta_logo.png') }}" alt="SweetHoliday Logo">
         <h2>SWEET HOLIDAYS</h2>
     </div>
 

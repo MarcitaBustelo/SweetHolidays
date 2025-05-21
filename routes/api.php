@@ -13,7 +13,7 @@ use App\Http\Controllers\API\ArrivalApiController;
 //   "employee_id": "10001",
 //   "password": "12345678"
 // }
-Route::post('loginApi', [AuthAPIController::class, 'login']);
+Route::post('login', [AuthAPIController::class, 'login']);
 
 //Para registrarse
 //http://127.0.0.1:8000/register/register?name=anitaprat&email=anitaprat@gmail.com&NIF=98764523J&delegation_id=1&password=12345678&c_password=12345678

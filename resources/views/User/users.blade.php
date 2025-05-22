@@ -35,9 +35,12 @@
                         <th>Delegation</th>
                         <th>Department</th>
                         @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
-                            <th>Manager</th>
+                            <th>Responsable</th>
                         @endif
                         <th>Total Days</th>
+                         @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+                            <th>Status</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -98,6 +101,24 @@
                                     </button>
                                 </form>
                             </td>
+                            @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
+                                <td>
+                                    <form action="{{ route('employees.toggleActive', $employee->id) }}" method="POST"
+                                        style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        @if ($employee->active)
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Desactivar">
+                                                <i class="fas fa-user-slash"></i> Desactivar
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-sm" title="Activar">
+                                                <i class="fas fa-user-check"></i> Activar
+                                            </button>
+                                        @endif
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>

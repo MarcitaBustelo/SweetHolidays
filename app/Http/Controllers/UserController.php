@@ -361,6 +361,22 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Department updated successfully.');
     }
 
+    //Activar desactivar
+    public function toggleActive($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user) {
+            $user->active = !$user->active;
+            $user->save();
+
+            $message = $user->active ? 'Employee activated successfully.' : 'Employee activated successfully.';
+        } else {
+            $message = 'Employee not found.';
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
 
     //METODOS PARA EMPLEADOS QUE HAY QUE HACER API
 

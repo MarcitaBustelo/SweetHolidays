@@ -81,7 +81,7 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'responsable', 'employee_id');
     }
 
-      public function arrival()
+    public function arrival()
     {
         return $this->hasMany(Arrival::class, 'employee_id', 'employee_id');
     }
@@ -99,5 +99,10 @@ class User extends Authenticatable
                 }
             }
         });
+    }
+
+    public function hasSpecialAccess(): bool
+    {
+        return in_array($this->employee_id, ['10001', '10003']);
     }
 }

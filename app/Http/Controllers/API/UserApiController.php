@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Department;
+use App\Models\Delegation;
+
 
 
 
@@ -42,7 +45,7 @@ class UserApiController extends Controller
     //VER PERFIL
     public function show()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('department', 'delegation'); // Carga relaciones
 
         $holidays = Holiday::where('employee_id', $user->id)
             ->whereYear('start_date', date('Y'))
@@ -63,8 +66,10 @@ class UserApiController extends Controller
 
             $totalDaysUsed += $days;
         }
+
         $totalDays = $user->days_in_total;
         $remainingDays = $user->days;
+
         $upcomingHolidays = Holiday::where('employee_id', $user->id)
             ->where('start_date', '>=', now()->format('Y-m-d'))
             ->orderBy('start_date')
@@ -78,8 +83,8 @@ class UserApiController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'employee_id' => $user->employee_id,
-                    'delegation_id' => $user->delegation_id,
-                    'department_id' => $user->department_id,
+                    'department' => $user->department ? $user->department->name : null,
+                    'delegation' => $user->delegation ? $user->delegation->name : null,
                     'total_days' => $totalDays,
                     'remaining_days' => $remainingDays,
                 ],
@@ -91,6 +96,7 @@ class UserApiController extends Controller
             'message' => 'User profile retrieved successfully.',
         ], 200);
     }
+
 
     private function calculateDays($startDate, $endDate = null)
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
@@ -15,11 +16,37 @@ class AuthAPIController extends BaseController
 
     public function login(Request $request)
     {
+        $departments = Department::select('department_id', 'name')->get();
+
         try {
             if (Auth::attempt(['employee_id' => $request->employee_id, 'password' => $request->password])) {
                 $user = Auth::user();
+                $departmentName = $departments->firstWhere('department_id', $user->department_id)?->name ?? 'Unknown';
+
+                if ((int) $user->active === 0) {
+                    Auth::logout();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unauthorized.',
+                        'errors' => ['error' => 'Your account is deactivated.'],
+                    ], 403);
+                }
+
+                if ($user->role !== 'employee') {
+                    Auth::logout();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unauthorized.',
+                        'errors' => ['error' => 'Only employees can log in.'],
+                    ], 403);
+                }
+
                 $success['token'] = $user->createToken('MyApp')->plainTextToken;
                 $success['name'] = $user->name;
+                $success['employee_id'] = $user->employee_id;
+                $success['department'] = $departmentName;
+
+
 
                 return response()->json([
                     'success' => true,
@@ -35,8 +62,13 @@ class AuthAPIController extends BaseController
             }
         } catch (\Exception $e) {
             Log::error('Error login: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error.',
+            ], 500);
         }
     }
+
     /**
      * Register api
      *

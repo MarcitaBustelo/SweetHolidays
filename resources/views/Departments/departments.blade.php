@@ -1,7 +1,6 @@
 @extends('adminlte::page')
 
 @section('title', __('Department Management'))
-<link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center">
@@ -26,6 +25,7 @@
     <div class="card-body bg-white">
         <table id="departmentsTable" class="table table-bordered table-hover">
             <thead>
+                <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
                 <tr style="background-color: #ebe4f6; color: #4b2e83;">
                     <th>@lang('Name')</th>
                     <th>@lang('Actions')</th>

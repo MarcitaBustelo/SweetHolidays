@@ -106,7 +106,7 @@ class FestiveController extends Controller
         $festive->date = $request->input('date');
         $festive->save();
 
-        return redirect()->route('Festives.festives')->with('success', 'Fecha del festivo actualizada correctamente.');
+        return redirect()->route('festives.festives')->with('success', 'Fecha del festivo actualizada correctamente.');
     }
 
 

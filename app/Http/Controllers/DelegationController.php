@@ -33,7 +33,7 @@ class DelegationController extends Controller
 
         Delegation::create($request->all());
 
-        return redirect()->route('Delegations.delegations')->with('success', 'Delegation created successfully');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation created successfully');
     }
 
     public function update(Request $request, Delegation $delegation)
@@ -44,13 +44,13 @@ class DelegationController extends Controller
 
         $delegation->update($request->all());
 
-        return redirect()->route('Delegations.delegations')->with('success', 'Delegation updated successfully');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation updated successfully');
     }
 
     public function destroy(Delegation $delegation)
     {
         $delegation->delete();
 
-        return redirect()->route('Delegations.delegations')->with('success', 'Delegation deleted correctly');
+        return redirect()->route('delegations.delegations')->with('success', 'Delegation deleted correctly');
     }
 }

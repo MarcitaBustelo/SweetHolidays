@@ -29,7 +29,7 @@ class HolidayController extends Controller
         }
 
         try {
-            $employee = \App\Models\User::find($request->employee_id);
+            $employee = User::find($request->employee_id);
 
             if (!$employee) {
                 return response()->json(['error' => 'This employee doesn´t exist'], 404);

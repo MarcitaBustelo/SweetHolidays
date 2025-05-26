@@ -109,11 +109,11 @@
                                         @method('PUT')
                                         @if ($employee->active)
                                             <button type="submit" class="btn btn-danger btn-sm" title="Desactivar">
-                                                <i class="fas fa-user-slash"></i> Desactivar
+                                                <i class="fas fa-user-slash"></i> Deactivate
                                             </button>
                                         @else
                                             <button type="submit" class="btn btn-success btn-sm" title="Activar">
-                                                <i class="fas fa-user-check"></i> Activar
+                                                <i class="fas fa-user-check"></i> Activate
                                             </button>
                                         @endif
                                     </form>

@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background-image: url('{{ asset('logo.png') }}');
+            background-image: url('{{ asset('storage/images/logo.png') }}');
             min-height: 100vh;
             margin: 0;
             display: flex;

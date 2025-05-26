@@ -16,6 +16,7 @@
     </div>
 </div>
 @stop
+<link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
 @section('content')
 <div class="card shadow-sm border-0">
@@ -156,7 +157,7 @@
             var modal = $(this);
             var form = modal.find('#delegationForm');
 
-            form.find('input[name=_method]').remove(); 
+            form.find('input[name=_method]').remove();
 
             if (action === 'edit') {
                 var delegationId = button.data('id');

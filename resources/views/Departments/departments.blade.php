@@ -1,6 +1,7 @@
 @extends('adminlte::page')
 
 @section('title', __('Department Management'))
+<link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center">
@@ -158,7 +159,7 @@
             var modal = $(this);
             var form = modal.find('#departmentForm');
 
-            form.find('input[name=_method]').remove(); 
+            form.find('input[name=_method]').remove();
 
             if (action === 'edit') {
                 var departmentId = button.data('id');

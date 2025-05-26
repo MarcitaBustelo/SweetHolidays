@@ -16,7 +16,6 @@
     </div>
 </div>
 @stop
-<link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
 
 @section('content')
 <div class="card shadow-sm border-0">
@@ -95,93 +94,97 @@
 @stop
 
 @section('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    body {
-        background-color: #f9f9fb;
-    }
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
 
-    .btn-primary {
-        background-color: #6a3cc9;
-        border-color: #6a3cc9;
-    }
+    <style>
+        body {
+            background-color: #f9f9fb;
+        }
 
-    .btn-primary:hover {
-        background-color: #5a31a8;
-        border-color: #5a31a8;
-    }
+        .btn-primary {
+            background-color: #6a3cc9;
+            border-color: #6a3cc9;
+        }
 
-    .btn-outline-primary {
-        color: #6a3cc9;
-        border-color: #c8b9e6;
-    }
+        .btn-primary:hover {
+            background-color: #5a31a8;
+            border-color: #5a31a8;
+        }
 
-    .btn-outline-primary:hover {
-        background-color: #e9e0f9;
-        color: #4b2e83;
-    }
+        .btn-outline-primary {
+            color: #6a3cc9;
+            border-color: #c8b9e6;
+        }
 
-    table thead tr {
-        background-color: #ebe4f6;
-        color: #4b2e83;
-    }
+        .btn-outline-primary:hover {
+            background-color: #e9e0f9;
+            color: #4b2e83;
+        }
 
-    table tbody tr:hover {
-        background-color: #f5f2fa;
-    }
+        table thead tr {
+            background-color: #ebe4f6;
+            color: #4b2e83;
+        }
 
-    .form-control:focus {
-        border-color: #b49ce0;
-        box-shadow: 0 0 0 0.2rem rgba(106, 60, 201, 0.25);
-    }
-</style>
-@stop
+        table tbody tr:hover {
+            background-color: #f5f2fa;
+        }
+
+        .form-control:focus {
+            border-color: #b49ce0;
+            box-shadow: 0 0 0 0.2rem rgba(106, 60, 201, 0.25);
+        }
+    </style>
+@endsection
+
 
 @section('js')
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
-<script>
-    $(document).ready(function () {
-        // Initialize the DataTable
-        $('#delegationsTable').DataTable({
-            responsive: true,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/English.json'
-            }
+    <!-- jQuery + Bootstrap Bundle + AdminLTE + DataTables desde CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#delegationsTable').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/English.json'
+                }
+            });
+
+            $('#delegationModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var action = button.data('action');
+                var modal = $(this);
+                var form = modal.find('#delegationForm');
+
+                form.find('input[name=_method]').remove();
+
+                if (action === 'edit') {
+                    var delegationId = button.data('id');
+                    var delegationName = button.data('name');
+
+                    modal.find('.modal-title').text('@lang('Edit Delegation')');
+                    modal.find('#delegationId').val(delegationId);
+                    modal.find('#delegationName').val(delegationName);
+                    form.attr('action', '/delegations/' + delegationId);
+
+                    form.append('<input type="hidden" name="_method" value="PUT">');
+                    modal.find('#submitBtn').text('@lang('Update')');
+                } else {
+                    modal.find('.modal-title').text('@lang('Add Delegation')');
+                    modal.find('#delegationId').val('');
+                    modal.find('#delegationName').val('');
+                    form.attr('action', '/delegations');
+                    modal.find('#submitBtn').text('@lang('Save')');
+                }
+            });
         });
-
-        $('#delegationModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var action = button.data('action');
-            var modal = $(this);
-            var form = modal.find('#delegationForm');
-
-            form.find('input[name=_method]').remove();
-
-            if (action === 'edit') {
-                var delegationId = button.data('id');
-                var delegationName = button.data('name');
-
-                modal.find('.modal-title').text('@lang('Edit Delegation')');
-                modal.find('#delegationId').val(delegationId);
-                modal.find('#delegationName').val(delegationName);
-                form.attr('action', '/delegations/' + delegationId);
-
-                // Add input hidden for PUT method spoofing
-                form.append('<input type="hidden" name="_method" value="PUT">');
-
-                modal.find('#submitBtn').text('@lang('Update')');
-            } else {
-                modal.find('.modal-title').text('@lang('Add Delegation')');
-                modal.find('#delegationId').val('');
-                modal.find('#delegationName').val('');
-                form.attr('action', '/delegations');
-
-                modal.find('#submitBtn').text('@lang('Save')');
-            }
-        });
-
-    });
-</script>
-@stop
+    </script>
+@endsection

@@ -123,3 +123,6 @@ Route::post('/delegations', [DelegationController::class, 'store'])->name('deleg
 Route::get('/delegations/{delegation}/edit', [DelegationController::class, 'edit'])->name('delegations.edit')->middleware('auth');
 Route::put('/delegations/{delegation}', [DelegationController::class, 'update'])->name('delegations.update')->middleware('auth');
 Route::delete('/delegations/{delegation}', [DelegationController::class, 'destroy'])->name('delegations.destroy')->middleware('auth');
+
+//Arrivals
+Route::get('/arrivals', [App\Http\Controllers\ArrivalController::class, 'index'])->name('arrivals.index')->middleware('auth');

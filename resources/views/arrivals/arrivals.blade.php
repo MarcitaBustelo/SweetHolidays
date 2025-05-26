@@ -21,6 +21,7 @@
             <thead>
                 <tr style="background-color: #ebe4f6; color: #4b2e83;">
                     <th>@lang('Employee')</th>
+                    <th>@lang('Delegation')</th>
                     <th>@lang('Date')</th>
                     <th>@lang('Arrival Time')</th>
                     <th>@lang('Departure Time')</th>
@@ -31,6 +32,7 @@
                 @forelse ($arrivals as $arrival)
                     <tr>
                         <td>{{ $arrival->employee_name }}</td>
+                        <td>{{ $arrival->delegation_name }}</td>
                         <td>{{ \Carbon\Carbon::parse($arrival->date)->format('Y-m-d') }}</td>
                         <td>{{ $arrival->arrival_time }}</td>
                         <td>{{ $arrival->departure_time ?? '-' }}</td>

@@ -50,12 +50,6 @@
         <button type="submit" class="submit-btn" style="border-radius: 10px;">
             <i class="fas fa-sign-in-alt"></i> Log In
         </button>
-
-        <!-- @if (Route::has('password.request'))
-                <div class="forgot-password-link">
-                    <a href="{{ route('password.request') }}">Forgot your password?</a>
-                </div>
-            @endif -->
     </form>
 @endsection
 

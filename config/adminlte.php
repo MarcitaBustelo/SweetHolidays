@@ -446,6 +446,26 @@ return [
                 ],
             ],
         ],
+        'Jquery' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/adminlte/plugins/jquery/jquery.min.js',
+                ],
+            ],
+        ],
+        'Bootstrap' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => 'vendor/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js',
+                ],
+            ],
+        ],
     ],
 
     /*

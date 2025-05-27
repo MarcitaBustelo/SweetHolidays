@@ -720,6 +720,7 @@
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
+                    credentials: 'same-origin',
                     body: formData
                 })
                     .then(response => response.json())

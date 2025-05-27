@@ -335,7 +335,7 @@ return [
         ],
         [
             'text' => 'Logout',
-            'url' => '/logout',
+            'url' => '/logout-safe',
             'icon' => 'far fa-share-square',
         ],
         // [

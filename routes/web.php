@@ -11,7 +11,7 @@ use App\Http\Controllers\FestiveController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DelegationController;
-
+use App\Http\Controllers\Auth\LoginController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -20,6 +20,12 @@ Route::get('/', function () {
 
 // Autenticación
 Auth::routes();
+Route::get('/logout-safe', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+});
 
 // RUTAS PARA BOSS Y RHH
 // CAMBIAR DEPARTAMENTO Y RESPONSABLE EN VISTA USUARIOS

@@ -190,9 +190,9 @@ class HolidayController extends Controller
                     ->where('file', 'LIKE', "justified/{$employeeId}{$date}%")
                     ->count() + 1;
 
-                $fileName = "{$employeeId}_{$date}_{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
+                $fileName = "proof_{$employeeId}_{$date}_{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
+                $filePath = $request->file('file')->storeAs('images', $fileName, 'public');
 
-                $filePath = $request->file('file')->storeAs('justificantes', $fileName, 'public');
                 $holiday->file = $filePath;
             }
 

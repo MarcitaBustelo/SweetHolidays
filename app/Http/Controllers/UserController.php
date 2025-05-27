@@ -346,7 +346,7 @@ class UserController extends Controller
     public function updateDepartment(Request $request, $id)
     {
         $request->validate([
-            'department_id' => 'required|exists:departments,id',
+            'department_id' => 'required|exists:departments,department_id',
         ]);
 
         $employee = User::find($id);

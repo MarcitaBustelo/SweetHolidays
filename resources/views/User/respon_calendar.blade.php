@@ -95,11 +95,12 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap5.min.css">
 
 <!-- NUEVOS -->
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap5.min.css">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap5.min.css">
 
 <style>
     .fc-daygrid-event {
@@ -256,8 +257,9 @@
                 const userSelect = document.getElementById('userSelect');
                 const userId = userSelect.value;
 
-                if (!userId) {
-                    Swal.fire('Error', 'You must select a user before adding an absence.', 'error');
+
+                if (!userId || userId === 'all') {
+                    Swal.fire('Error', 'You must select a specific user before adding an absence.', 'error');
                     calendar.unselect();
                     return;
                 }

@@ -461,7 +461,7 @@
             </div>
             <div class="form-group">
                 <label for="file">Proof</label>
-                ${holiday.file ? `<p><strong>Archivo actual:</strong> <a href="/storage/${holiday.file}" target="_blank">Download</a></p>` : ''}
+                    ${holiday.file_url ? `<p><strong>Archivo actual:</strong> <a href="${holiday.file_url}" target="_blank">Download</a></p>` : ''}
                 <input type="file" id="file" name="file" class="form-control" accept=".jpeg,.png,.jpg,.pdf">
             </div>
         </form>

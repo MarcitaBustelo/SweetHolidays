@@ -202,6 +202,7 @@ class HolidayController extends Controller
                 'success' => true,
                 'message' => 'The absence has been updated successfully.',
                 'holiday' => $holiday,
+                'file_url' => $holiday->file ? asset('storage/' . $holiday->file) : null,
             ]);
         } catch (\Exception $e) {
             Log::error('Error al actualizar la ausencia: ' . $e->getMessage());

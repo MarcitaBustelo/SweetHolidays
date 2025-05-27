@@ -169,8 +169,10 @@ class AuthAPIController extends BaseController
 
         return response()->json([
             'success' => true,
-            'message' => 'Password updated successfully.',
+            'status' => 'success',
+            'message' => 'Password updated correctly!',
         ]);
+
     }
 
 }

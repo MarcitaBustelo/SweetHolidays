@@ -23,6 +23,16 @@ Route::post('register', [AuthAPIController::class, 'register']);
 //http://127.0.0.1:8000/api/logout
 Route::middleware('auth:sanctum')->post('/logout', [AuthApiController::class, 'logout']);
 
+//Cambiar contraseña
+//http://127.0.0.1:8000/api/reset-password
+// {
+//   "current_password": "old_password123",
+//   "new_password": "newPassword123",
+//   "new_password_confirmation": "newPassword123"
+// }
+Route::middleware('auth:sanctum')->post('/reset-password', [AuthApiController::class, 'resetPassword']);
+
+
 // Endpoints de usuario
 
 //Ver ausencias calendario

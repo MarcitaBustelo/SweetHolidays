@@ -333,6 +333,11 @@ return [
             'url' => '/users',
             'icon' => 'fas fa-users',
         ],
+        [
+            'text' => 'Logout',
+            'url' => '/logout',
+            'icon' => 'far fa-share-square',
+        ],
         // [
         //     'text' => 'User Handbook',
         //     'url' => '/manual',

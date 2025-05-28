@@ -550,6 +550,7 @@
                         'error');
                 }
             },
+
             eventDrop: async function (info) {
                 const {
                     event
@@ -591,12 +592,7 @@
                 const {
                     event
                 } = info;
-                if (!event.extendedProps.original_start) {
-                    event.setExtendedProp('original_start', event.start.toISOString().split('T')[0]);
-                }
-                if (!event.extendedProps.original_end) {
-                    event.setExtendedProp('original_end', info.oldEvent.end.toISOString().split('T')[0]);
-                }
+
                 try {
                     const response = await fetch('{{ route('holiday.update') }}', {
                         method: 'PUT',
@@ -609,17 +605,12 @@
                             start_date: event.start.toISOString().split('T')[0],
                             end_date: event.end ? event.end.toISOString().split(
                                 'T')[0] : null,
-                            original_start_date: event.extendedProps.original_start,
-                            original_end_date: event.extendedProps.original_end,
                         }),
                     });
 
                     const result = await response.json();
 
                     if (response.ok) {
-                        event.setExtendedProp('original_start', event.start.toISOString().split('T')[0]);
-                        event.setExtendedProp('original_end', event.end ? event.end.toISOString().split('T')[0] : null);
-
                         Swal.fire('Updated!', 'The absence has been updated correctly.',
                             'success');
                     } else {

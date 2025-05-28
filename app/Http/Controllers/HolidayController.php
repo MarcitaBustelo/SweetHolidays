@@ -84,8 +84,6 @@ class HolidayController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'holiday_type_id' => 'nullable|exists:holiday_types,id',
-            'original_start_date' => 'nullable|date',
-            'original_end_date' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -96,53 +94,64 @@ class HolidayController extends Controller
             $holiday = Holiday::find($request->holiday_id);
 
             if (!$holiday) {
-                return response()->json(['error' => 'The absence doesn’t exist'], 404);
+                return response()->json(['error' => 'The absence doesn\'t exist'], 404);
             }
 
             $user = $holiday->employee;
 
-            // Original dates (from request or fallback to DB)
-            $originalStart = new \DateTime($request->original_start_date ?? $holiday->start_date);
-            $originalEnd = new \DateTime($request->original_end_date ?? $holiday->end_date);
+            // Calcular días originales
+            $originalStart = new \DateTime($holiday->start_date);
+            $originalEnd = new \DateTime($holiday->end_date);
             $originalDays = $originalStart->diff($originalEnd)->days + 1;
 
-            // New dates
+            // Calcular días nuevos
             $newStart = new \DateTime($request->start_date);
             $newEnd = new \DateTime($request->end_date);
             $newDays = $newStart->diff($newEnd)->days + 1;
 
-            $adjustedStartDate = (clone $newStart)->modify('+1 day')->format('Y-m-d');
+            // Determinar si sigue siendo tipo vacaciones o si cambió
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
-            if ((int) $holiday->holiday_type_id === 1) {
-                $difference = $originalDays - $newDays;
+            // Solo ajustar días si el tipo original O el nuevo es de vacaciones (holiday_type_id = 1)
+            $wasVacation = (int) $holiday->holiday_type_id === 1;
+            $willBeVacation = (int) $newHolidayTypeId === 1;
 
-                if ($difference > 0) {
-                    // Se acortó: devolver días
-                    $user->days += $difference;
-                    $user->save();
-                } elseif ($difference < 0) {
-                    // Se alargó: verificar si tiene suficientes días
-                    $extraNeeded = abs($difference);
-                    if ($user->days < $extraNeeded) {
-                        return response()->json(['error' => 'Not enough vacation days left for this extension.'], 400);
+            if ($wasVacation || $willBeVacation) {
+                if ($wasVacation && $willBeVacation) {
+                    // Ambos son vacaciones: ajustar por la diferencia
+                    $difference = $originalDays - $newDays;
+                    $user->days += $difference; // Si difference > 0 (se acortó), suma días. Si < 0 (se alargó), resta días
+                } elseif ($wasVacation && !$willBeVacation) {
+                    // Era vacación pero ya no: devolver todos los días originales
+                    $user->days += $originalDays;
+                } elseif (!$wasVacation && $willBeVacation) {
+                    // No era vacación pero ahora sí: restar los días nuevos
+                    $user->days -= $newDays;
+
+                    // Verificar que no se quede en negativo
+                    if ($user->days < 0) {
+                        return response()->json(['error' => 'No tienes suficientes días de vacaciones disponibles'], 400);
                     }
-                    $user->days -= $extraNeeded;
-                    $user->save();
                 }
+
+                $user->save();
             }
 
+            // Actualizar la ausencia
             $holiday->update([
-                'start_date' => $adjustedStartDate,
+                'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'holiday_type_id' => $newHolidayTypeId,
             ]);
 
             return response()->json([
                 'success' => 'Updated absence successfully.',
-                'holiday' => $holiday
+                'holiday' => $holiday,
+                'remaining_days' => $user->days
             ]);
+
         } catch (\Exception $e) {
+            \Log::error('Error updating holiday: ' . $e->getMessage());
             return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
     }

@@ -322,7 +322,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Ocurrió un error. Por favor, inténtalo nuevamente más tarde.');
+                    alert('Something went wrong. Please try again later.');
                 });
         });
 
@@ -330,9 +330,9 @@
             const toast = document.createElement('div');
             toast.classList.add('custom-toast');
             toast.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
-            `;
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
 
             document.body.appendChild(toast);
 
@@ -344,6 +344,11 @@
                 toast.classList.remove('visible');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+
+            // Recarga la página después de 5 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
         }
     });
 </script>

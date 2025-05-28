@@ -64,11 +64,13 @@ Route::get('/holidays/filter', [HolidayController::class, 'getHolidaysByTypeAndD
 Route::get('/holidays/{id}', [HolidayController::class, 'getHoliday'])->name('holidays.get')->middleware('auth');
 Route::post('/holidays/edit', [HolidayController::class, 'editJustifyHoliday'])->name('holidays.edit')->middleware('auth');
 
-//Rutas para gestionar tipos de vacaciones
+// Rutas para HolidayType (Responsable)
 Route::get('/holiday_types', [HolidayTypeController::class, 'index'])->name('holiday_types.index');
 Route::post('/holiday_types', [HolidayTypeController::class, 'store'])->name('holiday_types.store');
 Route::put('/holiday_types/{id}', [HolidayTypeController::class, 'update'])->name('holiday_types.update');
 Route::delete('/holiday_types/delete', [HolidayTypeController::class, 'delete'])->name('holiday_types.delete');
+
+Route::post('/holidays/update-type', [HolidayController::class, 'updateType'])->name('holidays.updateType')->middleware('auth');
 
 Route::get('/festives', function () {
     if (!Auth::user()->hasSpecialAccess()) {

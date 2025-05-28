@@ -13,6 +13,7 @@ class HolidayType extends Model
     protected $dateFormat = 'Y-m-d';
     protected $fillable = [
         'type',
+        'color',
     ];
 
     public function holiday()

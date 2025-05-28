@@ -36,7 +36,9 @@
                     <tr>
                         <td>{{ $type->type }}</td>
                         <td>
-                            <span style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background-color: {{ $type->color }}; border: 1px solid #ccc;" title="{{ $type->color }}"></span>
+                            <span
+                                style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background-color: {{ $type->color }}; border: 1px solid #ccc;"
+                                title="{{ $type->color }}"></span>
                         </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal"
@@ -44,7 +46,8 @@
                                 data-type="{{ $type->type }}" data-color="{{ $type->color }}">
                                 <i class="fas fa-edit"></i> @lang('Edit')
                             </button>
-                            <form action="{{ route('holiday_types.delete') }}" method="POST" class="delete-type-form" style="display: inline-block;">
+                            <form action="{{ route('holiday_types.delete') }}" method="POST" class="delete-type-form"
+                                style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')
                                 <input type="hidden" name="id" value="{{ $type->id }}">
@@ -199,6 +202,7 @@
         });
 
         // Ajax form submit (add/update)
+        // Ajax form submit (add/update)
         $('#holidayTypeForm').on('submit', function (e) {
             e.preventDefault();
             var action = $(this).data('action');
@@ -225,7 +229,7 @@
                     Swal.fire({
                         icon: response.success ? 'success' : 'error',
                         title: response.success ? 'Success' : 'Error',
-                        text: JSON.stringify(response),
+                        text: response.message,
                         confirmButtonColor: '#6a3cc9'
                     }).then(() => {
                         if (response.success) {
@@ -273,7 +277,7 @@
                             Swal.fire({
                                 icon: response.success ? 'success' : 'error',
                                 title: response.success ? 'Deleted' : 'Error',
-                                text: JSON.stringify(response),
+                                text: response.message,
                                 confirmButtonColor: '#6a3cc9'
                             }).then(() => {
                                 if (response.success) {

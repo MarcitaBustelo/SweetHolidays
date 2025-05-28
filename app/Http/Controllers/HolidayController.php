@@ -45,15 +45,8 @@ class HolidayController extends Controller
             $daysRequested = $interval->days;
 
             // Solo cuenta si el tipo es "vacation"
-            $vacationTypeId = 1; // o el ID que corresponda a vacaciones
-            if ((int) $request->holiday_id === $vacationTypeId) {
-                if ($employee->days < $daysRequested) {
-                    return response()->json(['error' => 'This employee does not have enough vacation days left'], 400);
-                }
-
-                // Descuenta días solo si es tipo "vacation"
-                $employee->days -= $daysRequested;
-                $employee->save();
+            if ($request->holiday_id == 1 && $employee->days < $daysRequested) {
+                return response()->json(['error' => 'The employee doesnt have taht many days left'], 400);
             }
 
             // Crear la ausencia (ajustar fecha si es necesario)
@@ -65,6 +58,10 @@ class HolidayController extends Controller
                 'end_date' => $request->end_date,
                 'holiday_id' => $request->holiday_id,
             ]);
+            if ($request->holiday_id == 1) {
+                $employee->days -= $daysRequested;
+                $employee->save();
+            }
 
             return response()->json([
                 'success' => 'Absence added correctly.',

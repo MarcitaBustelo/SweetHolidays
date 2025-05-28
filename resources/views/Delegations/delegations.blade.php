@@ -148,6 +148,8 @@
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+    <!-- SweetAlert2 para popups -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function () {
@@ -185,6 +187,32 @@
                     modal.find('#submitBtn').text('@lang('Save')');
                 }
             });
+
+            // --- INICIO: Mensaje de success con SweetAlert2 ---
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}',
+                    confirmButtonColor: '#6a3cc9'
+                });
+            @endif
+            // --- FIN: Mensaje de success con SweetAlert2 ---
+
+            // --- INICIO: Mensaje de error con SweetAlert2 si hay errores de validación ---
+            @if ($errors->any())
+                let errorMsg = '';
+                @foreach ($errors->all() as $error)
+                    errorMsg += "{{ $error }}\n";
+                @endforeach
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMsg,
+                    confirmButtonColor: '#6a3cc9'
+                });
+            @endif
+            // --- FIN: Mensaje de error con SweetAlert2 ---
         });
     </script>
 @endsection

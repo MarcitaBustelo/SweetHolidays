@@ -35,7 +35,7 @@
                         <th>Delegation</th>
                         <th>Department</th>
                         @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
-                            <th>Responsable</th>
+                            <th>Responsible</th>
                         @endif
                         <th>Total Days</th>
                          @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
@@ -76,7 +76,7 @@
                                     @csrf
                                     @method('PUT')
                                         <select name="responsable" class="form-control form-control-sm mr-2" style="width: 150px;">
-                                           <option value="">No Responsable</option>
+                                           <option value="">No Responsible</option>
                                               @foreach ($responsables as $responsable)
                                                    <option value="{{ $responsable->employee_id }}" 
                                                       {{ $employee->responsable == $responsable->employee_id ? 'selected' : '' }}>

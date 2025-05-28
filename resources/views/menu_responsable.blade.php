@@ -5,10 +5,10 @@
     @stack('js')
 @endsection
 
-@section('title', 'Responsable Menu')
+@section('title', 'Responsible Menu')
 
 @section('content_header')
-<h1 style="color: #4b0082;">Responsable Menu</h1>
+<h1 style="color: #4b0082;">Responsible Menu</h1>
 @stop
 
 @section('content')

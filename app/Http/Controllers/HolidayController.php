@@ -84,6 +84,8 @@ class HolidayController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'holiday_type_id' => 'nullable|exists:holiday_types,id',
+            'original_start_date' => 'nullable|date',
+            'original_end_date' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -99,25 +101,33 @@ class HolidayController extends Controller
 
             $user = $holiday->employee;
 
-            $originalStart = new \DateTime($holiday->start_date);
-            $originalEnd = new \DateTime($holiday->end_date);
+            // Original dates (from request or fallback to DB)
+            $originalStart = new \DateTime($request->original_start_date ?? $holiday->start_date);
+            $originalEnd = new \DateTime($request->original_end_date ?? $holiday->end_date);
             $originalDays = $originalStart->diff($originalEnd)->days + 1;
 
+            // New dates
             $newStart = new \DateTime($request->start_date);
             $newEnd = new \DateTime($request->end_date);
             $newDays = $newStart->diff($newEnd)->days + 1;
 
-            $adjustedStartDate = $newStart->modify('+1 day')->format('Y-m-d');
-
-            // Determinar si sigue siendo tipo vacaciones o si cambió
+            $adjustedStartDate = (clone $newStart)->modify('+1 day')->format('Y-m-d');
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
             if ((int) $holiday->holiday_type_id === 1) {
                 $difference = $originalDays - $newDays;
 
-                // Si se acortó la ausencia, devolver días
                 if ($difference > 0) {
+                    // Se acortó: devolver días
                     $user->days += $difference;
+                    $user->save();
+                } elseif ($difference < 0) {
+                    // Se alargó: verificar si tiene suficientes días
+                    $extraNeeded = abs($difference);
+                    if ($user->days < $extraNeeded) {
+                        return response()->json(['error' => 'Not enough vacation days left for this extension.'], 400);
+                    }
+                    $user->days -= $extraNeeded;
                     $user->save();
                 }
             }

@@ -81,7 +81,6 @@ class HolidayController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'holiday_id' => 'required|exists:holidays,id',
-            'days' => 'required|users, days',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'holiday_type_id' => 'nullable|exists:holidays_types,id',

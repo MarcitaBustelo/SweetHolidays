@@ -82,7 +82,7 @@ class HolidayController extends Controller
         $validator = Validator::make($request->all(), [
             'holiday_id' => 'required|exists:holidays,id',
             'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after_or_equal:start_date', // Debe ser required, igual que en assign
             'holiday_type_id' => 'nullable|exists:holidays_types,id',
         ]);
 
@@ -97,44 +97,47 @@ class HolidayController extends Controller
                 return response()->json(['error' => 'The absence doesn’t exist'], 404);
             }
 
-            $user = $holiday->employee; // <-- Chequea que esta relación esté bien definida
-
-            // DEBUG: ¿Existe el usuario y el campo days?
-            if (!$user) {
+            $employee = $holiday->employee; // Relación igual que en assign
+            if (!$employee) {
                 return response()->json(['error' => 'Employee not found'], 404);
             }
-            if ($user->days === null) {
-                $user->days = 0;
+            if ($employee->days === null) {
+                $employee->days = 0;
             }
 
+            // Calcular días originales y nuevos
             $originalStart = new \DateTime($holiday->start_date);
             $originalEnd = new \DateTime($holiday->end_date);
-            $originalDays = $originalStart->diff($originalEnd)->days + 1;
+            $originalDays = $originalStart->diff($originalEnd)->days;
 
             $newStart = new \DateTime($request->start_date);
             $newEnd = new \DateTime($request->end_date);
-            $newDays = $newStart->diff($newEnd)->days + 1;
+            $newDays = $newStart->diff($newEnd)->days;
 
-            $adjustedStartDate = $request->start_date; // o tu lógica
+            // Ajustar start_date (+1 día) igual que en assign
+            $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
 
-            $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
-
-            if ($holiday->holiday_type_id === 1) {
+            // Si el tipo de ausencia es vacaciones (id 1)
+            if ($holiday->holiday_type_id == 1) {
                 $difference = $newDays - $originalDays;
+
                 if ($difference > 0) {
-                    // Se han cogido más días: RESTA
-                    $user->days -= $difference;
+                    // Se alarga la ausencia, RESTAR días extra al usuario
+                    if ($employee->days < $difference) {
+                        return response()->json(['error' => 'El empleado no tiene suficientes días para ampliar la ausencia'], 400);
+                    }
+                    $employee->days -= $difference;
                 } elseif ($difference < 0) {
-                    // Se han cogido menos días: SUMA
-                    $user->days += abs($difference);
+                    // Se acorta la ausencia, SUMAR los días recuperados
+                    $employee->days += abs($difference);
                 }
-                $user->save(); // ¡SOLO guardas el modelo, no una variable!
+                $employee->save();
             }
 
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
-                'holiday_type_id' => $newHolidayTypeId,
+                'holiday_type_id' => $request->holiday_type_id ?? $holiday->holiday_type_id,
             ]);
 
             return response()->json([

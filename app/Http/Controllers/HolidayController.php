@@ -44,11 +44,19 @@ class HolidayController extends Controller
             $interval = $startDate->diff($endDate);
             $daysRequested = $interval->days;
 
-            if ($employee->days < $daysRequested) {
-                return response()->json(['error' => 'This employee does not have enough vacation days left'], 400);
+            // Solo cuenta si el tipo es "vacation"
+            $vacationTypeId = 1; // o el ID que corresponda a vacaciones
+            if ((int) $request->holiday_id === $vacationTypeId) {
+                if ($employee->days < $daysRequested) {
+                    return response()->json(['error' => 'This employee does not have enough vacation days left'], 400);
+                }
+
+                // Descuenta días solo si es tipo "vacation"
+                $employee->days -= $daysRequested;
+                $employee->save();
             }
 
-            // Crear la ausencia
+            // Crear la ausencia (ajustar fecha si es necesario)
             $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
 
             $holiday = Holiday::create([
@@ -57,9 +65,6 @@ class HolidayController extends Controller
                 'end_date' => $request->end_date,
                 'holiday_id' => $request->holiday_id,
             ]);
-
-            $employee->days -= $daysRequested;
-            $employee->save();
 
             return response()->json([
                 'success' => 'Absence added correctly.',
@@ -73,6 +78,7 @@ class HolidayController extends Controller
             return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
     }
+
 
     public function updateHoliday(Request $request)
     {

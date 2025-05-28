@@ -7,13 +7,10 @@ use Illuminate\Http\Request;
 
 class HolidayTypeController extends Controller
 {
-    /**
-     */
     public function index()
     {
         $holiday_types = HolidayType::all();
         return view('holidaystypes.holidaystypes', compact('holiday_types'));
-
     }
 
     public function store(Request $request)
@@ -31,39 +28,18 @@ class HolidayTypeController extends Controller
             ], 422);
         }
 
+        $color = $request->filled('color') ? $request->input('color') : $this->generateRandomColor($request->input('type'));
+
         $holidayType = HolidayType::create([
             'type' => $request->input('type'),
+            'color' => $color
         ]);
-
-        $holidayType->color = $this->generateRandomColor($holidayType->id);
-        $holidayType->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Type of absence created successfully.',
             'data' => $holidayType,
         ]);
-    }
-
-    public function delete(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|integer|exists:holidays_types,id',
-        ]);
-
-        $holidayType = HolidayType::find($request->input('id'));
-        $holidayType->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Type of absence deleted successfully.',
-        ]);
-    }
-
-    private function generateRandomColor($id)
-    {
-        $hash = md5($id);
-        return '#' . substr($hash, 0, 6); // Tomar los primeros 6 caracteres del hash para el color
     }
 
     public function update(Request $request, $id)
@@ -87,11 +63,8 @@ class HolidayTypeController extends Controller
         }
 
         $holidayType->type = $request->input('type');
-
-        // Si se permite actualizar el color manualmente, puedes agregarlo aquí:
-        if ($request->filled('color')) {
-            $holidayType->color = $request->input('color');
-        }
+        // Si se permite actualizar el color manualmente:
+        $holidayType->color = $request->filled('color') ? $request->input('color') : $this->generateRandomColor($holidayType->id);
 
         $holidayType->save();
 
@@ -100,5 +73,26 @@ class HolidayTypeController extends Controller
             'message' => 'Type of absence updated successfully.',
             'data' => $holidayType,
         ]);
+    }
+
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:holidays_types,id',
+        ]);
+
+        $holidayType = HolidayType::find($request->input('id'));
+        $holidayType->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Type of absence deleted successfully.',
+        ]);
+    }
+
+    private function generateRandomColor($seed)
+    {
+        $hash = md5($seed . microtime());
+        return '#' . substr($hash, 0, 6);
     }
 }

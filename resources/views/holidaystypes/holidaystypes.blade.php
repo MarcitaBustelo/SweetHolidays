@@ -36,22 +36,15 @@
                     <tr>
                         <td>{{ $type->type }}</td>
                         <td>
-                            <span
-                                style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background-color: {{ $type->color }}; border: 1px solid #ccc;"
-                                title="{{ $type->color }}"></span>
-                            <span style="margin-left: 8px; color: #555;">{{ $type->color }}</span>
-                        </td>
-                        <!-- <td>
                             <span style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background-color: {{ $type->color }}; border: 1px solid #ccc;" title="{{ $type->color }}"></span>
-                        </td> -->
+                        </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal"
                                 data-target="#holidayTypeModal" data-action="edit" data-id="{{ $type->id }}"
                                 data-type="{{ $type->type }}" data-color="{{ $type->color }}">
                                 <i class="fas fa-edit"></i> @lang('Edit')
                             </button>
-                            <form action="{{ route('holiday_types.delete') }}" method="POST" style="display: inline-block;"
-                                onsubmit="return confirm('@lang('Are you sure you want to delete this absence type?')')">
+                            <form action="{{ route('holiday_types.delete') }}" method="POST" class="delete-type-form" style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')
                                 <input type="hidden" name="id" value="{{ $type->id }}">
@@ -83,7 +76,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="holidayTypeForm" action="{{ route('holiday_types.store') }}" method="POST">
+                <form id="holidayTypeForm">
                     @csrf
                     <input type="hidden" name="id" id="holidayTypeId">
                     <div class="form-group">
@@ -162,7 +155,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
-        // Initialize DataTable
         $('#holidayTypesTable').DataTable({
             "paging": true,
             "lengthChange": false,
@@ -172,6 +164,7 @@
             "autoWidth": false
         });
 
+        // Modal open for add/edit
         $('#holidayTypeModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var action = button.data('action');
@@ -189,10 +182,8 @@
                 modal.find('#holidayTypeId').val(typeId);
                 modal.find('#holidayTypeName').val(typeName);
                 modal.find('#holidayTypeColor').val(typeColor);
-                form.attr('action', '/holiday_types/' + typeId);
-
-                // Add hidden input for PUT method spoofing
-                form.append('<input type="hidden" name="_method" value="PUT">');
+                form.data('action', 'edit');
+                form.data('id', typeId);
 
                 modal.find('#submitBtn').text('@lang('Update')');
             } else {
@@ -200,34 +191,113 @@
                 modal.find('#holidayTypeId').val('');
                 modal.find('#holidayTypeName').val('');
                 modal.find('#holidayTypeColor').val('');
-                form.attr('action', '/holiday_types');
+                form.data('action', 'add');
+                form.data('id', '');
 
                 modal.find('#submitBtn').text('@lang('Save')');
             }
         });
 
-        // --- Success message with SweetAlert2 ---
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: '{{ session('success') }}',
-                confirmButtonColor: '#6a3cc9'
+        // Ajax form submit (add/update)
+        $('#holidayTypeForm').on('submit', function (e) {
+            e.preventDefault();
+            var action = $(this).data('action');
+            var id = $(this).data('id');
+            var url = action === 'edit' ? '/holiday_types/' + id : '/holiday_types';
+            var method = action === 'edit' ? 'PUT' : 'POST';
+
+            var data = {
+                type: $('#holidayTypeName').val(),
+                color: $('#holidayTypeColor').val(),
+                _token: '{{ csrf_token() }}'
+            };
+
+            if (action === 'edit') {
+                data._method = 'PUT';
+            }
+
+            $.ajax({
+                url: url,
+                method: 'POST', // Laravel requiere POST para spoof PUT
+                data: data,
+                dataType: 'json',
+                success: function (response) {
+                    Swal.fire({
+                        icon: response.success ? 'success' : 'error',
+                        title: response.success ? 'Success' : 'Error',
+                        text: JSON.stringify(response),
+                        confirmButtonColor: '#6a3cc9'
+                    }).then(() => {
+                        if (response.success) {
+                            location.reload();
+                        }
+                    });
+                    $('#holidayTypeModal').modal('hide');
+                },
+                error: function (xhr) {
+                    let json = xhr.responseJSON;
+                    let msg = json && json.message ? json.message : 'An error occurred';
+                    if (json && json.errors) {
+                        msg += '\n' + Object.values(json.errors).join('\n');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg,
+                        confirmButtonColor: '#6a3cc9'
+                    });
+                }
             });
-        @endif
-            // --- Error message with SweetAlert2 for validation errors ---
-            @if ($errors->any())
-                let errorMsg = '';
-                @foreach ($errors->all() as $error)
-                    errorMsg += "{{ $error }}\n";
-                @endforeach
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMsg,
-                    confirmButtonColor: '#6a3cc9'
-                });
-            @endif
+        });
+
+        // Borrado con confirmación y respuesta JSON
+        $('.delete-type-form').on('submit', function (e) {
+            e.preventDefault();
+            var form = this;
+            Swal.fire({
+                title: '@lang('Are you sure you want to delete this absence type?')',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '@lang('Delete')',
+                cancelButtonText: '@lang('Cancel')'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $(form).attr('action'),
+                        method: 'POST',
+                        data: $(form).serialize(),
+                        dataType: 'json',
+                        success: function (response) {
+                            Swal.fire({
+                                icon: response.success ? 'success' : 'error',
+                                title: response.success ? 'Deleted' : 'Error',
+                                text: JSON.stringify(response),
+                                confirmButtonColor: '#6a3cc9'
+                            }).then(() => {
+                                if (response.success) {
+                                    location.reload();
+                                }
+                            });
+                        },
+                        error: function (xhr) {
+                            let json = xhr.responseJSON;
+                            let msg = json && json.message ? json.message : 'An error occurred';
+                            if (json && json.errors) {
+                                msg += '\n' + Object.values(json.errors).join('\n');
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: msg,
+                                confirmButtonColor: '#6a3cc9'
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
 @stop

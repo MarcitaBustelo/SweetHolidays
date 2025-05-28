@@ -228,7 +228,7 @@ class HolidayController extends Controller
                 $employeeId = $holiday->employee_id;
                 $date = now()->format('Ymd');
                 $nextFileIndex = Holiday::where('employee_id', $employeeId)
-                    ->where('file', 'LIKE', "justified/{$employeeId}{$date}%")
+                    ->where('file', 'LIKE', "images/proof_{$employeeId}_{$date}%")
                     ->count() + 1;
 
                 $fileName = "proof_{$employeeId}_{$date}_{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
@@ -245,8 +245,8 @@ class HolidayController extends Controller
                 'holiday' => $holiday,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error al actualizar la ausencia: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al actualizar la ausencia.'], 500);
+            Log::error('Error updating absence: ' . $e->getMessage());
+            return response()->json(['error' => 'Something happened while updating absence´s details.'], 500);
         }
     }
 
@@ -264,8 +264,8 @@ class HolidayController extends Controller
                 'end_date' => $holiday->end_date,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error al obtener los detalles de la ausencia: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al obtener los detalles de la ausencia.'], 500);
+            Log::error('Something happened while obtaining absence´s details: ' . $e->getMessage());
+            return response()->json(['error' => 'Something happened while obtaining absence´s details.'], 500);
         }
     }
 
@@ -277,12 +277,38 @@ class HolidayController extends Controller
         ]);
 
         $holiday = Holiday::findOrFail($request->holiday_id);
+
+        // Si el nuevo tipo es VACATION (ID=1)
+        if ((int) $request->absenceType === 1) {
+            $user = $holiday->employee; // Ajusta si tu relación es diferente
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Employee not found.'
+                ], 404);
+            }
+
+            // Calcula los días de ausencia
+            $start = new \DateTime($holiday->start_date);
+            $end = new \DateTime($holiday->end_date);
+            $daysToUse = $start->diff($end)->days + 1;
+
+            // Comprueba si tiene suficientes días
+            if ($user->days < $daysToUse) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This employee does not have enough vacation days left.'
+                ], 400);
+            }
+        }
+
         $holiday->holiday_id = $request->absenceType;
         $holiday->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de ausencia actualizado correctamente.'
+            'message' => 'Type of absence updated successfully.',
         ]);
     }
 
@@ -317,7 +343,7 @@ class HolidayController extends Controller
                 return response()->json([
                     'success' => true,
                     'absences' => [],
-                    'message' => 'No se encontraron empleados bajo su responsabilidad.',
+                    'message' => 'No employees found for the authenticated user.',
                 ]);
             }
             $holidays = Holiday::with('holidayType', 'employee')

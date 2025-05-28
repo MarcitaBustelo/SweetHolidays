@@ -286,6 +286,13 @@ class UserController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
+        if ($endDate->lt($startDate)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The end date cannot be earlier than the start date.',
+            ], 422);
+        }
+        
         // Validar que ninguna fecha sea anterior a hoy
         if ($startDate->lt($today) || $endDate->lt($today)) {
             return response()->json([
@@ -321,7 +328,7 @@ class UserController extends Controller
         $responsable = User::where('employee_id', $user->responsable)->first();
 
         if (!$responsable || !$responsable->email) {
-            return response()->json(['success' => false, 'message' => 'Responsable\'s email not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Responsible\'s email not found'], 404);
         }
 
         $data = [
@@ -355,7 +362,7 @@ class UserController extends Controller
         $employee->responsable = $request->input('responsable');
         $employee->save();
 
-        return redirect()->back()->with('success', 'Responsable updated successfully.');
+        return redirect()->back()->with('success', 'Responsible updated successfully.');
     }
     public function updateDepartment(Request $request, $id)
     {

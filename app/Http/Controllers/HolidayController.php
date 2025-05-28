@@ -97,8 +97,15 @@ class HolidayController extends Controller
                 return response()->json(['error' => 'The absence doesn’t exist'], 404);
             }
 
-            $user = $holiday->employee;
-            $days=$user->days;
+            $user = $holiday->employee; // <-- Chequea que esta relación esté bien definida
+
+            // DEBUG: ¿Existe el usuario y el campo days?
+            if (!$user) {
+                return response()->json(['error' => 'Employee not found'], 404);
+            }
+            if ($user->days === null) {
+                $user->days = 0;
+            }
 
             $originalStart = new \DateTime($holiday->start_date);
             $originalEnd = new \DateTime($holiday->end_date);
@@ -108,26 +115,25 @@ class HolidayController extends Controller
             $newEnd = new \DateTime($request->end_date);
             $newDays = $newStart->diff($newEnd)->days + 1;
 
-            $adjustedStartDate = $newStart->modify('+1 day')->format('Y-m-d');
+            $adjustedStartDate = $request->start_date; // o tu lógica
 
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
             if ($holiday->holiday_type_id === 1) {
                 $difference = $newDays - $originalDays;
                 if ($difference > 0) {
-                    $days -= $difference;
-                    $user->save();
+                    // Se han cogido más días: RESTA
+                    $user->days -= $difference;
                 } elseif ($difference < 0) {
-                    // Se han cogido menos días: SUMAR
-                    $days += abs($difference);
-                    $user->save();
+                    // Se han cogido menos días: SUMA
+                    $user->days += abs($difference);
                 }
+                $user->save(); // ¡SOLO guardas el modelo, no una variable!
             }
 
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
-                'days' => $days,
                 'holiday_type_id' => $newHolidayTypeId,
             ]);
 
@@ -136,7 +142,7 @@ class HolidayController extends Controller
                 'holiday' => $holiday
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
+            return response()->json(['error' => 'Something wrong happened while saving the absence', 'details' => $e->getMessage()], 500);
         }
     }
 

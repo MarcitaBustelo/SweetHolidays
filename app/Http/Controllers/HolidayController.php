@@ -46,7 +46,7 @@ class HolidayController extends Controller
 
             // Solo cuenta si el tipo es "vacation"
             if ($request->holiday_id == 1 && $employee->days < $daysRequested) {
-                return response()->json(['error' => 'The employee doesnt have taht many days left'], 400);
+                return response()->json(['error' => 'The employee doesnt have that many days left'], 400);
             }
 
             // Crear la ausencia (ajustar fecha si es necesario)

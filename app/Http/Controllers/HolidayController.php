@@ -110,7 +110,7 @@ class HolidayController extends Controller
             $adjustedStartDate = $newStart->modify('+1 day')->format('Y-m-d');
 
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
-            dd($newHolidayTypeId);
+
             if ($holiday->holiday_type_id === 1) {
                 $difference = $originalDays - $newDays;
                 if ($difference > 0) {

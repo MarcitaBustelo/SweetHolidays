@@ -719,7 +719,10 @@
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'Accept': 'application/json', // Esto es clave
+
                     },
+                    body: JSON.stringify(data),
                     credentials: 'same-origin',
                     body: formData
                 })

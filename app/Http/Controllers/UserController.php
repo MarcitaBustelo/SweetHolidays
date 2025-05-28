@@ -279,30 +279,21 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'reason' => 'required|string|max:1000',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date',
         ]);
 
         $today = Carbon::today();
         $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
-        try {
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
-            $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid date format.',
-            ], 422);
-        }
-
+        
         if ($endDate->lt($startDate)) {
             return response()->json([
                 'success' => false,
                 'message' => 'The end date cannot be earlier than the start date.',
             ], 422);
         }
-
+        
         // Validar que ninguna fecha sea anterior a hoy
         if ($startDate->lt($today) || $endDate->lt($today)) {
             return response()->json([

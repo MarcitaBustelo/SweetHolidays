@@ -282,15 +282,27 @@ class UserController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
+        $today = Carbon::today();
+        $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
-        if ($endDate->isFriday()) {
+        // Validar que ninguna fecha sea anterior a hoy
+        if ($startDate->lt($today) || $endDate->lt($today)) {
             return response()->json([
                 'success' => false,
-                'message' => 'If the last day is friday, the request must include saturday and sunday.',
+                'message' => 'Start date and end date must be today or in the future.',
             ], 422);
         }
 
+        // Validación adicional: si el último día es viernes, incluir sábado y domingo
+        if ($endDate->isFriday()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'If the last day is Friday, the request must include Saturday and Sunday.',
+            ], 422);
+        }
+
+        // Si el día siguiente es festivo
         $nextDay = $endDate->copy()->addDay();
         $isFestive = Festive::where('date', $nextDay->format('Y-m-d'))->exists();
 
@@ -309,7 +321,7 @@ class UserController extends Controller
         $responsable = User::where('employee_id', $user->responsable)->first();
 
         if (!$responsable || !$responsable->email) {
-            return response()->json(['success' => false, 'message' => 'Responsable´s email not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Responsable\'s email not found'], 404);
         }
 
         $data = [
@@ -331,6 +343,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Oops! Something went wrong: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function updateResponsable(Request $request, $id)
     {
@@ -378,58 +391,5 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
-
-    //METODOS PARA EMPLEADOS QUE HAY QUE HACER API
-
-    // MANDAR EMAIL PARA SOLICITAR VACACIONES
-    // public function sendEmail(Request $request, $id)
-    // {
-    //     Validar las entradas del formulario
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'reason' => 'required|string|max:1000',
-    //         'start_date' => 'required|date',
-    //         'end_date' => 'required|date|after_or_equal:start_date',
-    //     ]);
-
-    //     $user = User::find($id);
-
-    //     if ($user) {
-    //         Obtener el employee_id del responsable del usuario
-    //         $responsableId = $user->responsable;
-
-    //         if ($responsableId) {
-    //             $responsable = Employee::where('employee_id', $responsableId)->first();
-
-    //             if ($responsable && $responsable->professional_email) {
-    //                 $data = [
-    //                     'name' => $request->input('name'),
-    //                     'reason' => $request->input('reason'),
-    //                     'start_date' => $request->input('start_date'),
-    //                     'end_date' => $request->input('end_date'),
-    //                     'responsable_email' => $responsable->professional_email,
-    //                 ];
-
-    //                 Enviar el correo
-    //                 Mail::send('email', $data, function ($message) use ($data) {
-    //                     $message->to($data['responsable_email'])
-    //                         ->subject('Solicitud de Ausencia');
-    //                 });
-
-    //                 return response()->json(['success' => true, 'message' => 'Correo enviado con éxito.']);
-    //             }
-
-    //             return response()->json(['success' => false, 'message' => 'Correo del responsable no encontrado.'], 404);
-    //         }
-
-    //         return response()->json(['success' => false, 'message' => 'Responsable no asignado al usuario.'], 404);
-    //     }
-
-    //     return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
-    // }
-
-    //VER CALENDARIO CON LOS FESTIOS Y SUS AUSENCIAS
-
-
 
 }

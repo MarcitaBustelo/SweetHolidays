@@ -12,7 +12,8 @@ class HolidayTypeController extends Controller
     public function index()
     {
         $holiday_types = HolidayType::all();
-        return response()->json($holiday_types);
+        return view('holidaystypes.holidaystypes', compact('holiday_types'));
+
     }
 
     public function store(Request $request)
@@ -63,5 +64,41 @@ class HolidayTypeController extends Controller
     {
         $hash = md5($id);
         return '#' . substr($hash, 0, 6); // Tomar los primeros 6 caracteres del hash para el color
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'type' => 'required|string|max:255',
+        ]);
+
+        $holidayType = HolidayType::findOrFail($id);
+
+        // Verifica que no exista otro registro (distinto al actual) con el mismo nombre (case insensitive)
+        $existingType = HolidayType::whereRaw('LOWER(type) = ?', [strtolower($request->input('type'))])
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The absence type already exists.',
+            ], 422);
+        }
+
+        $holidayType->type = $request->input('type');
+
+        // Si se permite actualizar el color manualmente, puedes agregarlo aquí:
+        if ($request->filled('color')) {
+            $holidayType->color = $request->input('color');
+        }
+
+        $holidayType->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Type of absence updated successfully.',
+            'data' => $holidayType,
+        ]);
     }
 }

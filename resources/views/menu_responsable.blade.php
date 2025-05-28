@@ -49,24 +49,19 @@
         </div>
     </div>
 
-    <!-- Manage Leave Types -->
-    <div class="col-md-6 mb-4">
+        <div class="col-md-6 mb-4">
         <div class="card shadow-sm" style="background-color: #f5e8ff; border-color: #e0c3fc;">
             <div class="card-header" style="background-color: #e0c3fc; border-bottom-color: #c79bf2;">
                 <h3 class="card-title" style="color: #4b0082;">
-                    <i class="fas fa-calendar-plus mr-2"></i>Manage Leave Types
+                    <i class="fas fa-user mr-2"></i>Manage Leave Types
                 </h3>
             </div>
             <div class="card-body">
                 <p style="color: #4b0082;">Manage types of work absences.</p>
-                <button id="btn-create-type" class="btn"
-                    style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
-                    <i class="fas fa-calendar-plus mr-1"></i> Create New Type
-                </button>
-                <button id="btn-view-types" class="btn"
-                    style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
-                    <i class="fas fa-list mr-1"></i> View Existing Types
-                </button>
+                <a href="{{ route('holiday_types.index') }}" class="btn"
+                    style="background-color: #a066c9; color: white; border: none;">
+                    <i class="fas fa-user mr-2"></i> View Types
+                </a>
             </div>
         </div>
     </div>

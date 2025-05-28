@@ -226,7 +226,6 @@ class UserController extends Controller
 
         $vacationDaysUsed = 0;
         $absenceDaysUsed = 0;
-        $totalDaysUsed = 0;
 
         foreach ($holidays as $holiday) {
             $days = $this->calculateDays($holiday->start_date, $holiday->end_date);
@@ -236,11 +235,12 @@ class UserController extends Controller
             } else {
                 $absenceDaysUsed += $days;
             }
-
-            $totalDaysUsed += $days;
         }
+
         $totalDays = $user->days_in_total;
-        $remainingDays = $user->days;
+        $remainingDays = $totalDays - $vacationDaysUsed;
+        $totalDaysUsed = $vacationDaysUsed + $absenceDaysUsed;
+
         $upcomingHolidays = Holiday::where('employee_id', $user->id)
             ->where('start_date', '>=', now()->format('Y-m-d'))
             ->orderBy('start_date')
@@ -257,6 +257,7 @@ class UserController extends Controller
             'upcomingHolidays'
         ));
     }
+
     private function calculateDays($startDate, $endDate = null)
     {
         if (!$endDate) {

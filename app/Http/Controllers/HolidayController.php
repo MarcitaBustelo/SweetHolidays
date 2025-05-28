@@ -83,37 +83,58 @@ class HolidayController extends Controller
             'holiday_id' => 'required|exists:holidays,id',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'holiday_type_id' => 'nullable|exists:holiday_types,id', // Validación para el holiday_type_id
+            'holiday_type_id' => 'nullable|exists:holiday_types,id',
         ]);
 
         if ($validator->fails()) {
-            Log::error('Errores de validación:', $validator->errors()->toArray());
             return response()->json(['error' => $validator->errors()], 422);
         }
+
         try {
-            $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
             $holiday = Holiday::find($request->holiday_id);
 
             if (!$holiday) {
-                return response()->json(['error' => 'La ausencia no existe.'], 404);
+                return response()->json(['error' => 'The absence doesn’t exist'], 404);
+            }
+
+            $user = $holiday->employee;
+
+            $originalStart = new \DateTime($holiday->start_date);
+            $originalEnd = new \DateTime($holiday->end_date);
+            $originalDays = $originalStart->diff($originalEnd)->days + 1;
+
+            $newStart = new \DateTime($request->start_date);
+            $newEnd = new \DateTime($request->end_date);
+            $newDays = $newStart->diff($newEnd)->days + 1;
+
+            $adjustedStartDate = $newStart->modify('+1 day')->format('Y-m-d');
+
+            // Determinar si sigue siendo tipo vacaciones o si cambió
+            $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
+
+            if ((int) $holiday->holiday_type_id === 1) {
+                $difference = $originalDays - $newDays;
+
+                // Si se acortó la ausencia, devolver días
+                if ($difference > 0) {
+                    $user->days += $difference;
+                    $user->save();
+                }
             }
 
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
-                'holiday_type_id' => $request->holiday_type_id ?? $holiday->holiday_type_id, // Actualizar holiday_type si se envía
+                'holiday_type_id' => $newHolidayTypeId,
             ]);
 
             return response()->json([
-                'success' => 'Ausencia actualizada correctamente.',
+                'success' => 'Updated absence successfully.',
                 'holiday' => $holiday
             ]);
         } catch (\Exception $e) {
-            Log::error('Error: ' . $e->getMessage());
-            Log::error($e->getTraceAsString());
             return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
-
     }
 
 

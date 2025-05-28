@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\HolidayType;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 
 use Illuminate\Http\Request;
@@ -162,24 +163,24 @@ class HolidayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::info('Validación fallida', ['errors' => $validator->errors()]);
+            Log::info('Failed validation', ['errors' => $validator->errors()]);
             return response()->json(['error' => $validator->errors()], 422);
         }
 
         try {
-            Log::info('Buscando la ausencia', ['holiday_id' => $request->holiday_id]);
+            Log::info('Looking for absence', ['holiday_id' => $request->holiday_id]);
             $holiday = Holiday::find($request->holiday_id);
 
             if (!$holiday) {
-                Log::warning('La ausencia no existe o ya fue eliminada.', ['holiday_id' => $request->holiday_id]);
-                return response()->json(['error' => 'La ausencia no existe o ya fue eliminada.'], 404);
+                Log::warning('The absence doesnt exist or was already deleted', ['holiday_id' => $request->holiday_id]);
+                return response()->json(['error' => 'absence doesnt exist or was already deleted'], 404);
             }
 
             $employee = $holiday->employee;
 
             if (!$employee) {
-                Log::warning('El empleado asociado no existe.', ['holiday_id' => $request->holiday_id]);
-                return response()->json(['error' => 'El empleado asociado no existe.'], 404);
+                Log::warning('The employee associated with doesnt exist.', ['holiday_id' => $request->holiday_id]);
+                return response()->json(['error' => 'the employee associated with doesnt exist'], 404);
             }
 
             $startDate = new \DateTime($holiday->start_date);
@@ -196,18 +197,18 @@ class HolidayController extends Controller
             $employee->save();
 
             // Eliminar la ausencia
-            Log::info('Eliminando la ausencia', ['holiday' => $holiday]);
+            Log::info('Deleting absence...', ['holiday' => $holiday]);
             $holiday->delete();
 
-            Log::info('Ausencia eliminada correctamente.');
+            Log::info('Absence deleted successfully');
             return response()->json([
-                'success' => 'Ausencia eliminada correctamente. Los días han sido devueltos.',
+                'success' => 'Absence deleted successfully. The days were given back.',
                 'days_restored' => $daysToReturn,
                 'employee_days' => $employee->days,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error al eliminar la ausencia: ' . $e->getMessage());
-            return response()->json(['error' => 'Ocurrió un error al eliminar la ausencia.'], 500);
+            Log::error('Error while deleting absence: ' . $e->getMessage());
+            return response()->json(['error' => 'Something happened while deleting absence.'], 500);
         }
     }
 
@@ -232,9 +233,16 @@ class HolidayController extends Controller
                     ->count() + 1;
 
                 $fileName = "proof_{$employeeId}_{$date}_{$nextFileIndex}." . $request->file('file')->getClientOriginalExtension();
-                $filePath = $request->file('file')->storeAs('images', $fileName, 'public');
+                $destinationPath = public_path('storage/images');
 
-                $holiday->file = $filePath;
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true); // Crea el directorio si no existe
+                }
+
+                $request->file('file')->move($destinationPath, $fileName);
+
+                $holiday->file = "images/$fileName";
+
             }
 
             $holiday->save();

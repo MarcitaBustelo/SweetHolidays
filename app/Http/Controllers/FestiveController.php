@@ -20,6 +20,9 @@ class FestiveController extends Controller
         $delegations = Delegation::all();
         return view('Festives.festives', compact('festives', 'delegations'));
     }
+
+
+
     public function store(Request $request)
     {
         // Validar los datos
@@ -31,6 +34,12 @@ class FestiveController extends Controller
         ], [
             'delegation_id.required_if' => 'A delegation must not be selected when the festive is national.',
         ]);
+
+        // Comprobar si ya existe un festivo con ese nombre (case insensitive)
+        $exists = Festive::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->exists();
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This festive name already exists.']);
+        }
 
         $festive = new Festive();
         $festive->name = $request->name;
@@ -49,14 +58,6 @@ class FestiveController extends Controller
         return redirect()->back()->with('success', 'Festive created successfully.');
     }
 
-    public function destroy($id)
-    {
-        $festive = Festive::findOrFail($id);
-        $festive->delete();
-
-        return redirect()->back()->with('success', 'Festive deleted successfully.');
-    }
-
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -65,6 +66,14 @@ class FestiveController extends Controller
             'delegation_id' => 'nullable|exists:delegations,id',
             'national' => 'nullable|boolean',
         ]);
+
+        // Comprobar si ya existe otro festivo con ese nombre (case insensitive, excluyendo el actual)
+        $exists = Festive::whereRaw('LOWER(name) = ?', [strtolower($request->name)])
+            ->where('id', '!=', $id)
+            ->exists();
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This festive name already exists.']);
+        }
 
         $festive = Festive::findOrFail($id);
         $festive->name = $request->name;
@@ -81,6 +90,13 @@ class FestiveController extends Controller
         $festive->save();
 
         return redirect()->back()->with('success', 'Festive updated successfully.');
+    }
+    public function destroy($id)
+    {
+        $festive = Festive::findOrFail($id);
+        $festive->delete();
+
+        return redirect()->back()->with('success', 'Festive deleted successfully.');
     }
     public function updateFestiveYear()
     {

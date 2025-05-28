@@ -24,6 +24,13 @@ class DepartmentController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
+        // Comprobar si ya existe un departamento con ese nombre (case insensitive)
+        $exists = Department::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->exists();
+
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This department already exists.']);
+        }
+
         Department::create($request->all());
 
         return redirect()->route('departments.departments')->with('success', 'Department created successfully.');
@@ -34,6 +41,15 @@ class DepartmentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+
+        // Comprobar si ya existe otro departamento con ese nombre (case insensitive, excluyendo el actual)
+        $exists = Department::whereRaw('LOWER(name) = ?', [strtolower($request->name)])
+            ->where('id', '!=', $department->id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This department name already exists.']);
+        }
 
         $department->update($request->all());
 

@@ -31,6 +31,13 @@ class DelegationController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
+        // Comprobar si ya existe una delegación con ese nombre (case insensitive)
+        $exists = Delegation::whereRaw('LOWER(name) = ?', [strtolower($request->name)])->exists();
+
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This delegation already exists.']);
+        }
+
         Delegation::create($request->all());
 
         return redirect()->route('delegations.delegations')->with('success', 'Delegation created successfully');
@@ -41,6 +48,15 @@ class DelegationController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
+
+        // Comprobar si ya existe otra delegación con ese nombre (case insensitive, excluyendo la actual)
+        $exists = Delegation::whereRaw('LOWER(name) = ?', [strtolower($request->name)])
+            ->where('id', '!=', $delegation->id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->withInput()->withErrors(['name' => 'This delegation name already exists.']);
+        }
 
         $delegation->update($request->all());
 

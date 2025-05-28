@@ -344,11 +344,9 @@
                 toast.classList.remove('visible');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
-
-            // Recarga la página después de 5 segundos
             setTimeout(() => {
                 location.reload();
-            }, 5000);
+            }, 3000);
         }
     });
 </script>

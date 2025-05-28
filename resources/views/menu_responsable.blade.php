@@ -59,14 +59,16 @@
             </div>
             <div class="card-body">
                 <p style="color: #4b0082;">Manage types of work absences.</p>
-                <button onclick="openCreateHolidayType()" class="btn"
+                <!-- CAMBIO: Añadido id a los botones y quitado onclick -->
+                <button id="btn-create-type" class="btn"
                     style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
                     <i class="fas fa-calendar-plus mr-1"></i> Create New Type
                 </button>
-                <button onclick="viewHolidayTypes()" class="btn"
+                <button id="btn-view-types" class="btn"
                     style="background-color: #a066c9; color: white; border: none; font-size: 0.875rem; padding: 6px 12px; border-radius: 6px;">
                     <i class="fas fa-list mr-1"></i> View Existing Types
                 </button>
+                <!-- FIN CAMBIO -->
             </div>
         </div>
     </div>
@@ -288,6 +290,12 @@
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
 <script>
+    // ====== CAMBIOS: Asignación de eventos y funciones globales ======
+    $(document).ready(function() {
+        $('#btn-create-type').on('click', openCreateHolidayType);
+        $('#btn-view-types').on('click', viewHolidayTypes);
+    });
+
     function openCreateHolidayType() {
         Swal.fire({
             title: 'Create new Type of Absence',
@@ -334,6 +342,7 @@
             }
         });
     }
+    window.openCreateHolidayType = openCreateHolidayType;
 
     function viewHolidayTypes() {
         fetch('{{ route('holiday_types.index') }}')
@@ -344,7 +353,6 @@
                     typesHtml += `
                     <li style="margin-bottom: 10px;">
                         <span>${type.type}</span>
-                        
                         <button onclick="deleteHolidayType(${type.id})" 
                                 style="margin-left: 5px; padding: 5px 10px; color: white; background-color: #dc3545; border: none; border-radius: 5px;">
                             Delete
@@ -366,6 +374,7 @@
                 Swal.fire('Error', 'Absence types could not be loaded.', 'error');
             });
     }
+    window.viewHolidayTypes = viewHolidayTypes;
 
     function deleteHolidayType(id) {
         Swal.fire({
@@ -404,5 +413,7 @@
             }
         });
     }
+    window.deleteHolidayType = deleteHolidayType;
+    // ====== FIN CAMBIOS ======
 </script>
 @stop

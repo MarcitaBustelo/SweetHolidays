@@ -121,19 +121,19 @@ class HolidayController extends Controller
             $newHolidayTypeId = $holiday->holiday_type_id ?? $holiday->holiday_id;
             if ($newHolidayTypeId === 1) {
                 $difference = $newDays - $originalDays;
-                dd(vars: $difference);
+                // dd(vars: $difference);
                 if ($difference > 0) {
                     // Se amplió la ausencia
                     if ($user->days < $difference) {
                         return response()->json(['error' => 'The employee doesn’t have enough days left to extend the absence'], 400);
                     }
-                    // $user->days -= $difference;
+                    $user->days -= $difference;
                 } elseif ($difference < 0) {
                     // Se acortó la ausencia
                     $user->days += abs($difference);
                 }
 
-                // $user->save();
+                $user->save();
             }
 
             // Actualizar la ausencia

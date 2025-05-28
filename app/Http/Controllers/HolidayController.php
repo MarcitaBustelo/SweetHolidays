@@ -82,7 +82,7 @@ class HolidayController extends Controller
         $validator = Validator::make($request->all(), [
             'holiday_id' => 'required|exists:holidays,id',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date', // Debe ser required, igual que en assign
+            'end_date' => 'required|date|after_or_equal:start_date',
             'holiday_type_id' => 'nullable|exists:holidays_types,id',
         ]);
 
@@ -97,47 +97,52 @@ class HolidayController extends Controller
                 return response()->json(['error' => 'The absence doesn’t exist'], 404);
             }
 
-            $employee = $holiday->employee; // Relación igual que en assign
-            if (!$employee) {
+            $user = $holiday->employee;
+
+            if (!$user) {
                 return response()->json(['error' => 'Employee not found'], 404);
             }
-            if ($employee->days === null) {
-                $employee->days = 0;
+
+            if ($user->days === null) {
+                $user->days = 0;
             }
 
-            // Calcular días originales y nuevos
+            // Fechas originales y nuevas
             $originalStart = new \DateTime($holiday->start_date);
             $originalEnd = new \DateTime($holiday->end_date);
-            $originalDays = $originalStart->diff($originalEnd)->days;
+            $originalDays = $originalStart->diff($originalEnd)->days + 1;
 
             $newStart = new \DateTime($request->start_date);
             $newEnd = new \DateTime($request->end_date);
-            $newDays = $newStart->diff($newEnd)->days;
+            $newDays = $newStart->diff($newEnd)->days + 1;
 
-            // Ajustar start_date (+1 día) igual que en assign
             $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
 
-            // Si el tipo de ausencia es vacaciones (id 1)
-            if ($holiday->holiday_type_id == 1) {
+            $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
+
+            // Solo si es tipo vacaciones (ID = 1)
+            if ((int) $holiday->holiday_type_id === 1) {
                 $difference = $newDays - $originalDays;
 
                 if ($difference > 0) {
-                    // Se alarga la ausencia, RESTAR días extra al usuario
-                    if ($employee->days < $difference) {
-                        return response()->json(['error' => 'El empleado no tiene suficientes días para ampliar la ausencia'], 400);
+                    // Se amplió la ausencia
+                    if ($user->days < $difference) {
+                        return response()->json(['error' => 'The employee doesn’t have enough days left to extend the absence'], 400);
                     }
-                    $employee->days -= $difference;
+                    $user->days -= $difference;
                 } elseif ($difference < 0) {
-                    // Se acorta la ausencia, SUMAR los días recuperados
-                    $employee->days += abs($difference);
+                    // Se acortó la ausencia
+                    $user->days += abs($difference);
                 }
-                $employee->save();
+
+                $user->save();
             }
 
+            // Actualizar la ausencia
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
-                'holiday_type_id' => $request->holiday_type_id ?? $holiday->holiday_type_id,
+                'holiday_type_id' => $newHolidayTypeId,
             ]);
 
             return response()->json([
@@ -145,10 +150,12 @@ class HolidayController extends Controller
                 'holiday' => $holiday
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Something wrong happened while saving the absence', 'details' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Something wrong happened while saving the absence',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
-
 
     public function deleteHoliday(Request $request)
     {

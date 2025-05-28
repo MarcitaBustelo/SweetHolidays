@@ -83,7 +83,7 @@ class HolidayController extends Controller
             'holiday_id' => 'required|exists:holidays,id',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'holiday_type_id' => 'nullable|exists:holiday_types,id',
+            'holiday_type_id' => 'nullable|exists:holidays_types,id',
         ]);
 
         if ($validator->fails()) {
@@ -109,13 +109,10 @@ class HolidayController extends Controller
 
             $adjustedStartDate = $newStart->modify('+1 day')->format('Y-m-d');
 
-            // Determinar si sigue siendo tipo vacaciones o si cambió
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
-
-            if ((int) $holiday->holiday_type_id === 1) {
+            dd($newHolidayTypeId);
+            if ($holiday->holiday_type_id === 1) {
                 $difference = $originalDays - $newDays;
-
-                // Si se acortó la ausencia, devolver días
                 if ($difference > 0) {
                     $user->days += $difference;
                     $user->save();

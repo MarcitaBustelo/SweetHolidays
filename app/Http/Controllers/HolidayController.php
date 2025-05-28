@@ -98,6 +98,7 @@ class HolidayController extends Controller
             }
 
             $user = $holiday->employee;
+            $days=$user->days;
 
             $originalStart = new \DateTime($holiday->start_date);
             $originalEnd = new \DateTime($holiday->end_date);
@@ -111,15 +112,14 @@ class HolidayController extends Controller
 
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
-            dd($holiday->holiday_type_id);
             if ($holiday->holiday_type_id === 1) {
                 $difference = $newDays - $originalDays;
                 if ($difference > 0) {
-                    $user->days -= $difference;
+                    $days -= $difference;
                     $user->save();
                 } elseif ($difference < 0) {
                     // Se han cogido menos días: SUMAR
-                    $user->days += abs($difference);
+                    $days += abs($difference);
                     $user->save();
                 }
             }
@@ -127,6 +127,7 @@ class HolidayController extends Controller
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
+                'days' => $days,
                 'holiday_type_id' => $newHolidayTypeId,
             ]);
 

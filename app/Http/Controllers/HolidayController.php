@@ -81,6 +81,7 @@ class HolidayController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'holiday_id' => 'required|exists:holidays,id',
+            'days' => 'required|users, days',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'holiday_type_id' => 'nullable|exists:holidays_types,id',
@@ -112,9 +113,13 @@ class HolidayController extends Controller
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
             if ($holiday->holiday_type_id === 1) {
-                $difference = $originalDays - $newDays;
+                $difference = $newDays - $originalDays;
                 if ($difference > 0) {
-                    $user->days += $difference;
+                    $user->days -= $difference;
+                    $user->save();
+                } elseif ($difference < 0) {
+                    // Se han cogido menos días: SUMAR
+                    $user->days += abs($difference);
                     $user->save();
                 }
             }

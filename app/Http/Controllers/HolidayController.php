@@ -111,6 +111,7 @@ class HolidayController extends Controller
 
             $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
 
+            dd($holiday->holiday_type_id);
             if ($holiday->holiday_type_id === 1) {
                 $difference = $newDays - $originalDays;
                 if ($difference > 0) {

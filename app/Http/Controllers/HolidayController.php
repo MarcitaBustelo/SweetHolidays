@@ -114,28 +114,26 @@ class HolidayController extends Controller
 
             $newStart = new \DateTime($request->start_date);
             $newEnd = new \DateTime($request->end_date);
-            $newDays = $newStart->diff($newEnd)->days + 1;
+            $newDays = $newStart->diff($newEnd)->days;
 
             $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
 
-            $newHolidayTypeId = $request->holiday_type_id ?? $holiday->holiday_type_id;
-
-            // Solo si es tipo vacaciones (ID = 1)
-            if ((int) $holiday->holiday_type_id === 1) {
+            $newHolidayTypeId = $holiday->holiday_type_id ?? $holiday->holiday_id;
+            if ($newHolidayTypeId === 1) {
                 $difference = $newDays - $originalDays;
-
+                dd($difference);
                 if ($difference > 0) {
                     // Se amplió la ausencia
                     if ($user->days < $difference) {
                         return response()->json(['error' => 'The employee doesn’t have enough days left to extend the absence'], 400);
                     }
-                    $user->days -= $difference;
+                    // $user->days -= $difference;
                 } elseif ($difference < 0) {
                     // Se acortó la ausencia
                     $user->days += abs($difference);
                 }
 
-                $user->save();
+                // $user->save();
             }
 
             // Actualizar la ausencia

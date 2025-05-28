@@ -719,31 +719,21 @@
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        'Accept': 'application/json' // ✅ Mantén esto
-
                     },
                     credentials: 'same-origin',
                     body: formData
                 })
-                    .then(async response => {
-                        const data = await response.json().catch(() => null);
-
-                        if (!response.ok) {
-                            let errorMessage = 'Unknown error occurred.';
-
-                            if (data?.message) {
-                                errorMessage = data.message;
-                            } else if (data?.errors) {
-                                errorMessage = Object.values(data.errors).flat().join('<br>');
-                            }
-
-                            throw new Error(errorMessage);
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            throw new Error(data.message || 'Unknown error');
                         }
-
                         return data;
                     })
                     .catch(error => {
-                        Swal.showValidationMessage(`Error: ${error.message}`);
+                        Swal.showValidationMessage(
+                            `Error: ${error.message}`
+                        );
                     });
             }
         }).then((result) => {

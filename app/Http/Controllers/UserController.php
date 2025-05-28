@@ -286,13 +286,23 @@ class UserController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
+        try {
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid date format.',
+            ], 422);
+        }
+
         if ($endDate->lt($startDate)) {
             return response()->json([
                 'success' => false,
                 'message' => 'The end date cannot be earlier than the start date.',
             ], 422);
         }
-        
+
         // Validar que ninguna fecha sea anterior a hoy
         if ($startDate->lt($today) || $endDate->lt($today)) {
             return response()->json([
@@ -342,7 +352,7 @@ class UserController extends Controller
         try {
             Mail::send('email', $data, function ($message) use ($data) {
                 $message->to($data['responsable_email'])
-                    ->subject('Solicitud de Ausencia');
+                    ->subject('Absence Request from');
             });
 
             return response()->json(['success' => true, 'message' => 'Email sent successfully.']);

@@ -143,44 +143,37 @@ class UserController extends Controller
     }
 
     //Actualizar los días totales de vacaciones que tienen los usuarios
-    public function updateDays(Request $request, $id)
+    public function updateDays(Request $request)
     {
         $request->validate([
             'days_in_total' => 'required|integer|min:0',
         ]);
 
-        $employee = User::find($id);
+        $user = Auth::user();
 
-        if (!$employee) {
-            return redirect()->back()->with('error', 'Employee not found.');
-        }
-
-        $holidays = Holiday::where('employee_id', $employee->id)
+        // Calcular los días de vacaciones ya usados este año
+        $vacationDaysUsed = Holiday::where('employee_id', $user->id)
             ->whereYear('start_date', date('Y'))
-            ->get();
+            ->where('holiday_id', 1) // Solo vacaciones
+            ->get()
+            ->reduce(function ($carry, $holiday) {
+                return $carry + $this->calculateDays($holiday->start_date, $holiday->end_date);
+            }, 0);
 
-        $daysUsed = 0;
-        foreach ($holidays as $holiday) {
-            $startDate = new DateTime($holiday->start_date);
-            $endDate = $holiday->end_date ? new DateTime($holiday->end_date) : null;
-
-            if ($endDate) {
-                $endDate->modify('+1 day');
-            }
-
-            $interval = $startDate->diff($endDate ?: $startDate);
-            $daysUsed += $interval->days;
-        }
-        $employee->days_in_total = $request->days_in_total;
-        $employee->days = $employee->days_in_total - $daysUsed;
-        if ($employee->days < 0) {
-            $employee->days = 0;
+        // Validar si los días ingresados son menores a los días ya usados
+        if ($request->input('days_in_total') < $vacationDaysUsed) {
+            return redirect()->back()->withErrors([
+                'days_in_total' => "You can't set total vacation days to less than the days already used ({$vacationDaysUsed}).",
+            ])->withInput();
         }
 
-        $employee->save();
+        // Actualizar el campo
+        $user->days_in_total = $request->input('days_in_total');
+        $user->save();
 
-        return redirect()->back()->with('success', 'Total days and remaining days updated successfully.');
+        return redirect()->back()->with('success', 'Total vacation days updated successfully.');
     }
+
 
     //Resetear los dias de vacaciones cada año
     // public function editDaysPerYear($id)
@@ -286,14 +279,14 @@ class UserController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
-        
+
         if ($endDate->lt($startDate)) {
             return response()->json([
                 'success' => false,
                 'message' => 'The end date cannot be earlier than the start date.',
             ], 422);
         }
-        
+
         // Validar que ninguna fecha sea anterior a hoy
         if ($startDate->lt($today) || $endDate->lt($today)) {
             return response()->json([

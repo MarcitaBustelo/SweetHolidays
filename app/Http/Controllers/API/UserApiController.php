@@ -119,16 +119,18 @@ class UserApiController extends Controller
         $request->validate([
             'reason' => 'required|string|max:1000',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date',
         ]);
 
-        // Verificar si el último día es viernes
+        // Crear instancias de Carbon para las fechas
+        $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
-        if ($endDate->isFriday()) {
+        // Verificar si la fecha de fin es anterior a la de inicio
+        if ($endDate->lt($startDate)) {
             return response()->json([
                 'success' => false,
-                'message' => 'If the last day is friday, the request must include saturday and sunday.',
+                'message' => 'The end date cannot be earlier than the start date.',
             ], 422);
         }
 

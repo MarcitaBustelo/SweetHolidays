@@ -149,7 +149,7 @@ class AuthAPIController extends BaseController
                 'success' => false,
                 'message' => 'Validation error.',
                 'errors' => [
-                    'The current password is incorrect.'
+                    'current_password' => ['The current password is incorrect.']
                 ]
             ], 422);
         }
@@ -159,7 +159,7 @@ class AuthAPIController extends BaseController
                 'success' => false,
                 'message' => 'Validation error.',
                 'errors' => [
-                    'The new password must be different from the current password.'
+                    'new_password' => ['The new password must be different from the current password.']
                 ]
             ], 422);
         }

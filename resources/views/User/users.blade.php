@@ -249,7 +249,14 @@
             autoWidth: false
         });
 
-        @if (session('success'))
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ $errors->first() }}',
+                confirmButtonColor: '#6a3cc9'
+            });
+        @elseif (session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
@@ -257,14 +264,6 @@
                 confirmButtonColor: '#6a3cc9'
             });
         @endif
-          @if ($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                text: '{{ $errors->first() }}',
-                confirmButtonColor: '#6a3cc9'
-            });
-        @endif
     });
 </script>
-@stop
+

@@ -164,7 +164,7 @@ class UserController extends Controller
         // Validar si los días ingresados son menores a los días ya usados
         if ($request->input('days_in_total') < $vacationDaysUsed) {
             return redirect()->back()->withErrors([
-                'days_in_total' => "You can't set total vacation days to less than the days already used ({$vacationDaysUsed}).",
+                'days_in_total' => "You cant set total vacation days to less than the days already used ({$vacationDaysUsed}).",
             ])->withInput();
         }
 

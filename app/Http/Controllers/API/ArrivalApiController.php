@@ -16,10 +16,9 @@ class ArrivalApiController extends Controller
         ]);
 
         $employeeId = $request->input('employee_id');
-        $currentDateTime = Carbon::now('Europe/Madrid');
+        $currentDateTime = Carbon::now()->addHours(2);
         $currentDate = $currentDateTime->format('Y-m-d');
         $currentTime = $currentDateTime->format('H:i:s');
-
 
         $arrival = Arrival::where('employee_id', $employeeId)
             ->where('date', $currentDate)

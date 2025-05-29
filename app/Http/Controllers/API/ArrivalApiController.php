@@ -12,12 +12,14 @@ class ArrivalApiController extends Controller
     public function handleScan(Request $request)
     {
         $request->validate([
-            'employee_id' => 'required|exists:users,employee_id', 
+            'employee_id' => 'required|exists:users,employee_id',
         ]);
 
         $employeeId = $request->input('employee_id');
-        $currentDate = Carbon::now()->format('Y-m-d');
-        $currentTime = Carbon::now()->format('H:i:s');
+        $currentDateTime = Carbon::now('Europe/Madrid');
+        $currentDate = $currentDateTime->format('Y-m-d');
+        $currentTime = $currentDateTime->format('H:i:s');
+
 
         $arrival = Arrival::where('employee_id', $employeeId)
             ->where('date', $currentDate)

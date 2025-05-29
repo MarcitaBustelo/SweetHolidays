@@ -119,18 +119,16 @@ class UserApiController extends Controller
         $request->validate([
             'reason' => 'required|string|max:1000',
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        // Crear instancias de Carbon para las fechas
-        $startDate = Carbon::createFromFormat('Y-m-d', $request->input('start_date'));
+        // Verificar si el último día es viernes
         $endDate = Carbon::createFromFormat('Y-m-d', $request->input('end_date'));
 
-        // Verificar si la fecha de fin es anterior a la de inicio
-        if ($endDate->lt($startDate)) {
+        if ($endDate->isFriday()) {
             return response()->json([
                 'success' => false,
-                'message' => 'The end date cannot be earlier than the start date.',
+                'message' => 'Must include saturday and sunday.',
             ], 422);
         }
 
@@ -141,7 +139,7 @@ class UserApiController extends Controller
         if ($isFestive) {
             return response()->json([
                 'success' => false,
-                'message' => 'If the next day is a festive day, the request must include it.',
+                'message' => 'Festive day must be included',
             ], 422);
         }
 

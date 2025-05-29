@@ -257,6 +257,14 @@
                 confirmButtonColor: '#6a3cc9'
             });
         @endif
+          @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: '{{ $errors->first() }}',
+                confirmButtonColor: '#6a3cc9'
+            });
+        @endif
     });
 </script>
 @stop

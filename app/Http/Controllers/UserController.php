@@ -143,16 +143,17 @@ class UserController extends Controller
     }
 
     //Actualizar los días totales de vacaciones que tienen los usuarios
-    public function updateDays(Request $request)
+    public function updateDays(Request $request, $id)
     {
         $request->validate([
             'days_in_total' => 'required|integer|min:0',
         ]);
 
-        $user = Auth::user();
+        // Buscar al empleado por ID
+        $employee = User::findOrFail($id);
 
-        // Calcular los días de vacaciones ya usados este año
-        $vacationDaysUsed = Holiday::where('employee_id', $user->id)
+        // Calcular los días de vacaciones ya usados este año por ese empleado
+        $vacationDaysUsed = Holiday::where('employee_id', $employee->id)
             ->whereYear('start_date', date('Y'))
             ->where('holiday_id', 1) // Solo vacaciones
             ->get()
@@ -168,11 +169,12 @@ class UserController extends Controller
         }
 
         // Actualizar el campo
-        $user->days_in_total = $request->input('days_in_total');
-        $user->save();
+        $employee->days_in_total = $request->input('days_in_total');
+        $employee->save();
 
         return redirect()->back()->with('success', 'Total vacation days updated successfully.');
     }
+
 
 
     //Resetear los dias de vacaciones cada año

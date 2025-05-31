@@ -27,13 +27,11 @@
             <i class="far fa-calendar mr-2"></i>View of Free Days
         </h3>
         <div class="card-tools">
+            <i class="fas fa-circle mr-1" style="color: red;"></i> National
+            <i class="fas fa-circle ml-3 mr-1" style="color: green;"></i> Other
             <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
             </button>
-        </div>
-        <div class="text-white small ml-3">
-            <i class="fas fa-circle mr-1" style="color: red;"></i> National
-            <i class="fas fa-circle ml-3 mr-1" style="color: green;"></i> Other
         </div>
     </div>
     <div class="card-body">
@@ -253,7 +251,7 @@
                     title: festive.name,
                     start: festive.date,
                     allDay: true,
-                    color: festive.national === true ? '#ffc107' : '#28a745',
+                    color: festive.national === 1 ? '#ffc107' : '#28a745',
                     textColor: '#fff',
                 }))
             ],

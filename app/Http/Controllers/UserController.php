@@ -103,10 +103,15 @@ class UserController extends Controller
         });
 
         $userDelegationId = $loggedInEmployee->delegation_id;
-        $festives = Festive::where(function ($query) use ($userDelegationId) {
-            $query->where('national', true)
-                ->orWhere('delegation_id', $userDelegationId);
-        })->get();
+        if (in_array($loggedInEmployeeId, $specialAccessEmployeeIds)) {
+            $festives = Festive::all();
+        } else {
+            $festives = Festive::where(function ($query) use ($userDelegationId) {
+                $query->where('national', true)
+                    ->orWhere('delegation_id', $userDelegationId);
+            })->get();
+        }
+
 
         $holiday_types = HolidayType::all();
         $delegations = Delegation::all();

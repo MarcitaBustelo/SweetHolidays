@@ -31,6 +31,10 @@
                 <i class="fas fa-minus"></i>
             </button>
         </div>
+        <div class="text-white small ml-3">
+            <i class="fas fa-circle mr-1" style="color: red;"></i> National
+            <i class="fas fa-circle ml-3 mr-1" style="color: green;"></i> Other
+        </div>
     </div>
     <div class="card-body">
         <form id="absenceForm">

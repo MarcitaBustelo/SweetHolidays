@@ -631,10 +631,6 @@
         filterButton.addEventListener('click', () => {
             const selectedUserId = userSelect.value;
 
-            // Siempre eliminar todos los eventos antes de cargar nuevos
-            calendar.removeAllEvents();
-
-            // Siempre añadir los festivos
             const festiveEvents = festives.map(festive => ({
                 title: festive.name,
                 start: festive.date,
@@ -644,36 +640,46 @@
             }));
 
             if (selectedUserId === 'all') {
-                // Mostrar todos los holidays + los festivos
-                const allHolidays = holidays.map(holiday => ({
-                    title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,
-                    start: holiday.start_date,
-                    end: holiday.end_date ? new Date(new Date(holiday.end_date).getTime() + 86400000).toISOString().split('T')[0] : null,
-                    allDay: true,
-                    color: holiday.color,
-                    textColor: "#f5f6fd",
-                    extendedProps: {
-                        holiday_id: holiday.id,
-                        employee_id: holiday.employee.id,
-                    },
-                }));
-
-                calendar.addEventSource([...allHolidays, ...festiveEvents]);
+                calendar.removeAllEvents();
+                calendar.addEventSource([
+                    ...holidays.map(holiday => ({
+                        title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,
+                        start: holiday.start_date,
+                        end: holiday.end_date ? new Date(new Date(holiday.end_date)
+                            .getTime() + 86400000).toISOString().split('T')[0] :
+                            null,
+                        allDay: true,
+                        color: holiday.color,
+                        textColor: "#f5f6fd",
+                        extendedProps: {
+                            holiday_id: holiday.id,
+                            employee_id: holiday.employee.id,
+                        },
+                    })),
+                    ...festives.map(festive => ({
+                        title: festive.name,
+                        start: festive.date,
+                        allDay: true,
+                        color: festive.national === true ? '#ffc107' : '#28a745',
+                        textColor: '#fff',
+                    })),
+                ]);
                 return;
             }
 
-            // Si selecciona un usuario específico
+            // Si selecciona un usuario específico, filtrar sus eventos
             if (!selectedUserId) {
                 Swal.fire('Error', 'You must choose an employee to filter the absences', 'error');
                 return;
             }
 
-            const filteredHolidays = holidays
+            const filteredEvents = holidays
                 .filter(holiday => holiday.employee.id == selectedUserId)
                 .map(holiday => ({
                     title: `${holiday.holiday_type} - ${holiday.employee.name} - ${holiday.employee.delegation} - ${holiday.employee.department}`,
                     start: holiday.start_date,
-                    end: holiday.end_date ? new Date(new Date(holiday.end_date).getTime() + 86400000).toISOString().split('T')[0] : null,
+                    end: holiday.end_date ? new Date(new Date(holiday.end_date).getTime() +
+                        86400000).toISOString().split('T')[0] : null,
                     allDay: true,
                     color: holiday.color,
                     textColor: "#f5f6fd",
@@ -683,15 +689,16 @@
                     },
                 }));
 
-            // Añadir festivos y los holidays filtrados
-            calendar.addEventSource([...filteredHolidays, ...festiveEvents]);
+            calendar.removeAllEvents();
+            calendar.addEventSource(filteredEvents);
+            calendar.addEventSource(festiveEvents);
         });
+    });
 
-
-        function requestHoliday() {
-            Swal.fire({
-                title: 'Request Absence',
-                html: `
+    function requestHoliday() {
+        Swal.fire({
+            title: 'Request Absence',
+            html: `
                     <form id="requestHolidayForm">
     <div class="form-group">
         <label for="name">Name</label>
@@ -711,38 +718,38 @@
     </div>
 </form>
                 `,
-                showCancelButton: true,
-                confirmButtonText: 'Send request',
-                preConfirm: () => {
-                    const form = document.getElementById('requestHolidayForm');
-                    const formData = new FormData(form);
+            showCancelButton: true,
+            confirmButtonText: 'Send request',
+            preConfirm: () => {
+                const form = document.getElementById('requestHolidayForm');
+                const formData = new FormData(form);
 
-                    return fetch('{{ route('holiday_types.send_email', ['id' => Auth::id()]) }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        credentials: 'same-origin',
-                        body: formData
+                return fetch('{{ route('holiday_types.send_email', ['id' => Auth::id()]) }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    credentials: 'same-origin',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            throw new Error(data.message || 'Unknown error');
+                        }
+                        return data;
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (!data.success) {
-                                throw new Error(data.message || 'Unknown error');
-                            }
-                            return data;
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(
-                                `Error: ${error.message}`
-                            );
-                        });
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Sent!', 'Your request has been sent correctly', 'success');
-                }
-            });
-        }
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Error: ${error.message}`
+                        );
+                    });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire('Sent!', 'Your request has been sent correctly', 'success');
+            }
+        });
+    }
 </script>
 @stop

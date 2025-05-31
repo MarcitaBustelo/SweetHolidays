@@ -31,7 +31,7 @@ class DelegationController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $nameWithPrefix = 'SWEET HOLIDAY-' . $request->name;
+        $nameWithPrefix = 'SWEET HOLIDAYS-' . $request->name;
 
         $exists = Delegation::whereRaw('LOWER(name) = ?', [strtolower($nameWithPrefix)])->exists();
 
@@ -53,11 +53,8 @@ class DelegationController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        // Agregar el prefijo al nombre ingresado
-        $nameWithPrefix = 'SWEET HOLIDAY-' . $request->name;
-
         // Comprobar si ya existe otra delegación con ese nombre (case insensitive, excluyendo la actual)
-        $exists = Delegation::whereRaw('LOWER(name) = ?', [strtolower($nameWithPrefix)])
+        $exists = Delegation::whereRaw('LOWER(name) = ?', [strtolower($request->name)])
             ->where('id', '!=', $delegation->id)
             ->exists();
 
@@ -65,15 +62,10 @@ class DelegationController extends Controller
             return redirect()->back()->withInput()->withErrors(['name' => 'This delegation name already exists.']);
         }
 
-        // Actualizar la delegación con el nombre modificado
-        $delegation->update([
-            'name' => $nameWithPrefix,
-            // Asegúrate de incluir aquí otros campos si los hay
-        ]);
+        $delegation->update($request->all());
 
         return redirect()->route('delegations.delegations')->with('success', 'Delegation updated successfully');
     }
-
 
     public function destroy(Delegation $delegation)
     {

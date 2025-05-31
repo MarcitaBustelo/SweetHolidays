@@ -4,7 +4,7 @@
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center">
-    <h1 style="color: #3b2469;">@lang('Delegation Management')</h1>
+    <h1 style="color: #3b2469;">@lang('Branches Management')</h1>
     <div>
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#delegationModal"
             data-action="add">

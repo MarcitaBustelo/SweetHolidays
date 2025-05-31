@@ -32,6 +32,10 @@
                 <thead>
                     <tr style="background-color: #ebe4f6; color: #4b2e83;">
                         <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>NIF</th>
+                        <th>Start date</th>
                         <th>Delegation</th>
                         <th>Department</th>
                         @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))
@@ -47,6 +51,10 @@
                     @forelse ($employees as $employee)
                         <tr>
                             <td>{{ $employee->name }}</td>
+                            <td>{{ $employee->email }}</td>
+                            <td>{{ $employee->phone }}</td>
+                            <td>{{ $employee->nif }}</td>
+                            <td>{{ $employee->start_date ? $employee->start_date->format('d/m/Y') : 'No start date' }}</td>
                             <td>{{ $employee->delegation->name ?? 'No delegation' }}</td>
                             <td>
                                 @if (in_array(auth()->user()->employee_id, $specialAccessEmployeeIds))

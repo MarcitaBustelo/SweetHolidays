@@ -10,12 +10,6 @@
         <a style="background-color: rgb(81, 5, 91)" href="{{ route('menu.responsable') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Menu
         </a>
-        @if (auth()->user()->responsable !== null)
-            <button class="btn btn-primary ml-2" style="background-color: #3c8dbc; border-color: #3c8dbc;"
-                onclick="requestHoliday()">
-                <i class="fas fa-calendar-plus"></i> Request Absence
-            </button>
-        @endif
     </div>
 </div>
 @stop
@@ -27,8 +21,10 @@
             <i class="far fa-calendar mr-2"></i>View of Free Days
         </h3>
         <div class="card-tools">
-            <i class="fas fa-circle mr-1" style="color: red;"></i> National
-            <i class="fas fa-circle ml-3 mr-1" style="color: green;"></i> Other
+            <i class="fas fa-circle mr-1" style="color: red;"></i>
+            <span style="color: white;">National</span>
+            <i class="fas fa-circle ml-3 mr-1" style="color: green;"></i>
+            <span style="color: white;">Other</span>
             <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
                 <i class="fas fa-minus"></i>
             </button>
@@ -696,62 +692,5 @@
             calendar.addEventSource(festiveEvents);
         });
     });
-
-    function requestHoliday() {
-        Swal.fire({
-            title: 'Request Absence',
-            html: `
-                    <form id="requestHolidayForm">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" class="form-control" value="{{ auth()->user()->name }}" readonly>
-    </div>
-    <div class="form-group">
-        <label for="reason">Reason for Absence</label>
-        <textarea id="reason" name="reason" class="form-control" rows="4" placeholder="Reason for the absence" required></textarea>
-    </div>
-    <div class="form-group">
-        <label for="start_date">Start Date</label>
-        <input type="date" id="start_date" name="start_date" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="end_date">End Date</label>
-        <input type="date" id="end_date" name="end_date" class="form-control" required>
-    </div>
-</form>
-                `,
-            showCancelButton: true,
-            confirmButtonText: 'Send request',
-            preConfirm: () => {
-                const form = document.getElementById('requestHolidayForm');
-                const formData = new FormData(form);
-
-                return fetch('{{ route('holiday_types.send_email', ['id' => Auth::id()]) }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    credentials: 'same-origin',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.success) {
-                            throw new Error(data.message || 'Unknown error');
-                        }
-                        return data;
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                            `Error: ${error.message}`
-                        );
-                    });
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire('Sent!', 'Your request has been sent correctly', 'success');
-            }
-        });
-    }
 </script>
 @stop

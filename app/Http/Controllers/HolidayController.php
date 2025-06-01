@@ -8,10 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\HolidayType;
 use App\Models\User;
-use Illuminate\Support\Facades\Storage;
-
-
+use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HolidayController extends Controller
 {
@@ -45,12 +44,10 @@ class HolidayController extends Controller
             $interval = $startDate->diff($endDate);
             $daysRequested = $interval->days;
 
-            // Solo cuenta si el tipo es "vacation"
             if ($request->holiday_id == 1 && $employee->days < $daysRequested) {
                 return response()->json(['error' => 'The employee doesnt have that many days left'], 400);
             }
 
-            // Crear la ausencia (ajustar fecha si es necesario)
             $adjustedStartDate = date('Y-m-d', strtotime($request->start_date . ' +1 day'));
 
             $holiday = Holiday::create([
@@ -59,9 +56,25 @@ class HolidayController extends Controller
                 'end_date' => $request->end_date,
                 'holiday_id' => $request->holiday_id,
             ]);
+
             if ($request->holiday_id == 1) {
                 $employee->days -= $daysRequested;
                 $employee->save();
+            }
+
+            // Enviar correo al empleado
+            try {
+                $data = [
+                    'name' => $employee->name,
+                    'email' => $employee->email,
+                ];
+
+                Mail::send('email_approved', $data, function ($message) use ($data) {
+                    $message->to($data['email'])
+                        ->subject('Your Absence Has Been Approved');
+                });
+            } catch (\Exception $e) {
+                Log::error('Email send error: ' . $e->getMessage());
             }
 
             return response()->json([
@@ -76,7 +89,6 @@ class HolidayController extends Controller
             return response()->json(['error' => 'Something wrong happened while saving the absence'], 500);
         }
     }
-
 
     public function updateHoliday(Request $request)
     {
@@ -108,7 +120,6 @@ class HolidayController extends Controller
                 $user->days = 0;
             }
 
-            // Fechas originales y nuevas
             $originalStart = new \DateTime($holiday->start_date);
             $originalEnd = new \DateTime($holiday->end_date);
             $originalDays = $originalStart->diff($originalEnd)->days + 1;
@@ -122,27 +133,39 @@ class HolidayController extends Controller
             $newHolidayTypeId = $holiday->holiday_type_id ?? $holiday->holiday_id;
             if ($newHolidayTypeId === 1) {
                 $difference = $newDays - $originalDays;
-                // dd(vars: $difference);
+
                 if ($difference > 0) {
-                    // Se amplió la ausencia
                     if ($user->days < $difference) {
                         return response()->json(['error' => 'The employee doesn’t have enough days left to extend the absence'], 400);
                     }
                     $user->days -= $difference;
                 } elseif ($difference < 0) {
-                    // Se acortó la ausencia
                     $user->days += abs($difference);
                 }
 
                 $user->save();
             }
 
-            // Actualizar la ausencia
             $holiday->update([
                 'start_date' => $adjustedStartDate,
                 'end_date' => $request->end_date,
                 'holiday_type_id' => $newHolidayTypeId,
             ]);
+
+            // Enviar correo al empleado
+            try {
+                $data = [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+
+                Mail::send('updated_email', $data, function ($message) use ($data) {
+                    $message->to($data['email'])
+                        ->subject('Your Absence Has Been Approved');
+                });
+            } catch (\Exception $e) {
+                Log::error('Email send error: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => 'Updated absence successfully.',
@@ -155,6 +178,7 @@ class HolidayController extends Controller
             ], 500);
         }
     }
+
 
     public function deleteHoliday(Request $request)
     {
@@ -196,9 +220,23 @@ class HolidayController extends Controller
 
             $employee->save();
 
-            // Eliminar la ausencia
             Log::info('Deleting absence...', ['holiday' => $holiday]);
             $holiday->delete();
+
+            // Enviar correo al empleado
+            try {
+                $data = [
+                    'name' => $employee->name,
+                    'email' => $employee->email,
+                ];
+
+                Mail::send('deleted_email', $data, function ($message) use ($data) {
+                    $message->to($data['email'])
+                        ->subject('Your Absence Has Been Deleted');
+                });
+            } catch (\Exception $e) {
+                Log::error('Email send error (deletion): ' . $e->getMessage());
+            }
 
             Log::info('Absence deleted successfully');
             return response()->json([
@@ -211,6 +249,7 @@ class HolidayController extends Controller
             return response()->json(['error' => 'Something happened while deleting absence.'], 500);
         }
     }
+
 
     public function editJustifyHoliday(Request $request)
     {

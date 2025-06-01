@@ -8,13 +8,13 @@
 <body style="font-family: Arial, sans-serif; background-color: #f4f7fb; margin: 0; padding: 0;">
     <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
         <tr>
-            <td style="padding: 20px; background-color:rgb(189, 17, 17); color: #ffffff; text-align: center; border-radius: 8px 8px 0 0;">
+            <td style="padding: 20px; background-color:rgb(171, 19, 19); color: #ffffff; text-align: center; border-radius: 8px 8px 0 0;">
                 <h1 style="margin: 0; font-size: 24px;">Absence Deleted</h1>
             </td>
         </tr>
         <tr>
             <td style="padding: 20px; color: #333333; line-height: 1.6;">
-                <p>Hello <strong style="color: #2e7d32;">{{ $name }}</strong>,</p>
+                <p>Hello <strong style="color:rgb(244, 248, 245);">{{ $name }}</strong>,</p>
                 <p>Your absence request has been <strong>deleted</strong> by your responsible</p>
                 <p style="margin-top: 20px;">Thank you for using our system.</p>
                 <p style="margin-top: 20px;">Best regards,</p>

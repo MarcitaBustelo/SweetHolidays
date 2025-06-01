@@ -633,7 +633,7 @@
                 title: festive.name,
                 start: festive.date,
                 allDay: true,
-                color: festive.national === 1 ? '#ffc107' : '#28a745',
+                color: festive.national === 1 ? '#d71616' : '#28a745',
                 textColor: '#fff',
             }));
 
@@ -658,7 +658,7 @@
                         title: festive.name,
                         start: festive.date,
                         allDay: true,
-                        color: festive.national === 1 ? '#ffc107' : '#28a745',
+                        color: festive.national === 1 ? '#d71616' : '#28a745',
                         textColor: '#fff',
                     })),
                 ]);

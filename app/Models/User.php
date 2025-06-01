@@ -33,6 +33,8 @@ class User extends Authenticatable
         'delegation_id',
         'responsable',
         'start_date',
+        'days',
+        'days_in_total',
     ];
 
     /**

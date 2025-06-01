@@ -34,14 +34,6 @@ class AuthAPIController extends BaseController
                     ], 403);
                 }
 
-                if ($user->role !== 'employee') {
-                    Auth::logout();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Unauthorized.',
-                        'errors' => ['error' => 'Only employees can log in.'],
-                    ], 403);
-                }
 
                 $success['token'] = $user->createToken('MyApp')->plainTextToken;
                 $success['name'] = $user->name;

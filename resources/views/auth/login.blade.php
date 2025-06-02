@@ -208,6 +208,7 @@
             const employeeInput = document.getElementById('employee_id');
             const form = document.querySelector('.form-section');
             const errorMessage = document.getElementById('employee_id_error');
+            const submitBtn = form.querySelector('.submit-btn');
 
             employeeInput.addEventListener('input', function () {
                 if (!/^\d*$/.test(employeeInput.value)) {
@@ -221,7 +222,11 @@
                 if (!/^\d+$/.test(employeeInput.value)) {
                     event.preventDefault();
                     errorMessage.style.display = 'block';
+                    return;
                 }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ingresando...';
             });
         });
     </script>

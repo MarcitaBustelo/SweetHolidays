@@ -226,7 +226,7 @@
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ingresando...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loging in...';
             });
         });
     </script>

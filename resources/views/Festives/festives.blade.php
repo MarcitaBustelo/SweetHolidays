@@ -33,7 +33,7 @@
                     <tr>
                         <td>{{ $festive->name }}</td>
                         <td>
-                            {{ $festive->national ? 'Nacional' : ($festive->delegation->name ?? 'No asignada') }}
+                            {{ $festive->national ? 'National' : ($festive->delegation->name ?? 'No asignada') }}
                         </td>
                         <td>
                             <form action="{{ route('festives.editDate', $festive->id) }}" method="POST"
@@ -273,6 +273,30 @@
                 confirmButtonColor: '#6a3cc9'
             });
         @endif
-        });
+
+        // CREAR
+        $('#createFestiveModal select[name="delegation_id"]').on('change', function () {
+            const isDelegationSelected = $(this).val() !== '';
+            const checkbox = $('#createFestiveModal input[name="national"]');
+
+            checkbox.prop('disabled', isDelegationSelected);
+            if (isDelegationSelected) {
+                checkbox.prop('checked', false);
+            }
+        }).trigger('change'); // <-- Asegura que se aplique al abrir
+
+        // EDITAR
+        @foreach ($festives as $festive)
+            $('#editFestiveModal{{ $festive->id }} select[name="delegation_id"]').on('change', function () {
+                const isDelegationSelected = $(this).val() !== '';
+                const checkbox = $('#editFestiveModal{{ $festive->id }} input[name="national"]');
+
+                checkbox.prop('disabled', isDelegationSelected);
+                if (isDelegationSelected) {
+                    checkbox.prop('checked', false);
+                }
+            }).trigger('change'); // <-- Asegura que se aplique al abrir
+        @endforeach
+    });
 </script>
 @stop

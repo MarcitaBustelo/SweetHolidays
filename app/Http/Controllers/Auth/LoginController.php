@@ -35,37 +35,46 @@ class LoginController extends Controller
 
     // Sobrescribe el método de login para mejor manejo de errores
     public function login(Request $request)
-    {
-        $this->validateLogin($request);
+{
+    $this->validateLogin($request);
 
-        // Verificar si las credenciales son válidas sin iniciar sesión aún
-        $credentials = $this->credentials($request);
-        $user = \App\Models\User::where('employee_id', $credentials['employee_id'])->first();
+    $credentials = $this->credentials($request);
+    $user = \App\Models\User::where('employee_id', $credentials['employee_id'])->first();
 
-        if ($user && \Hash::check($credentials['password'], $user->password)) {
-            if ($user->active == 0) {
-                return redirect()->route('login')
-                    ->withInput($request->only('active', 'remember'))
-                    ->withErrors([
-                        'employee_id' => "Your account is deactivated",
-                    ]);
-            } else if ($user->role === 'employee') {
-                return redirect()->route('login')
-                    ->withInput($request->only('employee_id', 'remember'))
-                    ->withErrors([
-                        'employee_id' => "Can't log in because you're not a responsible.",
-                    ]);
-            }
+    // Verificar si el número de empleado existe
+    if (!$user) {
+        return redirect()->route('login')
+            ->withInput($request->only('employee_id', 'remember'))
+            ->withErrors([
+                'employee_id' => "This employee doesn't exist",
+            ]);
+    }
 
-
-            // Si no es 'employee', entonces hacemos login normal
-            if (Auth::attempt($credentials, $request->filled('remember'))) {
-                return $this->sendLoginResponse($request);
-            }
+    // Verificar si la contraseña es válida
+    if (\Hash::check($credentials['password'], $user->password)) {
+        if ($user->active == 0) {
+            return redirect()->route('login')
+                ->withInput($request->only('employee_id', 'remember'))
+                ->withErrors([
+                    'employee_id' => "Your account is deactivated",
+                ]);
+        } elseif ($user->role === 'employee') {
+            return redirect()->route('login')
+                ->withInput($request->only('employee_id', 'remember'))
+                ->withErrors([
+                    'employee_id' => "Can't log in because you're not a responsible.",
+                ]);
         }
 
-        return $this->sendFailedLoginResponse($request);
+        // Hacer login normal
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            return $this->sendLoginResponse($request);
+        }
     }
+
+    return $this->sendFailedLoginResponse($request);
+}
+
 
 
     // Método para credenciales personalizado

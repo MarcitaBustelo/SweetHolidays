@@ -21,16 +21,6 @@ class AuthAPIController extends BaseController
         $departments = Department::select('department_id', 'name')->get();
 
         try {
-            // Verificar si el empleado existe antes de intentar login
-            $user = \App\Models\User::where('employee_id', $request->employee_id)->first();
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized.',
-                    'errors' => ['employee_id' => "This employee doesn't exist."],
-                ], 404);
-            }
-
             if (Auth::attempt(['employee_id' => $request->employee_id, 'password' => $request->password])) {
                 $user = Auth::user();
                 $departmentName = $departments->firstWhere('department_id', $user->department_id)?->name ?? 'Unknown';
@@ -44,10 +34,13 @@ class AuthAPIController extends BaseController
                     ], 403);
                 }
 
+
                 $success['token'] = $user->createToken('MyApp')->plainTextToken;
                 $success['name'] = $user->name;
                 $success['employee_id'] = $user->employee_id;
                 $success['department'] = $departmentName;
+
+
 
                 return response()->json([
                     'success' => true,
@@ -69,7 +62,6 @@ class AuthAPIController extends BaseController
             ], 500);
         }
     }
-
 
     /**
      * Register api

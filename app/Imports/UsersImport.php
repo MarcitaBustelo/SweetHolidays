@@ -30,8 +30,6 @@ class UsersImport implements ToModel, WithHeadingRow
                 'delegation_id' => $delegation ? $delegation->delegation_id : 99,
                 'department_id' => $department ? $department->department_id : 99,
                 'responsable' =>  $row['responsable'] ?? 1,
-                'days_in_total' => $row['days_in_total'] ?? 30,
-                'days' => $row['days'] ?? 30,
             ];
 
             $existingUser->update($updateData);
